@@ -1,0 +1,38 @@
+{
+  "name": "pillar",
+  "version": "1.0.0",
+  "description": "Discord bot that can play music, stream videos, setup reminders, create polls, managing welcome and leaving messages.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc -p ."
+  },
+  "keywords": [
+    "discord",
+    "bot"
+  ],
+  "author": "Erik Szabó",
+  "license": "MIT",
+  "dependencies": {
+    "@discordjs/opus": "^0.3.2",
+    "@types/ffmpeg-static": "^3.0.0",
+    "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0",
+    "ffmpeg": "0.0.4",
+    "ffmpeg-static": "^4.2.7",
+    "monk": "^7.3.2",
+    "node-schedule": "^1.3.2",
+    "ytdl-core": "^3.2.2",
+    "ytsr": "^0.1.21"
+  },
+  "devDependencies": {
+    "@types/monk": "^6.0.0",
+    "@types/node": "^14.6.4",
+    "@types/node-schedule": "^1.3.0",
+    "@types/ws": "^7.2.6",
+    "nodemon": "^2.0.4",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.2"
+  }
+}
