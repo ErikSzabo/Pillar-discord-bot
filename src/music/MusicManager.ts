@@ -9,6 +9,7 @@ import { StopCommand } from './commands/StopCommand';
 import { VolumeCommand } from './commands/VolumeCommand';
 import { CommandManager } from '../generic/ICommandManager';
 import { generalServerCache, channelType } from '../generic/GeneralServerCache';
+import { MusicChannelCommand } from './commands/MusicChannelCommand';
 
 export class MusicManager extends CommandManager {
   constructor(name: string) {
@@ -20,6 +21,7 @@ export class MusicManager extends CommandManager {
     this.addCommand(new SkipCommand());
     this.addCommand(new StopCommand());
     this.addCommand(new VolumeCommand());
+    this.addCommand(new MusicChannelCommand());
   }
 
   public handle(command: string, args: Array<string>, message: Message) {
