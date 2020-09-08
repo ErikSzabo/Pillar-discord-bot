@@ -46,6 +46,11 @@ client.on('message', (message) => {
       musicManager.handle(command, args, message);
       return;
     }
+
+    if (welcomeManager.getCommandNames().includes(command)) {
+      welcomeManager.handle(command, args, message);
+      return;
+    }
   }
 });
 

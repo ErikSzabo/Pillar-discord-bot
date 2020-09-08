@@ -48,8 +48,8 @@ export const generalServerCache = (() => {
       pollRole: 'off',
       watchTogetherRole: 'off',
       welcomeChannel: 'off',
-      welcomeMessage: '[USERNAME] joined the server!',
-      leaveMessage: '[USERNAME] leaved the server!',
+      welcomeMessage: '[USER] joined the server!',
+      leaveMessage: '[USER] leaved the server!',
     };
 
     cache.set(serverID, construct);

@@ -4,7 +4,6 @@ import { createEmbed, checkPermission } from '../../utils';
 import {
   messageType,
   generalServerCache,
-  roleType,
 } from '../../generic/GeneralServerCache';
 import config from '../../config';
 
@@ -18,11 +17,15 @@ export class WelcomeMessageCommand extends Command {
 
   public execute(args: Array<string>, message: Message): void {
     if (args[0].toLowerCase() === 'off') {
-      generalServerCache.setMessage(messageType.LEAVE, message.guild.id, 'off');
+      generalServerCache.setMessage(
+        messageType.WELCOME,
+        message.guild.id,
+        'off'
+      );
       message.channel.send(
         createEmbed(
           '🗨 Welcome Message',
-          'Now I will **not** send welcome messages when someone leaves!',
+          'Now I will **not** send welcome messages when someone joins!',
           false
         )
       );
@@ -45,7 +48,7 @@ export class WelcomeMessageCommand extends Command {
     }
 
     generalServerCache.setMessage(
-      messageType.LEAVE,
+      messageType.WELCOME,
       message.guild.id,
       welcomeMessage
     );
