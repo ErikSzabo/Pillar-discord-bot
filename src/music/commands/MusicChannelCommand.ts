@@ -41,7 +41,7 @@ export class MusicChannelCommand extends Command {
 
     const channels = message.mentions.channels;
 
-    if (!channels) {
+    if (!channels.first()) {
       message.channel.send(
         createEmbed(
           'Invalid',
@@ -53,6 +53,14 @@ export class MusicChannelCommand extends Command {
     }
 
     const channel = channels.first();
+
+    if (channel.type !== 'text') {
+      message.channel.send(
+        createEmbed('Invalid', 'You have to provide a **text** channel!', true)
+      );
+      return;
+    }
+
     const perms = channel.permissionsFor(message.client.user);
 
     if (!perms.has('SEND_MESSAGES') || !perms.has('READ_MESSAGE_HISTORY')) {

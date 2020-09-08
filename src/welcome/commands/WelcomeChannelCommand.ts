@@ -33,7 +33,7 @@ export class WelcomeChannelCommand extends Command {
 
     const channels = message.mentions.channels;
 
-    if (!channels) {
+    if (!channels.first()) {
       message.channel.send(
         createEmbed(
           'Invalid',
