@@ -106,18 +106,25 @@ export class PlayCommand extends Command {
       return;
     }
 
-    let dispatcher = serverData.connection
-      .play(ytdl(serverData.songs[0].url))
-      .on('finish', () => {
-        serverData.songs.shift();
-        this.play(serverData);
-      })
-      .on('error', (err) => {
-        console.error(err);
-      });
+    try {
+      let dispatcher = serverData.connection
+        .play(ytdl(serverData.songs[0].url))
+        .on('finish', () => {
+          serverData.songs.shift();
+          this.play(serverData);
+        })
+        .on('error', (err) => {
+          console.error(err);
+          serverData.songs.shift();
+          this.play(serverData);
+        });
 
-    serverData.isPlaying = true;
-    dispatcher.setVolumeLogarithmic(serverData.volume / 5);
+      serverData.isPlaying = true;
+      dispatcher.setVolumeLogarithmic(serverData.volume / 5);
+    } catch (err) {
+      serverData.songs.shift();
+      this.play(serverData);
+    }
   }
 
   private checkErrors(
