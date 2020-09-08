@@ -37,20 +37,7 @@ client.on('message', (message) => {
       .substring(config.prefix.length)
       .split(/\s+/);
 
-    if (generalManager.getCommandNames().includes(command)) {
-      generalManager.handle(command, args, message);
-      return;
-    }
-
-    if (musicManager.getCommandNames().includes(command)) {
-      musicManager.handle(command, args, message);
-      return;
-    }
-
-    if (welcomeManager.getCommandNames().includes(command)) {
-      welcomeManager.handle(command, args, message);
-      return;
-    }
+    generalManager.handle(command, args, message);
   }
 });
 
