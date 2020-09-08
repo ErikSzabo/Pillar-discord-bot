@@ -5,8 +5,8 @@ import { createEmbed } from '../../utils';
 import { reminders } from '../../database';
 
 export class DeleteCommand extends ReminderCommand {
-  constructor(jobs: Map<string, Job>) {
-    super('r-delete', 'deletes a reminder', jobs);
+  constructor() {
+    super('r-delete', 'deletes a reminder');
   }
 
   public execute(args: Array<string>, message: Message): void {}

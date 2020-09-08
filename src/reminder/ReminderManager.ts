@@ -6,26 +6,11 @@ import { Message } from 'discord.js';
 import { generalServerCache, roleType } from '../generic/GeneralServerCache';
 import { checkPermission } from '../utils';
 
-// 1 week before
-// 3 days before
-// 3 hours before
-
-export interface Reminder {
-  serverID: string;
-  mentionID: string;
-  title: string;
-  description: string;
-  dates: Date;
-}
-
 export class ReminderManager extends CommandManager {
-  private jobs: Map<string, Job>;
-
   constructor(name: string) {
     super(name);
-    this.jobs = new Map<string, Job>();
-    this.addCommand(new AddCommand(this.jobs));
-    this.addCommand(new DeleteCommand(this.jobs));
+    this.addCommand(new AddCommand());
+    this.addCommand(new DeleteCommand());
   }
 
   public handle(command: string, args: Array<string>, message: Message): void {
