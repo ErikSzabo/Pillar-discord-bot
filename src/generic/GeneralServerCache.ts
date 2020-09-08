@@ -6,6 +6,25 @@ export interface ServerInfo {
   moderationRole: string;
   pollRole: string;
   watchTogetherRole: string;
+  welcomeChannel: string;
+  welcomeMessage: string;
+  leaveMessage: string;
+}
+
+export enum messageType {
+  LEAVE = 'leaveMessage',
+  WELCOME = 'welcomeMessage',
+}
+
+export enum roleType {
+  MODERATION = 'moderationRole',
+  POLL = 'pollRole',
+  WATCH = 'watchTogetherRole',
+}
+
+export enum channelType {
+  MUSIC = 'musicChannel',
+  WELCOME = 'welcomeChannel',
 }
 
 export const generalServerCache = (() => {
@@ -28,6 +47,9 @@ export const generalServerCache = (() => {
       moderationRole: 'off',
       pollRole: 'off',
       watchTogetherRole: 'off',
+      welcomeChannel: 'off',
+      welcomeMessage: '[USERNAME] joined the server!',
+      leaveMessage: '[USERNAME] leaved the server!',
     };
 
     cache.set(serverID, construct);
@@ -35,58 +57,52 @@ export const generalServerCache = (() => {
     await serverInfo.insert(construct);
   };
 
-  const setMusicChannel = async (
+  const setMessage = async (
+    type: messageType,
     serverID: string,
-    musicChannel: string
+    message: string
   ): Promise<void> => {
-    cache.get(serverID).musicChannel = musicChannel;
-    await serverInfo.findOneAndUpdate({ serverID }, { $set: { musicChannel } });
-  };
-
-  const setModerationRole = async (
-    serverID: string,
-    moderationRole: string
-  ): Promise<void> => {
-    cache.get(serverID).moderationRole = moderationRole;
+    cache.get(serverID)[type] = message;
     await serverInfo.findOneAndUpdate(
       { serverID },
-      { $set: { moderationRole } }
+      { $set: { [`${type}`]: message } }
     );
   };
 
-  const setPollRole = async (
+  const setChannel = async (
+    type: channelType,
     serverID: string,
-    pollRole: string
+    channel: string
   ): Promise<void> => {
-    cache.get(serverID).pollRole = pollRole;
-    await serverInfo.findOneAndUpdate({ serverID }, { $set: { pollRole } });
-  };
-
-  const setWatchTogetherRole = async (
-    serverID: string,
-    watchTogetherRole: string
-  ): Promise<void> => {
-    cache.get(serverID).watchTogetherRole = watchTogetherRole;
+    cache.get(serverID)[type] = channel;
     await serverInfo.findOneAndUpdate(
       { serverID },
-      { $set: { watchTogetherRole } }
+      { $set: { [`${type}`]: channel } }
     );
   };
 
-  const getMusicChannel = (serverID: string): string => {
-    return cache.get(serverID).musicChannel;
+  const setRole = async (
+    type: roleType,
+    serverID: string,
+    role: string
+  ): Promise<void> => {
+    cache.get(serverID)[type] = role;
+    await serverInfo.findOneAndUpdate(
+      { serverID },
+      { $set: { [`${type}`]: role } }
+    );
   };
 
-  const getModerationRole = (serverID: string): string => {
-    return cache.get(serverID).moderationRole;
+  const getMessage = (type: messageType, serverID: string): string => {
+    return cache.get(serverID)[type];
   };
 
-  const getPollRole = (serverID: string): string => {
-    return cache.get(serverID).pollRole;
+  const getRole = (type: roleType, serverID: string): string => {
+    return cache.get(serverID)[type];
   };
 
-  const getWatchTogetherRole = (serverID: string): string => {
-    return cache.get(serverID).watchTogetherRole;
+  const getChannel = (type: channelType, serverID: string): string => {
+    return cache.get(serverID)[type];
   };
 
   const fullRemove = (serverID: string): void => {
@@ -104,15 +120,13 @@ export const generalServerCache = (() => {
   return {
     isCached,
     saveToCache,
-    setMusicChannel,
-    setModerationRole,
-    setPollRole,
-    setWatchTogetherRole,
-    getMusicChannel,
-    getModerationRole,
-    getPollRole,
-    getWatchTogetherRole,
     fullRemove,
     loadCache,
+    setRole,
+    setMessage,
+    setChannel,
+    getRole,
+    getMessage,
+    getChannel,
   };
 })();

@@ -1,8 +1,7 @@
 import { Message } from 'discord.js';
 import { Job } from 'node-schedule';
 import { ReminderCommand } from './ReminderCommand';
-import { createEmbed, checkPermission } from '../../utils';
-import { generalServerCache } from '../../generic/GeneralServerCache';
+import { createEmbed } from '../../utils';
 
 export class AddCommand extends ReminderCommand {
   constructor(jobs: Map<string, Job>) {
@@ -13,13 +12,5 @@ export class AddCommand extends ReminderCommand {
     );
   }
 
-  public execute(args: Array<string>, message: Message): void {
-    const modRole = generalServerCache.getModerationRole(message.guild.id);
-    try {
-      checkPermission(modRole, message.member);
-    } catch (error) {
-      message.channel.send(error.embed);
-      return;
-    }
-  }
+  public execute(args: Array<string>, message: Message): void {}
 }

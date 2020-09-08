@@ -3,6 +3,8 @@ import { CommandManager } from '../generic/ICommandManager';
 import { AddCommand } from './commands/AddCommand';
 import { DeleteCommand } from './commands/DeleteCommand';
 import { Message } from 'discord.js';
+import { generalServerCache, roleType } from '../generic/GeneralServerCache';
+import { checkPermission } from '../utils';
 
 // 1 week before
 // 3 days before
@@ -13,7 +15,7 @@ export interface Reminder {
   mentionID: string;
   title: string;
   description: string;
-  dates: Array<Date>;
+  dates: Date;
 }
 
 export class ReminderManager extends CommandManager {
@@ -27,8 +29,19 @@ export class ReminderManager extends CommandManager {
   }
 
   public handle(command: string, args: Array<string>, message: Message): void {
-    if (this.commands.has(command)) {
-      this.commands.get(command).execute(args, message);
+    if (!this.commands.has(command)) return;
+
+    const modRole = generalServerCache.getRole(
+      roleType.MODERATION,
+      message.guild.id
+    );
+    try {
+      checkPermission(modRole, message.member);
+    } catch (error) {
+      message.channel.send(error.embed);
+      return;
     }
+
+    this.commands.get(command).execute(args, message);
   }
 }

@@ -8,7 +8,7 @@ import { SkipCommand } from './commands/SkipCommand';
 import { StopCommand } from './commands/StopCommand';
 import { VolumeCommand } from './commands/VolumeCommand';
 import { CommandManager } from '../generic/ICommandManager';
-import { generalServerCache } from '../generic/GeneralServerCache';
+import { generalServerCache, channelType } from '../generic/GeneralServerCache';
 
 export class MusicManager extends CommandManager {
   constructor(name: string) {
@@ -23,7 +23,10 @@ export class MusicManager extends CommandManager {
   }
 
   public handle(command: string, args: Array<string>, message: Message) {
-    const musicChannel = generalServerCache.getMusicChannel(message.guild.id);
+    const musicChannel = generalServerCache.getChannel(
+      channelType.MUSIC,
+      message.guild.id
+    );
     if (musicChannel !== 'off' && musicChannel !== message.channel.id) {
       message.delete();
       return;

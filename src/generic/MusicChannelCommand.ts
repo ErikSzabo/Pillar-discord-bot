@@ -1,7 +1,11 @@
 import { Command } from './Command';
 import { Message } from 'discord.js';
 import { createEmbed, checkPermission } from '../utils';
-import { generalServerCache } from '../generic/GeneralServerCache';
+import {
+  generalServerCache,
+  roleType,
+  channelType,
+} from '../generic/GeneralServerCache';
 
 export class MusicChannelCommand extends Command {
   constructor() {
@@ -12,7 +16,10 @@ export class MusicChannelCommand extends Command {
   }
 
   public async execute(args: Array<string>, message: Message): Promise<void> {
-    const modRole = generalServerCache.getModerationRole(message.guild.id);
+    const modRole = generalServerCache.getRole(
+      roleType.MODERATION,
+      message.guild.id
+    );
     try {
       checkPermission(modRole, message.member);
     } catch (error) {
@@ -21,7 +28,7 @@ export class MusicChannelCommand extends Command {
     }
 
     if (args[0].toLowerCase() === 'off') {
-      generalServerCache.setMusicChannel(message.guild.id, 'off');
+      generalServerCache.setChannel(channelType.MUSIC, message.guild.id, 'off');
       message.channel.send(
         createEmbed(
           '🔉 Music Channel',
@@ -59,7 +66,11 @@ export class MusicChannelCommand extends Command {
       return;
     }
 
-    generalServerCache.setMusicChannel(message.guild.id, channel.id);
+    generalServerCache.setChannel(
+      channelType.MUSIC,
+      message.guild.id,
+      channel.id
+    );
     message.channel.send(
       createEmbed(
         '🔉 Music Channel',

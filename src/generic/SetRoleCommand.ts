@@ -1,7 +1,7 @@
 import { Command } from './Command';
 import { Message, MessageEmbed } from 'discord.js';
 import { createEmbed, checkPermission } from '../utils';
-import { generalServerCache } from '../generic/GeneralServerCache';
+import { generalServerCache, roleType } from '../generic/GeneralServerCache';
 import config from '../config';
 import { CustomError } from './CustomError';
 
@@ -22,7 +22,10 @@ export class SetRoleCommand extends Command {
   }
 
   public async execute(args: Array<string>, message: Message): Promise<void> {
-    const modRole = generalServerCache.getModerationRole(message.guild.id);
+    const modRole = generalServerCache.getRole(
+      roleType.MODERATION,
+      message.guild.id
+    );
     try {
       checkPermission(modRole, message.member);
       this.checkErrors(args, message);
@@ -46,13 +49,13 @@ export class SetRoleCommand extends Command {
     const isOff = newValue === 'off';
 
     if (type === 'mod') {
-      generalServerCache.setModerationRole(serverID, newValue);
+      generalServerCache.setRole(roleType.MODERATION, serverID, newValue);
       message.channel.send(this.createRoleEmbed('Moderation', newValue, isOff));
     } else if (type === 'poll') {
-      generalServerCache.setPollRole(serverID, newValue);
+      generalServerCache.setRole(roleType.POLL, serverID, newValue);
       message.channel.send(this.createRoleEmbed('Poll', newValue, isOff));
     } else if (type === 'watch') {
-      generalServerCache.setPollRole(serverID, newValue);
+      generalServerCache.setRole(roleType.WATCH, serverID, newValue);
       message.channel.send(
         this.createRoleEmbed('WatchTogether', newValue, isOff)
       );
