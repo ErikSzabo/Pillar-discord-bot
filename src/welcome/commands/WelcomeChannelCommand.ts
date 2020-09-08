@@ -1,38 +1,30 @@
-import { Command } from './Command';
 import { Message } from 'discord.js';
-import { createEmbed, checkPermission } from '../utils';
+import { Command } from '../../generic/Command';
 import {
   generalServerCache,
-  roleType,
   channelType,
-} from '../generic/GeneralServerCache';
+} from '../../generic/GeneralServerCache';
+import { createEmbed } from '../../utils';
 
-export class MusicChannelCommand extends Command {
+export class WelcomeChannelCommand extends Command {
   constructor() {
     super(
-      'music-channel',
-      "sets the music channel, by default every channel is allowed, (write 'off' if you want to reset this)"
+      'welcome-channel',
+      'welcome, and leave messages will appear in this channel, set to "off" to disable'
     );
   }
 
-  public async execute(args: Array<string>, message: Message): Promise<void> {
-    const modRole = generalServerCache.getRole(
-      roleType.MODERATION,
-      message.guild.id
-    );
-    try {
-      checkPermission(modRole, message.member);
-    } catch (error) {
-      message.channel.send(error.embed);
-      return;
-    }
-
+  public execute(args: Array<string>, message: Message): void {
     if (args[0].toLowerCase() === 'off') {
-      generalServerCache.setChannel(channelType.MUSIC, message.guild.id, 'off');
+      generalServerCache.setChannel(
+        channelType.WELCOME,
+        message.guild.id,
+        'off'
+      );
       message.channel.send(
         createEmbed(
-          '🔉 Music Channel',
-          'Music channel restrictions are turned off!',
+          '🙋‍♂️ Welcome Channel',
+          'Welcome channel restrictions are turned off!',
           false
         )
       );
@@ -53,6 +45,14 @@ export class MusicChannelCommand extends Command {
     }
 
     const channel = channels.first();
+
+    if (channel.type !== 'text') {
+      message.channel.send(
+        createEmbed('Invalid', 'You have to provide a **text** channel!', true)
+      );
+      return;
+    }
+
     const perms = channel.permissionsFor(message.client.user);
 
     if (!perms.has('SEND_MESSAGES') || !perms.has('READ_MESSAGE_HISTORY')) {
@@ -67,14 +67,14 @@ export class MusicChannelCommand extends Command {
     }
 
     generalServerCache.setChannel(
-      channelType.MUSIC,
+      channelType.WELCOME,
       message.guild.id,
       channel.id
     );
     message.channel.send(
       createEmbed(
-        '🔉 Music Channel',
-        `Music channel set to <#${channel.id}>`,
+        '🙋‍♂️ Welcome Channel',
+        `Welcome channel set to <#${channel.id}>`,
         false
       )
     );
