@@ -1,5 +1,6 @@
 import { MessageEmbed, Message, VoiceChannel, GuildMember } from 'discord.js';
 import { CustomError } from './generic/CustomError';
+import config from './config';
 
 interface VoiceMatchResult {
   error: boolean;
@@ -58,4 +59,16 @@ export function checkPermission(
       )
     );
   }
+}
+
+export function parseQuotedArgs(
+  message: Message,
+  commandName: string
+): Array<string> {
+  return message.content
+    .slice(config.prefix.length + commandName.length)
+    .trim()
+    .split(/('.*?'|".*?"|\S+)/g)
+    .map((el) => el.trim().replace(/"/g, ''))
+    .filter((el) => el !== '');
 }

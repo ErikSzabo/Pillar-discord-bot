@@ -1,8 +1,7 @@
 import { Message } from 'discord.js';
 import { ReminderCommand } from './ReminderCommand';
-import { createEmbed } from '../../utils';
+import { createEmbed, parseQuotedArgs } from '../../utils';
 import { reminderCache, Reminder } from '../ReminderCache';
-import config from '../../config';
 
 export class AddCommand extends ReminderCommand {
   constructor() {
@@ -21,7 +20,7 @@ export class AddCommand extends ReminderCommand {
       );
       if (duplicate)
         throw new Error('A reminder with this name is already exists!');
-      reminderCache.addReminder(reminder, message);
+      reminderCache.addReminder(reminder, message.channel, false);
       this.sendResponse(
         message,
         `${
@@ -50,6 +49,7 @@ export class AddCommand extends ReminderCommand {
         .split('-')[1]
         .split(':')
         .map((value) => Number(value));
+
       const isBad = [year, month, day, hour, minute].some((value) =>
         isNaN(value)
       );
@@ -84,13 +84,7 @@ export class AddCommand extends ReminderCommand {
 
   private parseReminder(message: Message): Reminder {
     // !r-add @tester 2020.9.10-12:30 "hosszu szar nev" "hosszu szar leiras"
-    const msg = message.content
-      .slice(config.prefix.length + this.getName().length)
-      .trim()
-      .split(/('.*?'|".*?"|\S+)/g)
-      .filter((el) => el !== '' && el !== ' ')
-      .map((el) => el.replace('"', ''))
-      .map((el) => el.replace('"', ''));
+    const msg = parseQuotedArgs(message, this.getName());
 
     if (msg.length > 4) throw new Error('Too many arguments!');
 

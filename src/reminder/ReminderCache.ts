@@ -1,6 +1,6 @@
 import { reminders } from '../database';
 import { Job, scheduleJob } from 'node-schedule';
-import { Message, Client, Channel } from 'discord.js';
+import { Client, Channel } from 'discord.js';
 import { createEmbed } from '../utils';
 
 export interface Reminder {
@@ -20,6 +20,7 @@ const threeDaysTime = 3 * 24 * 60 * 60 * 1000;
 const threeHoursTime = 3 * 60 * 60 * 1000;
 
 const schedule = (reminder: Reminder, channel: Channel): Job[] => {
+  const jobs: Job[] = [];
   let mentionText: string;
   if (reminder.type === 'everyone') {
     mentionText = '@everyone';
@@ -29,75 +30,30 @@ const schedule = (reminder: Reminder, channel: Channel): Job[] => {
     mentionText = `<@${reminder.mentionID}>`;
   }
 
-  const jobs = [];
-  if (reminder.date.getTime() - Date.now() - oneWeekTime > 0) {
-    const oneWeek = scheduleJob(
-      `${reminder.title}$WEEK`,
-      new Date(reminder.date.getTime() - oneWeekTime),
-      () => {
-        // @ts-ignore
-        channel.send(
-          createEmbed(
-            `‼ Reminder: ${reminder.title}`,
-            `**1 week till the event** -- ${mentionText} -- ${reminder.description}`,
-            false
-          )
-        );
-      }
-    );
-    jobs.push(oneWeek);
-  }
-
-  if (reminder.date.getTime() - Date.now() - threeDaysTime > 0) {
-    const threeDays = scheduleJob(
-      `${reminder.title}$DAY`,
-      new Date(reminder.date.getTime() - threeDaysTime),
-      () => {
-        // @ts-ignore
-        channel.send(
-          createEmbed(
-            `‼ Reminder: ${reminder.title}`,
-            `**3 days till the event** -- ${mentionText} -- ${reminder.description}`,
-            false
-          )
-        );
-      }
-    );
-    jobs.push(threeDays);
-  }
-
-  if (reminder.date.getTime() - Date.now() - threeHoursTime > 0) {
-    const threeHours = scheduleJob(
-      `${reminder.title}$HOUR`,
-      new Date(reminder.date.getTime() - threeHoursTime),
-      () => {
-        // @ts-ignore
-        channel.send(
-          createEmbed(
-            `‼ Reminder: ${reminder.title}`,
-            `**3 hours till the event** -- ${mentionText} -- ${reminder.description}`,
-            false
-          )
-        );
-      }
-    );
-    jobs.push(threeHours);
-  }
-
-  if (reminder.date.getTime() - Date.now() > 0) {
-    const now = scheduleJob(`${reminder.title}$NOW`, reminder.date, () => {
-      // @ts-ignore
-      channel.send(
-        createEmbed(
-          `‼ Reminder: ${reminder.title}`,
-          `**Event is happening!** -- ${mentionText} -- ${reminder.description}`,
-          false
-        )
+  function timedSchedule(timeOffset: number, timeTitle: string) {
+    if (reminder.date.getTime() - Date.now() - timeOffset > 0) {
+      const task = scheduleJob(
+        `${reminder.title}$${timeTitle}`,
+        new Date(reminder.date.getTime() - timeOffset),
+        () => {
+          // @ts-ignore
+          channel.send(
+            createEmbed(
+              `‼ Reminder: ${reminder.title}`,
+              `**${timeTitle}** -- ${mentionText} -- ${reminder.description}`,
+              false
+            )
+          );
+        }
       );
-      reminderCache.deleteReminder(reminder.serverID, reminder.title);
-    });
-    jobs.push(now);
+      jobs.push(task);
+    }
   }
+
+  timedSchedule(oneWeekTime, '1 week till the event');
+  timedSchedule(threeDaysTime, '3 days till the event');
+  timedSchedule(threeHoursTime, '3 hours till the event');
+  timedSchedule(0, 'The event is happening right now!');
 
   return jobs;
 };
@@ -107,43 +63,42 @@ export const reminderCache = (() => {
   const jobs = new Map<string, Map<string, Job[]>>();
 
   const findReminder = (
-    searchForTitle: string,
+    searchTitle: string,
     serverID: string
   ): [Reminder, number] => {
     const reminders = cache.get(serverID);
-    let reminder: Reminder;
-    let index: number;
-    if (!reminders) return [reminder, index];
+    if (!reminders) return [null, null];
     for (let i = 0; i < reminders.length; i++) {
-      if (reminders[i].title === searchForTitle) {
-        reminder = reminders[i];
-        index = i;
-        break;
+      if (reminders[i].title === searchTitle) {
+        return [reminders[i], i];
       }
     }
-    return [reminder, index];
   };
 
-  const addReminder = (reminder: Reminder, message: Message) => {
+  const addReminder = (
+    reminder: Reminder,
+    channel: Channel,
+    onlyCache: boolean
+  ): void => {
     if (cache.has(reminder.serverID)) {
       cache.get(reminder.serverID).push(reminder);
-      reminders.insert(reminder).catch((error) => console.log(error));
       if (jobs.has(reminder.serverID)) {
         jobs
           .get(reminder.serverID)
-          .set(reminder.title, schedule(reminder, message.channel));
+          .set(reminder.title, schedule(reminder, channel));
       } else {
         const jobMap = new Map<string, Job[]>();
-        jobMap.set(reminder.title, schedule(reminder, message.channel));
+        jobMap.set(reminder.title, schedule(reminder, channel));
         jobs.set(reminder.serverID, jobMap);
       }
     } else {
       cache.set(reminder.serverID, [reminder]);
-      reminders.insert(reminder).catch((error) => console.log(error));
       const jobMap = new Map<string, Job[]>();
-      jobMap.set(reminder.title, schedule(reminder, message.channel));
+      jobMap.set(reminder.title, schedule(reminder, channel));
       jobs.set(reminder.serverID, jobMap);
     }
+    if (!onlyCache)
+      reminders.insert(reminder).catch((error) => console.log(error));
   };
 
   const deleteReminder = (serverID: string, reminderTitle: string) => {
@@ -186,24 +141,7 @@ export const reminderCache = (() => {
         return;
       }
 
-      if (cache.has(reminder.serverID)) {
-        cache.get(reminder.serverID).push(reminder);
-        if (jobs.has(reminder.serverID)) {
-          jobs
-            .get(reminder.serverID)
-            .get(reminder.title)
-            .push(...schedule(reminder, channel));
-        } else {
-          jobs
-            .get(reminder.serverID)
-            .set(reminder.title, schedule(reminder, channel));
-        }
-      } else {
-        cache.set(reminder.serverID, [reminder]);
-        const jobMap = new Map<string, Job[]>();
-        jobMap.set(reminder.title, schedule(reminder, channel));
-        jobs.set(reminder.serverID, jobMap);
-      }
+      addReminder(reminder, channel, true);
     });
 
     shouldDelete.forEach((reminder) =>
