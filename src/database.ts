@@ -1,11 +1,11 @@
 import monk from 'monk';
 
-const db = monk('localhost/bela-discord');
+const db = monk(process.env.MONGO_URI || 'localhost/bela-discord');
 
 /**
  * Collection to store the reminders, after a restart.
  */
-export const reminders = db.get('remninders');
+export const reminders = db.get('reminders');
 
 /**
  * Collection to keep track of music channel id's and some roles

@@ -1,42 +1,41 @@
 import { Message } from 'discord.js';
-import { Job } from 'node-schedule';
 import { ReminderCommand } from './ReminderCommand';
 import { createEmbed } from '../../utils';
+import { reminderCache, Reminder } from '../ReminderCache';
+import config from '../../config';
 
 export class AddCommand extends ReminderCommand {
   constructor() {
     super(
       'r-add',
-      'adds a new reminder, <name> <date> <mention> [description]'
+      'adds a new reminder, <mention> <2020.12.24-20:30> "long name" "description if you want"'
     );
   }
 
   public execute(args: Array<string>, message: Message): void {
-    // !r-add <name> <2020.12.24-20:30> <mention> [description]
-    if (args.length < 3) {
-      message.channel.send(
-        createEmbed('Invalid', 'Not enough arguments!', true)
-      );
-      return;
-    }
-
-    const name = args[0];
-    let date: Date;
-
     try {
-      date = this.parseDate(args[1]);
+      const reminder = this.parseReminder(message);
+      const [duplicate] = reminderCache.findReminder(
+        reminder.title,
+        reminder.serverID
+      );
+      if (duplicate)
+        throw new Error('A reminder with this name is already exists!');
+      reminderCache.addReminder(reminder, message);
+      this.sendResponse(
+        message,
+        `${
+          reminder.type === 'role'
+            ? `<@&${reminder.mentionID}>`
+            : reminder.type === 'user'
+            ? `<@${reminder.mentionID}>`
+            : '@everyone'
+        }`,
+        reminder.title,
+        reminder.date
+      );
     } catch (err) {
-      message.channel.send(createEmbed('Invalid Date', err.message, true));
-      return;
-    }
-
-    const isEveryone = message.mentions.everyone;
-    const roleMention = message.mentions.roles.first();
-    const userMention = message.mentions.users.first();
-
-    if (isEveryone) {
-    } else if (roleMention) {
-    } else if (userMention) {
+      message.channel.send(createEmbed('🛑 Invalid', err.message, true));
     }
   }
 
@@ -51,21 +50,87 @@ export class AddCommand extends ReminderCommand {
         .split('-')[1]
         .split(':')
         .map((value) => Number(value));
-
-      const isCorrect = [year, month, day, hour, minute].some((value) =>
+      const isBad = [year, month, day, hour, minute].some((value) =>
         isNaN(value)
       );
 
-      if (!isCorrect)
-        throw new Error(
-          'You have to provide a valid date, like: 2020.11.24-20:30'
-        );
+      if (isBad) throw new Error();
 
-      return new Date(year, month, day, hour, minute, 0);
+      const parsedDate = new Date(year, month, day, hour, minute, 0);
+      if (parsedDate.getTime() - Date.now() <= 0) throw new Error();
+
+      return parsedDate;
     } catch (err) {
       throw new Error(
         'You have to provide a valid date, like: 2020.11.24-20:30'
       );
     }
+  }
+
+  private sendResponse(
+    message: Message,
+    mention: string,
+    title: string,
+    date: Date
+  ): void {
+    message.channel.send(
+      createEmbed(
+        '🧐 Reminder added!',
+        `Reminder: **${title}** is set for: ${mention}, at: ${date}`,
+        false
+      )
+    );
+  }
+
+  private parseReminder(message: Message): Reminder {
+    // !r-add @tester 2020.9.10-12:30 "hosszu szar nev" "hosszu szar leiras"
+    const msg = message.content
+      .slice(config.prefix.length + this.getName().length)
+      .trim()
+      .split(/('.*?'|".*?"|\S+)/g)
+      .filter((el) => el !== '' && el !== ' ')
+      .map((el) => el.replace('"', ''))
+      .map((el) => el.replace('"', ''));
+
+    if (msg.length > 4) throw new Error('Too many arguments!');
+
+    const date = this.parseDate(msg[1]);
+    const title = msg[2];
+    const description = msg.length >= 3 ? msg[3] : '';
+
+    const isEveryone = message.mentions.everyone;
+    const roleMention = message.mentions.roles.first();
+    const userMention = message.mentions.users.first();
+
+    if (!isEveryone && !roleMention && !userMention)
+      throw new Error('You have to mention a role/user/everyone');
+
+    return this.createReminderConstruct(
+      message,
+      isEveryone ? 'everyone' : userMention ? 'user' : 'role',
+      date,
+      title,
+      isEveryone ? '' : userMention ? userMention.id : roleMention.id,
+      description
+    );
+  }
+
+  private createReminderConstruct(
+    message: Message,
+    mentionType: 'everyone' | 'role' | 'user',
+    date: Date,
+    title: string,
+    mentionID?: string,
+    description?: string
+  ): Reminder {
+    return {
+      serverID: message.guild.id,
+      mentionID: mentionID ? mentionID : '',
+      channelID: message.channel.id,
+      type: mentionType,
+      title: title,
+      description: description ? description : '',
+      date: date,
+    };
   }
 }

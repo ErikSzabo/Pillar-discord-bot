@@ -1,3 +1,4 @@
+require('dotenv').config();
 import { Client, GuildMember, PartialGuildMember } from 'discord.js';
 import config from './config';
 import { MusicManager } from './music/MusicManager';
@@ -9,8 +10,7 @@ import {
   messageType,
 } from './generic/GeneralServerCache';
 import { WelcomeManager } from './welcome/WelcomeManager';
-
-require('dotenv').config();
+import { reminderCache } from './reminder/ReminderCache';
 
 const client = new Client();
 const musicManager = new MusicManager('Music');
@@ -27,6 +27,7 @@ client.once('ready', () => {
   console.log("I'm ready!");
   client.user.setActivity({ type: 'LISTENING', name: '!help' });
   generalServerCache.loadCache();
+  reminderCache.loadAndSetup(client);
 });
 
 client.on('message', (message) => {
