@@ -44,6 +44,13 @@ const schedule = (reminder: Reminder, channel: Channel): Job[] => {
               false
             )
           );
+          if (timeOffset === 0)
+            reminders
+              .findOneAndDelete({
+                serverID: reminder.serverID,
+                title: reminder.title,
+              })
+              .catch((err) => console.log(err));
         }
       );
       jobs.push(task);
@@ -73,6 +80,7 @@ export const reminderCache = (() => {
         return [reminders[i], i];
       }
     }
+    return [null, null];
   };
 
   const addReminder = (

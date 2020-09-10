@@ -1,9 +1,9 @@
 import { Message } from 'discord.js';
-import { ReminderCommand } from './ReminderCommand';
 import { createEmbed, parseQuotedArgs } from '../../utils';
 import { reminderCache, Reminder } from '../ReminderCache';
+import { Command } from '../../generic/Command';
 
-export class AddCommand extends ReminderCommand {
+export class AddCommand extends Command {
   constructor() {
     super(
       'r-add',

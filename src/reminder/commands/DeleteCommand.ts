@@ -1,10 +1,10 @@
 import { Message } from 'discord.js';
-import { ReminderCommand } from './ReminderCommand';
 import { createEmbed, parseQuotedArgs } from '../../utils';
 import { reminderCache } from '../ReminderCache';
 import { CustomError } from '../../generic/CustomError';
+import { Command } from '../../generic/Command';
 
-export class DeleteCommand extends ReminderCommand {
+export class DeleteCommand extends Command {
   constructor() {
     super('r-delete', '"name" deletes a reminder');
   }
