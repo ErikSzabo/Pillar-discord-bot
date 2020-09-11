@@ -18,9 +18,10 @@ export class ResumeCommand extends Command {
       return;
     }
 
-    const voiceResult = checkVoiceChannelMatch(message, voiceChannel);
-    if (voiceResult.error) {
-      message.channel.send(voiceResult.message);
+    try {
+      checkVoiceChannelMatch(message, voiceChannel);
+    } catch (err) {
+      message.channel.send(err.embed);
       return;
     }
 

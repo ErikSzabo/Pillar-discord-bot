@@ -2,11 +2,6 @@ import { MessageEmbed, Message, VoiceChannel, GuildMember } from 'discord.js';
 import { CustomError } from './generic/CustomError';
 import config from './config';
 
-interface VoiceMatchResult {
-  error: boolean;
-  message?: MessageEmbed;
-}
-
 export function createEmbed(
   title: string,
   description: string,
@@ -22,28 +17,21 @@ export function createEmbed(
 export function checkVoiceChannelMatch(
   message: Message,
   voiceChannel: VoiceChannel
-): VoiceMatchResult {
+): void {
   if (
     !voiceChannel ||
     !message.client.voice.connections.find(
       (conn) => conn.channel.id === voiceChannel.id
     )
   ) {
-    const embed = createEmbed(
-      'Ooops',
-      "You are not listening with the bot, you can't use this command now!",
-      true
+    throw new CustomError(
+      createEmbed(
+        'Ooops',
+        "You are not listening with the bot, you can't use this command now!",
+        true
+      )
     );
-
-    return {
-      error: true,
-      message: embed,
-    };
   }
-
-  return {
-    error: false,
-  };
 }
 
 export function checkPermission(
