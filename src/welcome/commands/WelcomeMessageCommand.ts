@@ -1,10 +1,7 @@
 import { Command } from '../../generic/Command';
 import { Message } from 'discord.js';
 import { createEmbed, checkPermission } from '../../utils';
-import {
-  messageType,
-  generalServerCache,
-} from '../../generic/GeneralServerCache';
+import { messageType, serverCache } from '../../generic/ServerCache';
 import config from '../../config';
 
 export class WelcomeMessageCommand extends Command {
@@ -17,11 +14,7 @@ export class WelcomeMessageCommand extends Command {
 
   public execute(args: Array<string>, message: Message): void {
     if (args[0].toLowerCase() === 'off') {
-      generalServerCache.setMessage(
-        messageType.WELCOME,
-        message.guild.id,
-        'off'
-      );
+      serverCache.setMessage(messageType.WELCOME, message.guild.id, 'off');
       message.channel.send(
         createEmbed(
           '🗨 Welcome Message',
@@ -47,7 +40,7 @@ export class WelcomeMessageCommand extends Command {
       return;
     }
 
-    generalServerCache.setMessage(
+    serverCache.setMessage(
       messageType.WELCOME,
       message.guild.id,
       welcomeMessage

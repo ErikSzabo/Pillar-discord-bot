@@ -119,4 +119,4 @@ class ServerCache {
   }
 }
 
-export const generalServerCache = new ServerCache();
+export const serverCache = new ServerCache();

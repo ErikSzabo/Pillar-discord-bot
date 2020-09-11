@@ -1,9 +1,6 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
-import {
-  generalServerCache,
-  channelType,
-} from '../../generic/GeneralServerCache';
+import { serverCache, channelType } from '../../generic/ServerCache';
 import { createEmbed } from '../../utils';
 
 export class WelcomeChannelCommand extends Command {
@@ -16,11 +13,7 @@ export class WelcomeChannelCommand extends Command {
 
   public execute(args: Array<string>, message: Message): void {
     if (args[0].toLowerCase() === 'off') {
-      generalServerCache.setChannel(
-        channelType.WELCOME,
-        message.guild.id,
-        'off'
-      );
+      serverCache.setChannel(channelType.WELCOME, message.guild.id, 'off');
       message.channel.send(
         createEmbed(
           '🙋‍♂️ Welcome Channel',
@@ -66,11 +59,7 @@ export class WelcomeChannelCommand extends Command {
       return;
     }
 
-    generalServerCache.setChannel(
-      channelType.WELCOME,
-      message.guild.id,
-      channel.id
-    );
+    serverCache.setChannel(channelType.WELCOME, message.guild.id, channel.id);
     message.channel.send(
       createEmbed(
         '🙋‍♂️ Welcome Channel',

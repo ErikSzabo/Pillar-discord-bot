@@ -3,7 +3,7 @@ import { CommandManager } from '../generic/ICommandManager';
 import { LeaveMessageCommand } from './commands/LeaveMessageCommand';
 import { WelcomeMessageCommand } from './commands/WelcomeMessageCommand';
 import { WelcomeChannelCommand } from './commands/WelcomeChannelCommand';
-import { generalServerCache, roleType } from '../generic/GeneralServerCache';
+import { serverCache, roleType } from '../generic/ServerCache';
 import { checkPermission, createEmbed } from '../utils';
 
 export class WelcomeManager extends CommandManager {
@@ -17,10 +17,7 @@ export class WelcomeManager extends CommandManager {
   public handle(command: string, args: Array<string>, message: Message): void {
     if (!this.commands.has(command)) return;
 
-    const modRole = generalServerCache.getRole(
-      roleType.MODERATION,
-      message.guild.id
-    );
+    const modRole = serverCache.getRole(roleType.MODERATION, message.guild.id);
     try {
       checkPermission(modRole, message.member);
     } catch (error) {

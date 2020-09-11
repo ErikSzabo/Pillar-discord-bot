@@ -4,11 +4,7 @@ import config from './config';
 import { MusicManager } from './music/MusicManager';
 import { ReminderManager } from './reminder/ReminderManager';
 import { GeneralManager } from './generic/GeneralManager';
-import {
-  generalServerCache,
-  channelType,
-  messageType,
-} from './generic/GeneralServerCache';
+import { serverCache, channelType, messageType } from './generic/ServerCache';
 import { WelcomeManager } from './welcome/WelcomeManager';
 import { reminderCache } from './reminder/ReminderCache';
 
@@ -26,7 +22,7 @@ const generalManager = new GeneralManager(
 client.once('ready', () => {
   console.log("I'm ready!");
   client.user.setActivity({ type: 'LISTENING', name: '!help' });
-  generalServerCache.loadCache();
+  serverCache.loadCache();
   reminderCache.loadAndSetup(client);
 });
 
@@ -43,11 +39,11 @@ client.on('message', (message) => {
 });
 
 client.on('guildCreate', (guild) => {
-  generalServerCache.saveToCache(guild.id);
+  serverCache.saveToCache(guild.id);
 });
 
 client.on('guildDelete', (guild) => {
-  generalServerCache.fullRemove(guild.id);
+  serverCache.fullRemove(guild.id);
 });
 
 client.on('guildMemberAdd', (member) => {
@@ -64,11 +60,11 @@ function handleWelcomeLeaveMessage(
   messageType: messageType,
   member: GuildMember | PartialGuildMember
 ): void {
-  const welcomeChannel = generalServerCache.getChannel(
+  const welcomeChannel = serverCache.getChannel(
     channelType.WELCOME,
     member.guild.id
   );
-  const message = generalServerCache.getMessage(messageType, member.guild.id);
+  const message = serverCache.getMessage(messageType, member.guild.id);
 
   if (welcomeChannel === 'off' || message === 'off') return;
 
