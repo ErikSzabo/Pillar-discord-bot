@@ -3,7 +3,7 @@ import * as ytdl from 'ytdl-core';
 import * as ffmpeg from 'ffmpeg-static';
 import { Message, Permissions, VoiceChannel, Util } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { ServerCache, ServerData, SongData } from '../ServerCache';
+import { musicCache, ServerMusicData, SongData } from '../MusicCache';
 import { createEmbed } from '../../utils';
 
 export class PlayCommand extends Command {
@@ -17,7 +17,6 @@ export class PlayCommand extends Command {
       ? voiceChannel.permissionsFor(message.client.user)
       : null;
     const serverID = message.guild.id;
-    const serverCache = ServerCache.getInstance();
 
     try {
       this.checkErrors(voiceChannel, permissions, args);
@@ -26,7 +25,7 @@ export class PlayCommand extends Command {
       return;
     }
 
-    if (serverCache.isCached(serverID)) {
+    if (musicCache.isCached(serverID)) {
       const song = await this.getSong(args.join(' '));
       if (!song) {
         await message.channel.send(
@@ -38,7 +37,7 @@ export class PlayCommand extends Command {
         );
         return;
       }
-      serverCache.getServerData(serverID).songs.push(song);
+      musicCache.getServerData(serverID).songs.push(song);
       message.channel.send(
         createEmbed(
           `✅ Queued`,
@@ -49,14 +48,14 @@ export class PlayCommand extends Command {
       return;
     }
 
-    serverCache.addToCache(serverID, {
+    musicCache.addToCache(serverID, {
       voiceChannel,
       songs: [],
       connection: null,
       volume: 2,
       isPlaying: false,
     });
-    const serverData = serverCache.getServerData(serverID);
+    const serverData = musicCache.getServerData(serverID);
 
     try {
       const song = await this.getSong(args.join(' '));
@@ -74,7 +73,7 @@ export class PlayCommand extends Command {
       serverData.connection = connection;
       serverData.songs.push(song);
       serverData.connection.on('disconnect', () => {
-        serverCache.remove(serverID);
+        musicCache.remove(serverID);
       });
       this.play(serverData);
       message.channel.send(
@@ -86,7 +85,7 @@ export class PlayCommand extends Command {
       );
     } catch (error) {
       console.error(`I could not join the voice channel: ${error}`);
-      serverCache.remove(message.guild.id);
+      musicCache.remove(message.guild.id);
       await voiceChannel.leave();
       await message.channel.send(
         createEmbed(
@@ -98,11 +97,11 @@ export class PlayCommand extends Command {
     }
   }
 
-  private async play(serverData: ServerData): Promise<void> {
+  private async play(serverData: ServerMusicData): Promise<void> {
     if (serverData.songs.length === 0) {
       serverData.isPlaying = false;
       serverData.voiceChannel.leave();
-      ServerCache.getInstance().remove(serverData.voiceChannel.guild.id);
+      musicCache.remove(serverData.voiceChannel.guild.id);
       return;
     }
 

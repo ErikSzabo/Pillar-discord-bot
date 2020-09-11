@@ -5,7 +5,7 @@ export interface SongData {
   url: string;
 }
 
-export interface ServerData {
+export interface ServerMusicData {
   voiceChannel: VoiceChannel;
   songs: Array<SongData>;
   volume: number;
@@ -14,32 +14,19 @@ export interface ServerData {
 }
 
 /**
- * Caches information about the servers.
+ * Caches music information about the servers.
  */
-export class ServerCache {
-  private static singleton: ServerCache;
+class MusicCache {
   /**
    * Map to hold the information about the servers.
    */
-  private servers: Map<string, ServerData>;
+  private cache: Map<string, ServerMusicData>;
 
   /**
    * Private constructor to initalize one singleton instance.
    */
-  private constructor() {
-    this.servers = new Map<string, ServerData>();
-  }
-
-  /**
-   * Returns the ServerCahce. This will be the same everywhere, because the same instance
-   * will be returned every time.
-   *
-   * @returns the server cache.
-   */
-  public static getInstance(): ServerCache {
-    if (this.singleton) return this.singleton;
-    this.singleton = new this();
-    return this.singleton;
+  constructor() {
+    this.cache = new Map<string, ServerMusicData>();
   }
 
   /**
@@ -48,15 +35,15 @@ export class ServerCache {
    * @param guildID id of the guild/server
    */
   public isCached(guildID: string): boolean {
-    return this.servers.has(guildID);
+    return this.cache.has(guildID);
   }
 
   /**
    * @param guildID id of the guild/server
    * @returns       cached data from the server
    */
-  public getServerData(guildID: string): ServerData {
-    return this.servers.get(guildID);
+  public getServerData(guildID: string): ServerMusicData {
+    return this.cache.get(guildID);
   }
 
   /**
@@ -65,9 +52,9 @@ export class ServerCache {
    * @param guildID     id of the guild/server
    * @param serverData  server data about the bot state
    */
-  public addToCache(guildID: string, serverData: ServerData): void {
+  public addToCache(guildID: string, serverData: ServerMusicData): void {
     if (this.isCached(guildID)) return;
-    this.servers.set(guildID, serverData);
+    this.cache.set(guildID, serverData);
   }
 
   /**
@@ -76,6 +63,8 @@ export class ServerCache {
    * @param guildID id of the guild/server
    */
   public remove(guildID: string): void {
-    this.servers.delete(guildID);
+    this.cache.delete(guildID);
   }
 }
+
+export const musicCache = new MusicCache();

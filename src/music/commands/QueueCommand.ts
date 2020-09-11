@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { ServerCache } from '../ServerCache';
+import { musicCache } from '../MusicCache';
 import { createEmbed } from '../../utils';
 
 export class QueueCommand extends Command {
@@ -9,9 +9,7 @@ export class QueueCommand extends Command {
   }
 
   public execute(args: Array<string>, message: Message): void {
-    const serverData = ServerCache.getInstance().getServerData(
-      message.guild.id
-    );
+    const serverData = musicCache.getServerData(message.guild.id);
 
     if (!serverData) {
       message.channel.send(

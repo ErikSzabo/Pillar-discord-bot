@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { ServerCache } from '../ServerCache';
+import { musicCache } from '../MusicCache';
 import { createEmbed, checkVoiceChannelMatch } from '../../utils';
 
 export class SkipCommand extends Command {
@@ -11,9 +11,7 @@ export class SkipCommand extends Command {
   public execute(args: Array<string>, message: Message): void {
     const voiceChannel = message.member.voice.channel;
 
-    const serverData = ServerCache.getInstance().getServerData(
-      message.guild.id
-    );
+    const serverData = musicCache.getServerData(message.guild.id);
 
     const voiceResult = checkVoiceChannelMatch(message, voiceChannel);
     if (voiceResult.error) {
