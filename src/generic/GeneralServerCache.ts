@@ -27,21 +27,86 @@ export enum channelType {
   WELCOME = 'welcomeChannel',
 }
 
-export const generalServerCache = (() => {
-  const cache = new Map<string, ServerInfo>();
+class ServerCache {
+  private cache: Map<string, ServerInfo>;
 
-  const isCached = (serverID: string): boolean => {
-    return cache.has(serverID);
-  };
+  constructor() {
+    this.cache = new Map<string, ServerInfo>();
+  }
 
-  const saveToCache = async (serverID: string): Promise<void> => {
+  public isCached(serverID: string): boolean {
+    return this.cache.has(serverID);
+  }
+
+  public async saveToCache(serverID: string): Promise<void> {
     const server: ServerInfo = await serverInfo.findOne({ serverID });
     if (server) {
-      cache.set(serverID, server);
+      this.cache.set(serverID, server);
       return;
     }
 
-    const construct = {
+    const construct = this.createCacheConstruct(serverID);
+
+    this.cache.set(serverID, construct);
+
+    await serverInfo.insert(construct);
+  }
+
+  public setMessage(
+    type: messageType,
+    serverID: string,
+    message: string
+  ): void {
+    this.cache.get(serverID)[type] = message;
+    serverInfo
+      .findOneAndUpdate({ serverID }, { $set: { [type]: message } })
+      .catch((err) => console.log(err));
+  }
+
+  public setChannel(
+    type: channelType,
+    serverID: string,
+    channel: string
+  ): void {
+    this.cache.get(serverID)[type] = channel;
+    serverInfo
+      .findOneAndUpdate({ serverID }, { $set: { [type]: channel } })
+      .catch((err) => console.log(err));
+  }
+
+  public setRole(type: roleType, serverID: string, role: string): void {
+    this.cache.get(serverID)[type] = role;
+    serverInfo
+      .findOneAndUpdate({ serverID }, { $set: { [type]: role } })
+      .catch((err) => console.log(err));
+  }
+
+  public getMessage(type: messageType, serverID: string): string {
+    return this.cache.get(serverID)[type];
+  }
+
+  public getRole(type: roleType, serverID: string): string {
+    return this.cache.get(serverID)[type];
+  }
+
+  public getChannel(type: channelType, serverID: string): string {
+    return this.cache.get(serverID)[type];
+  }
+
+  public fullRemove(serverID: string): void {
+    this.cache.delete(serverID);
+    serverInfo.findOneAndDelete({ serverID }).catch((err) => console.log(err));
+  }
+
+  public async loadCache(): Promise<void> {
+    const servers = await serverInfo.find({});
+    servers.forEach((server) => {
+      this.cache.set(server.serverID, server);
+    });
+  }
+
+  private createCacheConstruct(serverID: string): ServerInfo {
+    return {
       serverID: serverID,
       musicChannel: 'off',
       moderationRole: 'off',
@@ -51,82 +116,7 @@ export const generalServerCache = (() => {
       welcomeMessage: '[USER] joined the server!',
       leaveMessage: '[USER] leaved the server!',
     };
+  }
+}
 
-    cache.set(serverID, construct);
-
-    await serverInfo.insert(construct);
-  };
-
-  const setMessage = async (
-    type: messageType,
-    serverID: string,
-    message: string
-  ): Promise<void> => {
-    cache.get(serverID)[type] = message;
-    await serverInfo.findOneAndUpdate(
-      { serverID },
-      { $set: { [`${type}`]: message } }
-    );
-  };
-
-  const setChannel = async (
-    type: channelType,
-    serverID: string,
-    channel: string
-  ): Promise<void> => {
-    cache.get(serverID)[type] = channel;
-    await serverInfo.findOneAndUpdate(
-      { serverID },
-      { $set: { [`${type}`]: channel } }
-    );
-  };
-
-  const setRole = async (
-    type: roleType,
-    serverID: string,
-    role: string
-  ): Promise<void> => {
-    cache.get(serverID)[type] = role;
-    await serverInfo.findOneAndUpdate(
-      { serverID },
-      { $set: { [`${type}`]: role } }
-    );
-  };
-
-  const getMessage = (type: messageType, serverID: string): string => {
-    return cache.get(serverID)[type];
-  };
-
-  const getRole = (type: roleType, serverID: string): string => {
-    return cache.get(serverID)[type];
-  };
-
-  const getChannel = (type: channelType, serverID: string): string => {
-    return cache.get(serverID)[type];
-  };
-
-  const fullRemove = (serverID: string): void => {
-    cache.delete(serverID);
-    serverInfo.findOneAndDelete({ serverID });
-  };
-
-  const loadCache = async (): Promise<void> => {
-    const servers = await serverInfo.find({});
-    servers.forEach((server) => {
-      cache.set(server.serverID, server);
-    });
-  };
-
-  return {
-    isCached,
-    saveToCache,
-    fullRemove,
-    loadCache,
-    setRole,
-    setMessage,
-    setChannel,
-    getRole,
-    getMessage,
-    getChannel,
-  };
-})();
+export const generalServerCache = new ServerCache();
