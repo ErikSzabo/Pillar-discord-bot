@@ -3,6 +3,10 @@ import { HelpCommand } from './HelpCommand';
 import { SetRoleCommand } from './SetRoleCommand';
 import { Message } from 'discord.js';
 
+/**
+ * General command manager which controls the rest of the command managers
+ * and has the generic/basic commands like help and some settings command.
+ */
 export class GeneralManager extends CommandManager {
   private commandManagers: Array<CommandManager>;
 
