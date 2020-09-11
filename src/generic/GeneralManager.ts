@@ -19,11 +19,11 @@ export class GeneralManager extends CommandManager {
       return;
     }
 
-    this.commandManagers.forEach((manager) => {
+    for (let manager of this.commandManagers) {
       if (manager.getCommandNames().includes(command)) {
         manager.handle(command, args, message);
         return;
       }
-    });
+    }
   }
 }
