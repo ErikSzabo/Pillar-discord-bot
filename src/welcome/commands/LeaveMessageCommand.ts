@@ -8,6 +8,7 @@ export class LeaveMessageCommand extends Command {
   constructor() {
     super(
       'leave-message',
+      'leave-message <message>',
       'sets the leave message for the server, [USER] placeholder can be used, set to "off" to disable'
     );
   }

@@ -5,7 +5,7 @@ import { createEmbed, checkVoiceChannelMatch } from '../../utils';
 
 export class ResumeCommand extends Command {
   constructor() {
-    super('resume', 'resumes the paused music');
+    super('resume', 'resume', 'resumes the paused music');
   }
 
   public execute(args: Array<string>, message: Message): void {

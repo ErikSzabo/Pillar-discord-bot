@@ -5,7 +5,7 @@ import { createEmbed, checkVoiceChannelMatch } from '../../utils';
 
 export class SkipCommand extends Command {
   constructor() {
-    super('skip', 'skips the current music');
+    super('skip', 'skip', 'skips the current music');
   }
 
   public execute(args: Array<string>, message: Message): void {

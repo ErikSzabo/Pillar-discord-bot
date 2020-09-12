@@ -5,7 +5,7 @@ import { createEmbed, checkVoiceChannelMatch } from '../../utils';
 
 export class PauseCommand extends Command {
   constructor() {
-    super('pause', 'paueses the current musc');
+    super('pause', 'pause', 'paueses the current musc');
   }
 
   public execute(args: Array<string>, message: Message): void {

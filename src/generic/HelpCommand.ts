@@ -11,7 +11,7 @@ export class HelpCommand extends Command {
   private commandManagers: Array<CommandManager>;
 
   constructor(commandManagers: Array<CommandManager>) {
-    super('help', 'displays this help page');
+    super('help', 'help', 'displays this help page');
     this.commandManagers = commandManagers;
   }
 
@@ -31,7 +31,7 @@ export class HelpCommand extends Command {
   private create(cmd: Command): string {
     return `- **${
       config.prefix
-    }${cmd.getName()}** -- ${cmd.getDescription()}\n`;
+    }${cmd.getUsage()}** -- ${cmd.getDescription()}\n`;
   }
 
   /**

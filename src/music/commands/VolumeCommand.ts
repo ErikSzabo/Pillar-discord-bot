@@ -5,7 +5,7 @@ import { createEmbed, checkVoiceChannelMatch } from '../../utils';
 
 export class VolumeCommand extends Command {
   constructor() {
-    super('volume', 'sets or displays the volume');
+    super('volume', 'volume <number>', 'sets or displays the volume');
   }
 
   public execute(args: Array<string>, message: Message): void {

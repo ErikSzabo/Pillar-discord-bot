@@ -8,6 +8,11 @@ export abstract class Command {
   private name: string;
 
   /**
+   * Shows how to use the command.
+   */
+  private usage: string;
+
+  /**
    * Description which used by the help command mainly.
    */
   private description: string;
@@ -17,8 +22,9 @@ export abstract class Command {
    *
    * @param name name/prefix for the command.
    */
-  constructor(name: string, description: string) {
+  constructor(name: string, usage: string, description: string) {
     this.name = name;
+    this.usage = usage;
     this.description = description;
   }
 
@@ -42,5 +48,12 @@ export abstract class Command {
    */
   public getDescription(): string {
     return this.description;
+  }
+
+  /**
+   * @returns usage string for the command
+   */
+  public getUsage(): string {
+    return this.usage;
   }
 }

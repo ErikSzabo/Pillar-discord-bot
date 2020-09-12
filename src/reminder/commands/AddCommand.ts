@@ -7,7 +7,8 @@ export class AddCommand extends Command {
   constructor() {
     super(
       'r-add',
-      'adds a new reminder, <mention> <2020.12.24-20:30> "long name" "description if you want"'
+      'r-add <mention> <2020.12.24-20:30> "name" "description"',
+      'adds a new reminder'
     );
   }
 

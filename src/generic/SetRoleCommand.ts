@@ -17,6 +17,7 @@ export class SetRoleCommand extends Command {
   constructor() {
     super(
       'set-role',
+      'set-role <role type> <role>',
       `sets the required roles for specific commands\nFor help: **${config.prefix}set-role help**`
     );
   }

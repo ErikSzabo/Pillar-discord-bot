@@ -5,7 +5,7 @@ import { createEmbed, checkVoiceChannelMatch } from '../../utils';
 
 export class StopCommand extends Command {
   constructor() {
-    super('stop', 'stops the music and clears the queue');
+    super('stop', 'stop', 'stops the music and clears the queue');
   }
 
   public execute(args: Array<string>, message: Message): void {

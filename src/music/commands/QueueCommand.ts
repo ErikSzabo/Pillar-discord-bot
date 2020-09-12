@@ -5,7 +5,7 @@ import { createEmbed } from '../../utils';
 
 export class QueueCommand extends Command {
   constructor() {
-    super('queue', 'shows the music queue');
+    super('queue', 'queue', 'shows the music queue');
   }
 
   public execute(args: Array<string>, message: Message): void {

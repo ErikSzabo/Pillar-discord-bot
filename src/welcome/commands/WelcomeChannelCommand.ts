@@ -7,6 +7,7 @@ export class WelcomeChannelCommand extends Command {
   constructor() {
     super(
       'welcome-channel',
+      'welcome-channel <text channel>',
       'welcome, and leave messages will appear in this channel, set to "off" to disable'
     );
   }

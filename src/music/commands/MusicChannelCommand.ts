@@ -7,6 +7,7 @@ export class MusicChannelCommand extends Command {
   constructor() {
     super(
       'music-channel',
+      'music-channel <text channel>',
       "sets the music channel, by default every channel is allowed, (write 'off' if you want to reset this)"
     );
   }

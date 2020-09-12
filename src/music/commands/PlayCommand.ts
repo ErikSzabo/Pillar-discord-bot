@@ -8,7 +8,11 @@ import { createEmbed } from '../../utils';
 
 export class PlayCommand extends Command {
   constructor() {
-    super('play', 'plays a music by link or name');
+    super(
+      'play',
+      'play <youtube link or name>',
+      'plays a music by link or name'
+    );
   }
 
   public async execute(args: Array<string>, message: Message): Promise<void> {
