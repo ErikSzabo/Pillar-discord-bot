@@ -8,7 +8,6 @@ export interface ServerInfo {
   musicChannel: string;
   moderationRole: string;
   pollRole: string;
-  watchTogetherRole: string;
   welcomeChannel: string;
   welcomeMessage: string;
   leaveMessage: string;
@@ -28,7 +27,6 @@ export enum messageType {
 export enum roleType {
   MODERATION = 'moderationRole',
   POLL = 'pollRole',
-  WATCH = 'watchTogetherRole',
 }
 
 /**
@@ -192,7 +190,6 @@ class ServerCache {
       musicChannel: 'off',
       moderationRole: 'off',
       pollRole: 'off',
-      watchTogetherRole: 'off',
       welcomeChannel: 'off',
       welcomeMessage: '[USER] joined the server!',
       leaveMessage: '[USER] leaved the server!',
