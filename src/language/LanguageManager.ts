@@ -38,7 +38,8 @@ class LanguageManager {
     prop: string,
     options?: PlaceholderOptions
   ): MessageEmbed {
-    const message = this.languages.get(localization).get(prop);
+    let message = this.languages.get(localization).get(prop);
+    if (!message) message = this.languages.get('en').get(prop);
     message.description = this.handlePlaceholders(message.description, options);
     return createEmbed(message.title, message.description, message.error);
   }
@@ -47,7 +48,10 @@ class LanguageManager {
     localization: string,
     commandName: string
   ): string {
-    return this.commands.get(localization).get(commandName);
+    let cmdDescription = this.commands.get(localization).get(commandName);
+    if (!cmdDescription)
+      cmdDescription = this.commands.get('en').get(commandName);
+    return cmdDescription;
   }
 
   public has(locale: string): boolean {
