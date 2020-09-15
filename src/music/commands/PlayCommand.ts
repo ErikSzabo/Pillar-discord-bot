@@ -6,7 +6,6 @@ import { Command } from '../../generic/Command';
 import { musicCache, ServerMusicData, SongData } from '../MusicCache';
 import { CustomError } from '../../generic/CustomError';
 import { language } from '../../language/LanguageManager';
-import { serverCache } from '../../generic/ServerCache';
 
 export class PlayCommand extends Command {
   constructor() {
@@ -14,15 +13,14 @@ export class PlayCommand extends Command {
   }
 
   public async execute(args: Array<string>, message: Message): Promise<void> {
-    const currLang = serverCache.getLang(message.guild.id);
+    const serverID = message.guild.id;
     const voiceChannel = message.member.voice.channel;
     const permissions = voiceChannel
       ? voiceChannel.permissionsFor(message.client.user)
       : null;
-    const serverID = message.guild.id;
 
     try {
-      this.checkErrors(voiceChannel, permissions, args, currLang);
+      this.checkErrors(voiceChannel, permissions, args);
     } catch (error) {
       message.channel.send(error.embed);
       return;
@@ -32,13 +30,13 @@ export class PlayCommand extends Command {
       const song = await this.getSong(args.join(' '));
       if (!song) {
         await message.channel.send(
-          language.get(currLang, 'songNotFound', { song: args.join(' ') })
+          language.get(serverID, 'songNotFound', { song: args.join(' ') })
         );
         return;
       }
       musicCache.getServerData(serverID).songs.push(song);
       message.channel.send(
-        language.get(currLang, 'songQueued', { song: song.title })
+        language.get(serverID, 'songQueued', { song: song.title })
       );
       return;
     }
@@ -56,7 +54,7 @@ export class PlayCommand extends Command {
       const song = await this.getSong(args.join(' '));
       if (!song) {
         message.channel.send(
-          language.get(currLang, 'songNotFound', { song: args.join(' ') })
+          language.get(serverID, 'songNotFound', { song: args.join(' ') })
         );
         return;
       }
@@ -68,13 +66,13 @@ export class PlayCommand extends Command {
       });
       this.play(serverData);
       message.channel.send(
-        language.get(currLang, 'songQueued', { song: song.title })
+        language.get(serverID, 'songQueued', { song: song.title })
       );
     } catch (error) {
       console.error(`I could not join the voice channel: ${error}`);
-      musicCache.remove(message.guild.id);
+      musicCache.remove(serverID);
       voiceChannel.leave();
-      message.channel.send(language.get(currLang, 'cantJoinVoice'));
+      message.channel.send(language.get(serverID, 'cantJoinVoice'));
     }
   }
 
@@ -110,17 +108,17 @@ export class PlayCommand extends Command {
   private checkErrors(
     voiceChannel: VoiceChannel,
     permissions: Readonly<Permissions>,
-    args: Array<string>,
-    currLang: string
+    args: Array<string>
   ): void {
+    const serverID = voiceChannel.guild.id;
     if (!args || args.length < 1) {
-      throw new CustomError(language.get(currLang, 'notEnoughArguments'));
+      throw new CustomError(language.get(serverID, 'notEnoughArguments'));
     } else if (!voiceChannel) {
-      throw new CustomError(language.get(currLang, 'notInVoiceChannel'));
+      throw new CustomError(language.get(serverID, 'notInVoiceChannel'));
     } else if (!permissions.has('CONNECT')) {
-      throw new CustomError(language.get(currLang, 'noBotPermToJoinVoice'));
+      throw new CustomError(language.get(serverID, 'noBotPermToJoinVoice'));
     } else if (!permissions.has('SPEAK')) {
-      throw new CustomError(language.get(currLang, 'noBotPermToSpeak'));
+      throw new CustomError(language.get(serverID, 'noBotPermToSpeak'));
     }
   }
 

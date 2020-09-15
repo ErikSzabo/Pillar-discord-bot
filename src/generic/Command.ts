@@ -1,6 +1,5 @@
 import { Message } from 'discord.js';
 import { language } from '../language/LanguageManager';
-import { serverCache } from './ServerCache';
 
 export abstract class Command {
   /**
@@ -42,8 +41,8 @@ export abstract class Command {
   /**
    * @returns the description of the command
    */
-  public getDescription(currLang: string): string {
-    return language.getCommandDescription(currLang, this.name);
+  public getDescription(serverID: string): string {
+    return language.getCommandDescription(serverID, this.name);
   }
 
   /**

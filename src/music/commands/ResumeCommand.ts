@@ -2,7 +2,6 @@ import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
 import { musicCache } from '../MusicCache';
 import { checkVoiceChannelMatch } from '../../utils';
-import { serverCache } from '../../generic/ServerCache';
 import { language } from '../../language/LanguageManager';
 
 export class ResumeCommand extends Command {
@@ -11,10 +10,10 @@ export class ResumeCommand extends Command {
   }
 
   public execute(args: Array<string>, message: Message): void {
-    const currLang = serverCache.getLang(message.guild.id);
+    const serverID = message.guild.id;
     const voiceChannel = message.member.voice.channel;
 
-    const serverData = musicCache.getServerData(message.guild.id);
+    const serverData = musicCache.getServerData(serverID);
 
     if (serverData && serverData.isPlaying) {
       message.delete();
@@ -22,7 +21,7 @@ export class ResumeCommand extends Command {
     }
 
     try {
-      checkVoiceChannelMatch(message, voiceChannel, currLang);
+      checkVoiceChannelMatch(message, voiceChannel, serverID);
     } catch (err) {
       message.channel.send(err.embed);
       return;
@@ -31,7 +30,7 @@ export class ResumeCommand extends Command {
     serverData.isPlaying = true;
     serverData.connection.dispatcher.resume();
     message.channel.send(
-      language.get(currLang, 'musicResumed', {
+      language.get(serverID, 'musicResumed', {
         song: serverData.songs[0].title,
       })
     );

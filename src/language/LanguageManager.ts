@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { MessageEmbed } from 'discord.js';
 import { createEmbed } from '../utils';
+import { serverCache } from '../generic/ServerCache';
 
 interface LanguageProp {
   title: string;
@@ -34,21 +35,20 @@ class LanguageManager {
   }
 
   public get(
-    localization: string,
+    serverID: string,
     prop: string,
     options?: PlaceholderOptions
   ): MessageEmbed {
-    let message = this.languages.get(localization).get(prop);
+    const locale = serverCache.getLang(serverID);
+    let message = this.languages.get(locale).get(prop);
     if (!message) message = this.languages.get('en').get(prop);
     const description = this.handlePlaceholders(message.description, options);
     return createEmbed(message.title, description, message.error);
   }
 
-  public getCommandDescription(
-    localization: string,
-    commandName: string
-  ): string {
-    let cmdDescription = this.commands.get(localization).get(commandName);
+  public getCommandDescription(serverID: string, commandName: string): string {
+    const locale = serverCache.getLang(serverID);
+    let cmdDescription = this.commands.get(locale).get(commandName);
     if (!cmdDescription)
       cmdDescription = this.commands.get('en').get(commandName);
     return cmdDescription;

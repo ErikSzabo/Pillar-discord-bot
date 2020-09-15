@@ -2,7 +2,6 @@ import { Message } from 'discord.js';
 import { parseQuotedArgs } from '../../utils';
 import { reminderCache, Reminder } from '../ReminderCache';
 import { Command } from '../../generic/Command';
-import { serverCache } from '../../generic/ServerCache';
 import { CustomError } from '../../generic/CustomError';
 import { language } from '../../language/LanguageManager';
 
@@ -12,15 +11,15 @@ export class AddCommand extends Command {
   }
 
   public execute(args: Array<string>, message: Message): void {
-    const currLang = serverCache.getLang(message.guild.id);
+    const serverID = message.guild.id;
     try {
-      const reminder = this.parseReminder(message, currLang);
+      const reminder = this.parseReminder(message);
       const [duplicate] = reminderCache.findReminder(
         reminder.title,
         reminder.serverID
       );
       if (duplicate)
-        throw new CustomError(language.get(currLang, 'reminderAlreadyExists'));
+        throw new CustomError(language.get(serverID, 'reminderAlreadyExists'));
       reminderCache.addReminder(reminder, message.channel, false);
       this.sendResponse(
         message,
@@ -32,15 +31,14 @@ export class AddCommand extends Command {
             : '@everyone'
         }`,
         reminder.title,
-        reminder.date,
-        currLang
+        reminder.date
       );
     } catch (err) {
       message.channel.send(err.embed);
     }
   }
 
-  private parseDate(date: string, currLang: string): Date {
+  private parseDate(date: string, serverID: string): Date {
     try {
       const [year, month, day] = date
         .split('-')[0]
@@ -63,7 +61,7 @@ export class AddCommand extends Command {
 
       return parsedDate;
     } catch (err) {
-      throw new CustomError(language.get(currLang, 'invalidDate'));
+      throw new CustomError(language.get(serverID, 'invalidDate'));
     }
   }
 
@@ -71,11 +69,10 @@ export class AddCommand extends Command {
     message: Message,
     mention: string,
     title: string,
-    date: Date,
-    currLang: string
+    date: Date
   ): void {
     message.channel.send(
-      language.get(currLang, 'reminderAdded', {
+      language.get(message.guild.id, 'reminderAdded', {
         reminder: title,
         mention: mention,
         date: date.toLocaleDateString(),
@@ -83,14 +80,15 @@ export class AddCommand extends Command {
     );
   }
 
-  private parseReminder(message: Message, currLang: string): Reminder {
+  private parseReminder(message: Message): Reminder {
     // !r-add @tester 2020.9.10-12:30 "hosszu szar nev" "hosszu szar leiras"
     const msg = parseQuotedArgs(message, this.getName());
+    const serverID = message.guild.id;
 
     if (msg.length > 4)
-      throw new CustomError(language.get(currLang, 'tooManyArguments'));
+      throw new CustomError(language.get(serverID, 'tooManyArguments'));
 
-    const date = this.parseDate(msg[1], currLang);
+    const date = this.parseDate(msg[1], serverID);
     const title = msg[2];
     const description = msg.length >= 3 ? msg[3] : '';
 
@@ -99,7 +97,7 @@ export class AddCommand extends Command {
     const userMention = message.mentions.users.first();
 
     if (!isEveryone && !roleMention && !userMention)
-      throw new CustomError(language.get(currLang, 'missingReminderMention'));
+      throw new CustomError(language.get(serverID, 'missingReminderMention'));
 
     return this.createReminderConstruct(
       message,

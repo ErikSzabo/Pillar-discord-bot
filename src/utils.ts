@@ -18,7 +18,7 @@ export function createEmbed(
 export function checkVoiceChannelMatch(
   message: Message,
   voiceChannel: VoiceChannel,
-  currLang: string
+  serverID: string
 ): void {
   if (
     !voiceChannel ||
@@ -26,18 +26,18 @@ export function checkVoiceChannelMatch(
       (conn) => conn.channel.id === voiceChannel.id
     )
   ) {
-    throw new CustomError(language.get(currLang, 'noVoiceChannelMatch'));
+    throw new CustomError(language.get(serverID, 'noVoiceChannelMatch'));
   }
 }
 
 export function checkPermission(
   roleToCheck: string,
   member: GuildMember,
-  currLang: string
+  serverID: string
 ): void {
   if (member.permissions.has('ADMINISTRATOR')) return;
   if (roleToCheck !== 'off' && !member.roles.cache.has(roleToCheck)) {
-    throw new CustomError(language.get(currLang, 'noUserPerm'));
+    throw new CustomError(language.get(serverID, 'noUserPerm'));
   }
 }
 

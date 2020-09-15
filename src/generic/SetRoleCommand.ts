@@ -12,11 +12,11 @@ export class SetRoleCommand extends Command {
   }
 
   public async execute(args: Array<string>, message: Message): Promise<void> {
-    const currLang = serverCache.getLang(message.guild.id);
+    const serverID = message.guild.id;
     const modRole = serverCache.getRole(roleType.MODERATION, message.guild.id);
     try {
-      checkPermission(modRole, message.member, currLang);
-      this.checkErrors(args, message, currLang);
+      checkPermission(modRole, message.member, serverID);
+      this.checkErrors(args, message);
     } catch (error) {
       message.channel.send(error.embed);
       return;
@@ -24,11 +24,10 @@ export class SetRoleCommand extends Command {
 
     const type = args[0].toLowerCase();
     const roles = message.mentions.roles;
-    const serverID = message.guild.id;
 
     if (type === 'help') {
       message.channel.send(
-        language.get(currLang, 'roleHelp', { prefix: config.prefix })
+        language.get(serverID, 'roleHelp', { prefix: config.prefix })
       );
       return;
     }
@@ -40,57 +39,56 @@ export class SetRoleCommand extends Command {
       serverCache.setRole(roleType.MODERATION, serverID, newValue);
       message.channel.send(
         // TODO: [ROLETYPE] is in english -> that's sucks
-        this.createRoleEmbed('Moderation', newValue, currLang, isOff)
+        this.createRoleEmbed('Moderation', newValue, serverID, isOff)
       );
     } else if (type === 'poll') {
       serverCache.setRole(roleType.POLL, serverID, newValue);
       message.channel.send(
-        this.createRoleEmbed('Poll', newValue, currLang, isOff)
+        this.createRoleEmbed('Poll', newValue, serverID, isOff)
       );
     }
   }
 
   private checkErrors(
     args: Array<string>,
-    message: Message,
-    currLang: string
+    { guild: { id }, mentions }: Message
   ): void {
     if (args.length < 2 && args[0].toLowerCase() !== 'help') {
-      throw new CustomError(this.invalidEmbed(currLang));
+      throw new CustomError(this.invalidEmbed(id));
     }
 
     if (args.length < 1 && args[0].toLowerCase() !== 'help') {
-      throw new CustomError(this.invalidEmbed(currLang));
+      throw new CustomError(this.invalidEmbed(id));
     }
 
     if (!['help', 'mod', 'poll', 'watch'].includes(args[0].toLowerCase())) {
-      throw new CustomError(this.invalidEmbed(currLang));
+      throw new CustomError(this.invalidEmbed(id));
     }
 
-    const roles = message.mentions.roles;
+    const roles = mentions.roles;
     if (
       !roles.first() &&
       args[0].toLowerCase() !== 'help' &&
       args[1].toLowerCase() !== 'off'
     ) {
-      throw new CustomError(this.invalidEmbed(currLang));
+      throw new CustomError(this.invalidEmbed(id));
     }
   }
 
   private createRoleEmbed(
     start: string,
     role: string,
-    currLang: string,
+    serverID: string,
     isOff: boolean = false
   ): MessageEmbed {
     if (isOff) {
-      return language.get(currLang, 'roleSetOff', { roleType: start });
+      return language.get(serverID, 'roleSetOff', { roleType: start });
     } else {
-      return language.get(currLang, 'roleSet', { roleType: start, role: role });
+      return language.get(serverID, 'roleSet', { roleType: start, role: role });
     }
   }
 
-  private invalidEmbed(currLang: string): MessageEmbed {
-    return language.get(currLang, 'invalid');
+  private invalidEmbed(serverID: string): MessageEmbed {
+    return language.get(serverID, 'invalid');
   }
 }

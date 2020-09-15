@@ -10,33 +10,32 @@ export class LanguageCommand extends Command {
   }
 
   execute(args: string[], message: Message): void {
-    const currLang = serverCache.getLang(message.guild.id);
-
+    const serverID = message.guild.id;
     try {
       checkPermission(
         serverCache.getRole(roleType.MODERATION, message.guild.id),
         message.member,
-        currLang
+        serverID
       );
     } catch (err) {
-      message.channel.send(language.get(currLang, 'noUserPerm'));
+      message.channel.send(language.get(serverID, 'noUserPerm'));
       return;
     }
 
     if (!args[0]) {
-      message.channel.send(language.get(currLang, 'notEnoughArguments'));
+      message.channel.send(language.get(serverID, 'notEnoughArguments'));
       return;
     }
 
     const newLang = args[0].toLowerCase();
 
     if (!language.has(newLang)) {
-      message.channel.send(language.get(currLang, 'invalidLanguage'));
+      message.channel.send(language.get(serverID, 'invalidLanguage'));
       return;
     }
 
-    serverCache.setLang(message.guild.id, newLang);
+    serverCache.setLang(serverID, newLang);
 
-    message.channel.send(language.get(newLang, 'languageSet'));
+    message.channel.send(language.get(serverID, 'languageSet'));
   }
 }

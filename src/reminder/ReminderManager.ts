@@ -1,4 +1,3 @@
-import { scheduleJob, Job } from 'node-schedule';
 import { CommandManager } from '../generic/ICommandManager';
 import { AddCommand } from './commands/AddCommand';
 import { DeleteCommand } from './commands/DeleteCommand';
@@ -15,10 +14,10 @@ export class ReminderManager extends CommandManager {
 
   public handle(command: string, args: Array<string>, message: Message): void {
     if (!this.commands.has(command)) return;
-    const currLang = serverCache.getLang(message.guild.id);
-    const modRole = serverCache.getRole(roleType.MODERATION, message.guild.id);
+    const serverID = message.guild.id;
+    const modRole = serverCache.getRole(roleType.MODERATION, serverID);
     try {
-      checkPermission(modRole, message.member, currLang);
+      checkPermission(modRole, message.member, serverID);
     } catch (error) {
       message.channel.send(error.embed);
       return;

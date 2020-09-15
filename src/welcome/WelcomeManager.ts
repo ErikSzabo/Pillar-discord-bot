@@ -5,6 +5,7 @@ import { WelcomeMessageCommand } from './commands/WelcomeMessageCommand';
 import { WelcomeChannelCommand } from './commands/WelcomeChannelCommand';
 import { serverCache, roleType } from '../generic/ServerCache';
 import { checkPermission, createEmbed } from '../utils';
+import { language } from '../language/LanguageManager';
 
 export class WelcomeManager extends CommandManager {
   constructor(name: string) {
@@ -16,19 +17,17 @@ export class WelcomeManager extends CommandManager {
 
   public handle(command: string, args: Array<string>, message: Message): void {
     if (!this.commands.has(command)) return;
-    const currLang = serverCache.getLang(message.guild.id);
-    const modRole = serverCache.getRole(roleType.MODERATION, message.guild.id);
+    const serverID = message.guild.id;
+    const modRole = serverCache.getRole(roleType.MODERATION, serverID);
     try {
-      checkPermission(modRole, message.member, currLang);
+      checkPermission(modRole, message.member, serverID);
     } catch (error) {
       message.channel.send(error.embed);
       return;
     }
 
     if (args.length < 1) {
-      message.channel.send(
-        createEmbed('Invalid', 'Not enough arguments!', true)
-      );
+      message.channel.send(language.get(serverID, 'notEnoughArguments'));
       return;
     }
 

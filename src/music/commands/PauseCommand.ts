@@ -2,7 +2,6 @@ import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
 import { musicCache } from '../MusicCache';
 import { checkVoiceChannelMatch } from '../../utils';
-import { serverCache } from '../../generic/ServerCache';
 import { language } from '../../language/LanguageManager';
 
 export class PauseCommand extends Command {
@@ -12,16 +11,16 @@ export class PauseCommand extends Command {
 
   public execute(args: Array<string>, message: Message): void {
     const voiceChannel = message.member.voice.channel;
-    const currLang = serverCache.getLang(message.guild.id);
+    const serverID = message.guild.id;
     const serverData = musicCache.getServerData(message.guild.id);
 
     if (serverData && !serverData.isPlaying) {
-      message.channel.send(language.get(currLang, 'nothingToPause'));
+      message.channel.send(language.get(serverID, 'nothingToPause'));
       return;
     }
 
     try {
-      checkVoiceChannelMatch(message, voiceChannel, currLang);
+      checkVoiceChannelMatch(message, voiceChannel, serverID);
     } catch (err) {
       message.channel.send(err.embed);
       return;
@@ -30,8 +29,8 @@ export class PauseCommand extends Command {
     serverData.isPlaying = false;
     serverData.connection.dispatcher.pause();
     message.channel.send(
-      language.get(currLang, 'musicPaused', {
-        song: musicCache.getServerData(message.guild.id).songs[0].title,
+      language.get(serverID, 'musicPaused', {
+        song: musicCache.getServerData(serverID).songs[0].title,
       })
     );
   }

@@ -10,10 +10,10 @@ export class WelcomeMessageCommand extends Command {
   }
 
   public execute(args: Array<string>, message: Message): void {
-    const currLang = serverCache.getLang(message.guild.id);
+    const serverID = message.guild.id;
     if (args[0].toLowerCase() === 'off') {
-      serverCache.setMessage(messageType.WELCOME, message.guild.id, 'off');
-      message.channel.send(language.get(currLang, 'welcomeMessageOff'));
+      serverCache.setMessage(messageType.WELCOME, serverID, 'off');
+      message.channel.send(language.get(serverID, 'welcomeMessageOff'));
       return;
     }
 
@@ -22,18 +22,14 @@ export class WelcomeMessageCommand extends Command {
       .trim();
 
     if (!welcomeMessage) {
-      message.channel.send(language.get(currLang, 'welcomeMessageEmpty'));
+      message.channel.send(language.get(serverID, 'welcomeMessageEmpty'));
       return;
     }
 
-    serverCache.setMessage(
-      messageType.WELCOME,
-      message.guild.id,
-      welcomeMessage
-    );
+    serverCache.setMessage(messageType.WELCOME, serverID, welcomeMessage);
 
     message.channel.send(
-      language.get(currLang, 'welcomeMessageSet', { message: welcomeMessage })
+      language.get(serverID, 'welcomeMessageSet', { message: welcomeMessage })
     );
   }
 }

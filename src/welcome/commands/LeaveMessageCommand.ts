@@ -10,10 +10,10 @@ export class LeaveMessageCommand extends Command {
   }
 
   public execute(args: Array<string>, message: Message): void {
-    const currLang = serverCache.getLang(message.guild.id);
+    const serverID = message.guild.id;
     if (args[0].toLowerCase() === 'off') {
-      serverCache.setMessage(messageType.LEAVE, message.guild.id, 'off');
-      message.channel.send(language.get(currLang, 'leaveMessageOff'));
+      serverCache.setMessage(messageType.LEAVE, serverID, 'off');
+      message.channel.send(language.get(serverID, 'leaveMessageOff'));
       return;
     }
 
@@ -22,14 +22,14 @@ export class LeaveMessageCommand extends Command {
       .trim();
 
     if (!leaveMessage) {
-      message.channel.send(language.get(currLang, 'leaveMessageEmpty'));
+      message.channel.send(language.get(serverID, 'leaveMessageEmpty'));
       return;
     }
 
-    serverCache.setMessage(messageType.LEAVE, message.guild.id, leaveMessage);
+    serverCache.setMessage(messageType.LEAVE, serverID, leaveMessage);
 
     message.channel.send(
-      language.get(currLang, 'leaveMessageSet', { message: leaveMessage })
+      language.get(serverID, 'leaveMessageSet', { message: leaveMessage })
     );
   }
 }
