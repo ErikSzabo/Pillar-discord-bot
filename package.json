@@ -1,7 +1,7 @@
 {
   "name": "pillar",
   "version": "1.0.0",
-  "description": "Discord bot that can play music, stream videos, setup reminders, managing welcome and leaving messages.",
+  "description": "Discord bot that can play music, setup reminders, managing welcome and leaving messages.",
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
