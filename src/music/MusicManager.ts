@@ -29,7 +29,11 @@ export class MusicManager extends CommandManager {
       channelType.MUSIC,
       message.guild.id
     );
-    if (musicChannel !== 'off' && musicChannel !== message.channel.id) {
+    if (
+      musicChannel !== 'off' &&
+      musicChannel !== message.channel.id &&
+      !message.member.permissions.has('ADMINISTRATOR')
+    ) {
       message.delete();
       return;
     }

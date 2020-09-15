@@ -35,6 +35,7 @@ export function checkPermission(
   member: GuildMember,
   currLang: string
 ): void {
+  if (member.permissions.has('ADMINISTRATOR')) return;
   if (roleToCheck !== 'off' && !member.roles.cache.has(roleToCheck)) {
     throw new CustomError(language.get(currLang, 'noUserPerm'));
   }
