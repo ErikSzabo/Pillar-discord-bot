@@ -1,6 +1,6 @@
 import monk from 'monk';
 
-const db = monk(process.env.MONGO_URI || 'localhost/bela-discord');
+const db = monk(process.env.MONGO_URI || '127.0.0.1:27017/pillar-discord');
 
 /**
  * Collection to store the reminders, after a restart.
