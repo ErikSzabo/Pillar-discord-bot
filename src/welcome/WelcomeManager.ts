@@ -16,10 +16,10 @@ export class WelcomeManager extends CommandManager {
 
   public handle(command: string, args: Array<string>, message: Message): void {
     if (!this.commands.has(command)) return;
-
+    const currLang = serverCache.getLang(message.guild.id);
     const modRole = serverCache.getRole(roleType.MODERATION, message.guild.id);
     try {
-      checkPermission(modRole, message.member);
+      checkPermission(modRole, message.member, currLang);
     } catch (error) {
       message.channel.send(error.embed);
       return;

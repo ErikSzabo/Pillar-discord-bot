@@ -15,7 +15,8 @@ export class LanguageCommand extends Command {
     try {
       checkPermission(
         serverCache.getRole(roleType.MODERATION, message.guild.id),
-        message.member
+        message.member,
+        currLang
       );
     } catch (err) {
       message.channel.send(language.get(currLang, 'noUserPerm'));

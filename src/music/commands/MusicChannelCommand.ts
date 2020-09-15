@@ -13,7 +13,7 @@ export class MusicChannelCommand extends Command {
     const currLang = serverCache.getLang(message.guild.id);
     const modRole = serverCache.getRole(roleType.MODERATION, message.guild.id);
     try {
-      checkPermission(modRole, message.member);
+      checkPermission(modRole, message.member, currLang);
     } catch (error) {
       message.channel.send(error.embed);
       return;

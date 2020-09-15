@@ -1,6 +1,7 @@
 import { MessageEmbed, Message, VoiceChannel, GuildMember } from 'discord.js';
 import { CustomError } from './generic/CustomError';
 import config from './config';
+import { language } from './language/LanguageManager';
 
 export function createEmbed(
   title: string,
@@ -16,7 +17,8 @@ export function createEmbed(
 
 export function checkVoiceChannelMatch(
   message: Message,
-  voiceChannel: VoiceChannel
+  voiceChannel: VoiceChannel,
+  currLang: string
 ): void {
   if (
     !voiceChannel ||
@@ -24,28 +26,17 @@ export function checkVoiceChannelMatch(
       (conn) => conn.channel.id === voiceChannel.id
     )
   ) {
-    throw new CustomError(
-      createEmbed(
-        'Ooops',
-        "You are not listening with the bot, you can't use this command now!",
-        true
-      )
-    );
+    throw new CustomError(language.get(currLang, 'noVoiceChannelMatch'));
   }
 }
 
 export function checkPermission(
   roleToCheck: string,
-  member: GuildMember
+  member: GuildMember,
+  currLang: string
 ): void {
   if (roleToCheck !== 'off' && !member.roles.cache.has(roleToCheck)) {
-    throw new CustomError(
-      createEmbed(
-        '❌ No permission',
-        "you don't have permission to use this command!",
-        true
-      )
-    );
+    throw new CustomError(language.get(currLang, 'noUserPerm'));
   }
 }
 

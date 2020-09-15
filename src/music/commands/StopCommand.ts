@@ -16,7 +16,7 @@ export class StopCommand extends Command {
     const serverData = musicCache.getServerData(message.guild.id);
 
     try {
-      checkVoiceChannelMatch(message, voiceChannel);
+      checkVoiceChannelMatch(message, voiceChannel, currLang);
     } catch (err) {
       message.channel.send(err.embed);
       return;
