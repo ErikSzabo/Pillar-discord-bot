@@ -40,8 +40,8 @@ class LanguageManager {
   ): MessageEmbed {
     let message = this.languages.get(localization).get(prop);
     if (!message) message = this.languages.get('en').get(prop);
-    message.description = this.handlePlaceholders(message.description, options);
-    return createEmbed(message.title, message.description, message.error);
+    const description = this.handlePlaceholders(message.description, options);
+    return createEmbed(message.title, description, message.error);
   }
 
   public getCommandDescription(
