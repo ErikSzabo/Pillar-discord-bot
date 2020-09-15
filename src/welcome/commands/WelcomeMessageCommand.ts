@@ -1,8 +1,8 @@
 import { Command } from '../../generic/Command';
 import { Message } from 'discord.js';
-import { createEmbed, checkPermission } from '../../utils';
 import { messageType, serverCache } from '../../generic/ServerCache';
 import config from '../../config';
+import { language } from '../../language/LanguageManager';
 
 export class WelcomeMessageCommand extends Command {
   constructor() {
@@ -14,15 +14,10 @@ export class WelcomeMessageCommand extends Command {
   }
 
   public execute(args: Array<string>, message: Message): void {
+    const currLang = serverCache.getLang(message.guild.id);
     if (args[0].toLowerCase() === 'off') {
       serverCache.setMessage(messageType.WELCOME, message.guild.id, 'off');
-      message.channel.send(
-        createEmbed(
-          '🗨 Welcome Message',
-          'Now I will **not** send welcome messages when someone joins!',
-          false
-        )
-      );
+      message.channel.send(language.get(currLang, 'welcomeMessageOff'));
       return;
     }
 
@@ -31,13 +26,7 @@ export class WelcomeMessageCommand extends Command {
       .trim();
 
     if (!welcomeMessage) {
-      message.channel.send(
-        createEmbed(
-          'Empty',
-          'Welcome message can not be nothing, use "off" if you want to turn the feature off',
-          true
-        )
-      );
+      message.channel.send(language.get(currLang, 'welcomeMessageEmpty'));
       return;
     }
 
@@ -48,11 +37,7 @@ export class WelcomeMessageCommand extends Command {
     );
 
     message.channel.send(
-      createEmbed(
-        '🗨 Welcome message',
-        `Welcome message set to: **${welcomeMessage}**`,
-        false
-      )
+      language.get(currLang, 'welcomeMessageSet', { message: welcomeMessage })
     );
   }
 }

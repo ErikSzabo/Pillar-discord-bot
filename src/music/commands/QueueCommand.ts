@@ -1,7 +1,8 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
 import { musicCache } from '../MusicCache';
-import { createEmbed } from '../../utils';
+import { serverCache } from '../../generic/ServerCache';
+import { language } from '../../language/LanguageManager';
 
 export class QueueCommand extends Command {
   constructor() {
@@ -9,23 +10,19 @@ export class QueueCommand extends Command {
   }
 
   public execute(args: Array<string>, message: Message): void {
+    const currLang = serverCache.getLang(message.guild.id);
     const serverData = musicCache.getServerData(message.guild.id);
 
     if (!serverData) {
-      message.channel.send(
-        createEmbed('Empty!', "There isn't anything in the queue!", false)
-      );
+      message.channel.send(language.get(currLang, 'songQueueEmpty'));
       return;
     }
 
     message.channel.send(
-      createEmbed(
-        'Song queue:',
-        `${serverData.songs
-          .map((song) => `**-** ${song.title}`)
-          .join('\n')} \n**Now playing**: ${serverData.songs[0].title}`,
-        false
-      )
+      language.get(currLang, 'songQueue', {
+        songs: serverData.songs.map((song) => `**-** ${song.title}`).join('\n'),
+        song: serverData.songs[0].title,
+      })
     );
   }
 }

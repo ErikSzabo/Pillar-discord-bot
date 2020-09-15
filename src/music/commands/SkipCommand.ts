@@ -1,7 +1,9 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
 import { musicCache } from '../MusicCache';
-import { createEmbed, checkVoiceChannelMatch } from '../../utils';
+import { checkVoiceChannelMatch } from '../../utils';
+import { serverCache } from '../../generic/ServerCache';
+import { language } from '../../language/LanguageManager';
 
 export class SkipCommand extends Command {
   constructor() {
@@ -9,6 +11,7 @@ export class SkipCommand extends Command {
   }
 
   public execute(args: Array<string>, message: Message): void {
+    const currLang = serverCache.getLang(message.guild.id);
     const voiceChannel = message.member.voice.channel;
 
     const serverData = musicCache.getServerData(message.guild.id);
@@ -21,22 +24,14 @@ export class SkipCommand extends Command {
     }
 
     if (!serverData) {
-      message.channel.send(
-        createEmbed(
-          'Ooops',
-          'There is nothing playing that I could skip for you.',
-          true
-        )
-      );
+      message.channel.send(language.get(currLang, 'noMusicToSkip'));
       return;
     }
 
     message.channel.send(
-      createEmbed(
-        '▶ Skipped',
-        `**${serverData.songs[0].title}** is skipped for you 🤪`,
-        false
-      )
+      language.get(currLang, 'musicSkipped', {
+        song: serverData.songs[0].title,
+      })
     );
 
     serverData.connection.dispatcher.end();

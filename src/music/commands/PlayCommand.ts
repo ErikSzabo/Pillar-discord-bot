@@ -4,7 +4,9 @@ import * as ffmpeg from 'ffmpeg-static';
 import { Message, Permissions, VoiceChannel, Util } from 'discord.js';
 import { Command } from '../../generic/Command';
 import { musicCache, ServerMusicData, SongData } from '../MusicCache';
-import { createEmbed } from '../../utils';
+import { CustomError } from '../../generic/CustomError';
+import { language } from '../../language/LanguageManager';
+import { serverCache } from '../../generic/ServerCache';
 
 export class PlayCommand extends Command {
   constructor() {
@@ -16,6 +18,7 @@ export class PlayCommand extends Command {
   }
 
   public async execute(args: Array<string>, message: Message): Promise<void> {
+    const currLang = serverCache.getLang(message.guild.id);
     const voiceChannel = message.member.voice.channel;
     const permissions = voiceChannel
       ? voiceChannel.permissionsFor(message.client.user)
@@ -23,9 +26,9 @@ export class PlayCommand extends Command {
     const serverID = message.guild.id;
 
     try {
-      this.checkErrors(voiceChannel, permissions, args);
+      this.checkErrors(voiceChannel, permissions, args, currLang);
     } catch (error) {
-      message.channel.send(createEmbed('Oops', error.message, true));
+      message.channel.send(error.embed);
       return;
     }
 
@@ -33,21 +36,13 @@ export class PlayCommand extends Command {
       const song = await this.getSong(args.join(' '));
       if (!song) {
         await message.channel.send(
-          createEmbed(
-            '🤷‍♂️ Not found!',
-            `We can't find any songs that matches this: ${args.join(' ')}`,
-            true
-          )
+          language.get(currLang, 'songNotFound', { song: args.join(' ') })
         );
         return;
       }
       musicCache.getServerData(serverID).songs.push(song);
       message.channel.send(
-        createEmbed(
-          `✅ Queued`,
-          `**${song.title}** has been added to the queue!`,
-          false
-        )
+        language.get(currLang, 'songQueued', { song: song.title })
       );
       return;
     }
@@ -64,12 +59,8 @@ export class PlayCommand extends Command {
     try {
       const song = await this.getSong(args.join(' '));
       if (!song) {
-        await message.channel.send(
-          createEmbed(
-            '🤷‍♂️ Not found!',
-            `We can't find any songs that matches this: ${args.join(' ')}`,
-            true
-          )
+        message.channel.send(
+          language.get(currLang, 'songNotFound', { song: args.join(' ') })
         );
         return;
       }
@@ -81,23 +72,13 @@ export class PlayCommand extends Command {
       });
       this.play(serverData);
       message.channel.send(
-        createEmbed(
-          `✅ Queued`,
-          `**${song.title}** has been added to the queue!`,
-          false
-        )
+        language.get(currLang, 'songQueued', { song: song.title })
       );
     } catch (error) {
       console.error(`I could not join the voice channel: ${error}`);
       musicCache.remove(message.guild.id);
-      await voiceChannel.leave();
-      await message.channel.send(
-        createEmbed(
-          `😓 Can't join`,
-          `I could not join the voice channel: ${error}`,
-          true
-        )
-      );
+      voiceChannel.leave();
+      message.channel.send(language.get(currLang, 'cantJoinVoice'));
     }
   }
 
@@ -133,20 +114,17 @@ export class PlayCommand extends Command {
   private checkErrors(
     voiceChannel: VoiceChannel,
     permissions: Readonly<Permissions>,
-    args: Array<string>
+    args: Array<string>,
+    currLang: string
   ): void {
     if (!args || args.length < 1) {
-      throw new Error('You should provide a name or a youtube url!');
+      throw new CustomError(language.get(currLang, 'notEnoughArguments'));
     } else if (!voiceChannel) {
-      throw new Error('You have to be in a voice channel to play music!');
+      throw new CustomError(language.get(currLang, 'notInVoiceChannel'));
     } else if (!permissions.has('CONNECT')) {
-      throw new Error(
-        "I don't have permission to connect to your voice channel!"
-      );
+      throw new CustomError(language.get(currLang, 'noBotPermToJoinVoice'));
     } else if (!permissions.has('SPEAK')) {
-      throw new Error(
-        "I don't have permission to speak in this voice channel!"
-      );
+      throw new CustomError(language.get(currLang, 'noBotPermToSpeak'));
     }
   }
 

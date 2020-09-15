@@ -1,16 +1,10 @@
 import { Command } from './Command';
 import { Message, MessageEmbed } from 'discord.js';
-import { createEmbed, checkPermission } from '../utils';
+import { checkPermission } from '../utils';
 import { serverCache, roleType } from './ServerCache';
 import config from '../config';
 import { CustomError } from './CustomError';
-
-const help = [
-  `${config.prefix}set-role mod @role -- moderation/admin`,
-  `${config.prefix}set-role poll @role -- create polls`,
-  '**You have to mention the role!**',
-  'Only the specified role will have access (no hierarchy)',
-];
+import { language } from '../language/LanguageManager';
 
 export class SetRoleCommand extends Command {
   constructor() {
@@ -22,10 +16,11 @@ export class SetRoleCommand extends Command {
   }
 
   public async execute(args: Array<string>, message: Message): Promise<void> {
+    const currLang = serverCache.getLang(message.guild.id);
     const modRole = serverCache.getRole(roleType.MODERATION, message.guild.id);
     try {
       checkPermission(modRole, message.member);
-      this.checkErrors(args, message);
+      this.checkErrors(args, message, currLang);
     } catch (error) {
       message.channel.send(error.embed);
       return;
@@ -37,7 +32,7 @@ export class SetRoleCommand extends Command {
 
     if (type === 'help') {
       message.channel.send(
-        createEmbed('💙 Role help', `${help.join('\n')}`, false)
+        language.get(currLang, 'roleHelp', { prefix: config.prefix })
       );
       return;
     }
@@ -47,24 +42,33 @@ export class SetRoleCommand extends Command {
 
     if (type === 'mod') {
       serverCache.setRole(roleType.MODERATION, serverID, newValue);
-      message.channel.send(this.createRoleEmbed('Moderation', newValue, isOff));
+      message.channel.send(
+        // TODO: [ROLETYPE] is in english -> that's sucks
+        this.createRoleEmbed('Moderation', newValue, currLang, isOff)
+      );
     } else if (type === 'poll') {
       serverCache.setRole(roleType.POLL, serverID, newValue);
-      message.channel.send(this.createRoleEmbed('Poll', newValue, isOff));
+      message.channel.send(
+        this.createRoleEmbed('Poll', newValue, currLang, isOff)
+      );
     }
   }
 
-  private checkErrors(args: Array<string>, message: Message): void {
+  private checkErrors(
+    args: Array<string>,
+    message: Message,
+    currLang: string
+  ): void {
     if (args.length < 2 && args[0].toLowerCase() !== 'help') {
-      throw new CustomError(this.invalidEmbed());
+      throw new CustomError(this.invalidEmbed(currLang));
     }
 
     if (args.length < 1 && args[0].toLowerCase() !== 'help') {
-      throw new CustomError(this.invalidEmbed());
+      throw new CustomError(this.invalidEmbed(currLang));
     }
 
     if (!['help', 'mod', 'poll', 'watch'].includes(args[0].toLowerCase())) {
-      throw new CustomError(this.invalidEmbed());
+      throw new CustomError(this.invalidEmbed(currLang));
     }
 
     const roles = message.mentions.roles;
@@ -73,27 +77,24 @@ export class SetRoleCommand extends Command {
       args[0].toLowerCase() !== 'help' &&
       args[1].toLowerCase() !== 'off'
     ) {
-      throw new CustomError(this.invalidEmbed());
+      throw new CustomError(this.invalidEmbed(currLang));
     }
   }
 
   private createRoleEmbed(
     start: string,
     role: string,
+    currLang: string,
     isOff: boolean = false
   ): MessageEmbed {
     if (isOff) {
-      return createEmbed('💙 Role', `${start} role turned off!`, false);
+      return language.get(currLang, 'roleSetOff', { roleType: start });
     } else {
-      return createEmbed('💙 Role', `${start} role set to <@&${role}>`, false);
+      return language.get(currLang, 'roleSet', { roleType: start, role: role });
     }
   }
 
-  private invalidEmbed(): MessageEmbed {
-    return createEmbed(
-      '‼ Invalid',
-      `Try: **${config.prefix}${this.getName()} help**`,
-      true
-    );
+  private invalidEmbed(currLang: string): MessageEmbed {
+    return language.get(currLang, 'invalid');
   }
 }

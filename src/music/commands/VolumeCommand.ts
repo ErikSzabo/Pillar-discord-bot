@@ -1,7 +1,9 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
 import { musicCache } from '../MusicCache';
-import { createEmbed, checkVoiceChannelMatch } from '../../utils';
+import { checkVoiceChannelMatch } from '../../utils';
+import { serverCache } from '../../generic/ServerCache';
+import { language } from '../../language/LanguageManager';
 
 export class VolumeCommand extends Command {
   constructor() {
@@ -10,7 +12,7 @@ export class VolumeCommand extends Command {
 
   public execute(args: Array<string>, message: Message): void {
     const voiceChannel = message.member.voice.channel;
-
+    const currLang = serverCache.getLang(message.guild.id);
     const serverData = musicCache.getServerData(message.guild.id);
 
     try {
@@ -21,38 +23,24 @@ export class VolumeCommand extends Command {
     }
 
     if (!serverData) {
-      message.channel.send(
-        createEmbed('Ooops', 'There is nothing playing.', true)
-      );
+      message.channel.send(language.get(currLang, 'cantChangeVolume'));
       return;
     }
 
     if (!args[0]) {
       message.channel.send(
-        createEmbed(
-          '🔊 Volume',
-          `The current volume is: **${serverData.volume}**`,
-          false
-        )
+        language.get(currLang, 'currentVolume', { volume: serverData.volume })
       );
       return;
     }
 
     const volume = parseInt(args[0]);
     if (isNaN(volume)) {
-      message.channel.send(
-        createEmbed(
-          '🔊 Volume',
-          'You have to provide a valid number as the volume!',
-          true
-        )
-      );
+      message.channel.send(language.get(currLang, 'notNumberVolume'));
       return;
     }
     serverData.volume = volume;
     serverData.connection.dispatcher.setVolumeLogarithmic(volume / 5);
-    message.channel.send(
-      createEmbed('🔊 Volume', `Volume set to: **${args[0]}**`, false)
-    );
+    message.channel.send(language.get(currLang, 'volumeSet', { volume }));
   }
 }

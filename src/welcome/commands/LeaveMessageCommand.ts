@@ -1,8 +1,8 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { serverCache, roleType, messageType } from '../../generic/ServerCache';
-import { checkPermission, createEmbed } from '../../utils';
+import { serverCache, messageType } from '../../generic/ServerCache';
 import config from '../../config';
+import { language } from '../../language/LanguageManager';
 
 export class LeaveMessageCommand extends Command {
   constructor() {
@@ -14,15 +14,10 @@ export class LeaveMessageCommand extends Command {
   }
 
   public execute(args: Array<string>, message: Message): void {
+    const currLang = serverCache.getLang(message.guild.id);
     if (args[0].toLowerCase() === 'off') {
       serverCache.setMessage(messageType.LEAVE, message.guild.id, 'off');
-      message.channel.send(
-        createEmbed(
-          '🗨 Leave Message',
-          'Now I will **not** send leave messages when someone leaves!',
-          false
-        )
-      );
+      message.channel.send(language.get(currLang, 'leaveMessageOff'));
       return;
     }
 
@@ -31,24 +26,14 @@ export class LeaveMessageCommand extends Command {
       .trim();
 
     if (!leaveMessage) {
-      message.channel.send(
-        createEmbed(
-          'Empty',
-          'Leave message can not be nothing, use "off" if you want to turn the feature off',
-          true
-        )
-      );
+      message.channel.send(language.get(currLang, 'leaveMessageEmpty'));
       return;
     }
 
     serverCache.setMessage(messageType.LEAVE, message.guild.id, leaveMessage);
 
     message.channel.send(
-      createEmbed(
-        '🗨 Leave message',
-        `Leave message set to: **${leaveMessage}**`,
-        false
-      )
+      language.get(currLang, 'leaveMessageSet', { message: leaveMessage })
     );
   }
 }
