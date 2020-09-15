@@ -175,10 +175,10 @@ class ServerCache {
    * @param serverID id of the requested server
    * @param langauge new preferred langauge on the server
    */
-  public setLang(serverID: string, langauge: string): void {
-    this.cache.get(serverID).language = langauge;
+  public setLang(serverID: string, language: string): void {
+    this.cache.get(serverID).language = language;
     serverInfo
-      .findOneAndUpdate({ serverID }, { $set: { langauge } })
+      .findOneAndUpdate({ serverID }, { $set: { language } })
       .catch((err) => console.log(err));
   }
 

@@ -227,5 +227,15 @@
     "title": "Song queue:",
     "description": "[SONGS]\n Now playing: [SONG]",
     "error": false
+  },
+  "invalidLanguage": {
+    "title": "Ooops",
+    "description": "I can't speak this language yet! :(",
+    "error": true
+  },
+  "languageSet": {
+    "title": "Language",
+    "description": "The language updated successfully!",
+    "error": false
   }
 }

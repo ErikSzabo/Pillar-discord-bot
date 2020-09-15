@@ -34,11 +34,15 @@ class LanguageManager {
   public get(
     localization: string,
     prop: string,
-    options: PlaceholderOptions
+    options?: PlaceholderOptions
   ): MessageEmbed {
     const message = this.languages.get(localization).get(prop);
     message.description = this.handlePlaceholders(message.description, options);
     return createEmbed(message.title, message.description, message.error);
+  }
+
+  public has(locale: string): boolean {
+    return this.languages.has(locale);
   }
 
   public reload(): void {
@@ -70,6 +74,8 @@ class LanguageManager {
     description: string,
     options: PlaceholderOptions
   ): string {
+    if (!options) return description;
+
     if (options.channel)
       description = description.replace(/\[CHANNEL\]/g, options.channel);
 
