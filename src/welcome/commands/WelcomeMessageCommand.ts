@@ -6,11 +6,7 @@ import { language } from '../../language/LanguageManager';
 
 export class WelcomeMessageCommand extends Command {
   constructor() {
-    super(
-      'welcome-message',
-      'welcome-message <message>',
-      'sets the welcome message for the server, [USER] placeholder can be used, set to "off" to disable'
-    );
+    super('welcome-message', 'welcome-message <message>');
   }
 
   public execute(args: Array<string>, message: Message): void {

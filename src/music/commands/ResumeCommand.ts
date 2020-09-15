@@ -7,7 +7,7 @@ import { language } from '../../language/LanguageManager';
 
 export class ResumeCommand extends Command {
   constructor() {
-    super('resume', 'resume', 'resumes the paused music');
+    super('resume', 'resume');
   }
 
   public execute(args: Array<string>, message: Message): void {

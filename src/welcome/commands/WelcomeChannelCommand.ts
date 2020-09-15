@@ -5,11 +5,7 @@ import { language } from '../../language/LanguageManager';
 
 export class WelcomeChannelCommand extends Command {
   constructor() {
-    super(
-      'welcome-channel',
-      'welcome-channel <text channel>',
-      'welcome, and leave messages will appear in this channel, set to "off" to disable'
-    );
+    super('welcome-channel', 'welcome-channel <text channel>');
   }
 
   public execute(args: Array<string>, message: Message): void {

@@ -8,7 +8,7 @@ import { serverCache } from '../../generic/ServerCache';
 
 export class DeleteCommand extends Command {
   constructor() {
-    super('r-delete', 'r-delete "name"', '"name" deletes a reminder');
+    super('r-delete', 'r-delete "name"');
   }
 
   public execute(args: Array<string>, message: Message): void {

@@ -6,11 +6,7 @@ import { language } from '../../language/LanguageManager';
 
 export class MusicChannelCommand extends Command {
   constructor() {
-    super(
-      'music-channel',
-      'music-channel <text channel>',
-      "sets the music channel, by default every channel is allowed, (write 'off' if you want to reset this)"
-    );
+    super('music-channel', 'music-channel <text channel>');
   }
 
   public async execute(args: Array<string>, message: Message): Promise<void> {

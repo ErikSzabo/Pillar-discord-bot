@@ -7,7 +7,7 @@ import { language } from '../../language/LanguageManager';
 
 export class SkipCommand extends Command {
   constructor() {
-    super('skip', 'skip', 'skips the current music');
+    super('skip', 'skip');
   }
 
   public execute(args: Array<string>, message: Message): void {

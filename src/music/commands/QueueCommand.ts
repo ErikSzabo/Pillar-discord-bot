@@ -6,7 +6,7 @@ import { language } from '../../language/LanguageManager';
 
 export class QueueCommand extends Command {
   constructor() {
-    super('queue', 'queue', 'shows the music queue');
+    super('queue', 'queue');
   }
 
   public execute(args: Array<string>, message: Message): void {

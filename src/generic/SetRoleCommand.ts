@@ -8,11 +8,7 @@ import { language } from '../language/LanguageManager';
 
 export class SetRoleCommand extends Command {
   constructor() {
-    super(
-      'set-role',
-      'set-role <role type> <role>',
-      `sets the required roles for specific commands\nFor help: **${config.prefix}set-role help**`
-    );
+    super('set-role', 'set-role <role type> <role>');
   }
 
   public async execute(args: Array<string>, message: Message): Promise<void> {

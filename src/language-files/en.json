@@ -1,241 +1,261 @@
 {
-  "invalid": {
-    "title": "‼ Invalid",
-    "description": "Invalid command parameters, Try **[PREFIX]help**",
-    "error": true
+  "messages": {
+    "invalid": {
+      "title": "‼ Invalid",
+      "description": "Invalid command parameters, Try **[PREFIX]help**",
+      "error": true
+    },
+    "roleSet": {
+      "title": "💙 Role",
+      "description": "[ROLETYPE] role set to <@&${[ROLE]}>",
+      "error": false
+    },
+    "roleSetOff": {
+      "title": "💙 Role",
+      "description": "[ROLETYPE] role turned off",
+      "error": false
+    },
+    "roleHelp": {
+      "title": "💙 Role help",
+      "description": "[PREFIX]set-role mod @role -- moderation/admin\n[PREFIX]set-role poll @role -- create polls\n**You have to mention the role!**\nOnly the specified role will have access (no hierarchy)",
+      "error": false
+    },
+    "leaveMessageOff": {
+      "title": "🗨 Leave Message",
+      "description": "Now I will **not** send leave messages when someone leaves!",
+      "error": false
+    },
+    "leaveMessageEmpty": {
+      "title": "Empty",
+      "description": "Leave message can not be nothing, use \"off\" if you want to turn the feature off",
+      "error": true
+    },
+    "leaveMessageSet": {
+      "title": "🗨 Leave Message",
+      "description": "Leave message set to: **[MESSAGE]**",
+      "error": false
+    },
+    "welcomeMessageOff": {
+      "title": "🗨 Welcome Message",
+      "description": "Now I will **not** send welcome messages when someone leaves!",
+      "error": false
+    },
+    "welcomeMessageEmpty": {
+      "title": "Empty",
+      "description": "Welcome message can not be nothing, use \"off\" if you want to turn the feature off",
+      "error": true
+    },
+    "welcomeMessageSet": {
+      "title": "🗨 Welcome Message",
+      "description": "welcome message set to: **[MESSAGE]**",
+      "error": false
+    },
+    "welcomeChannelOff": {
+      "title": "🙋‍♂️ Welcome Channel",
+      "description": "Welcome and leave messages will no longer appear!",
+      "error": false
+    },
+    "noChannelMention": {
+      "title": "No channel",
+      "description": "You have to mention a channel, like: #channelname",
+      "error": true
+    },
+    "notTextChannel": {
+      "title": "Not text channel",
+      "description": "You have to provide a valid **text** channel!",
+      "error": true
+    },
+    "noReadSendPerm": {
+      "title": "No permission",
+      "description": "I don't have **read** or **send** permission for the channel!",
+      "error": true
+    },
+    "welcomeChannelSet": {
+      "title": "🙋‍♂️ Welcome Channel",
+      "description": "Welcome channel set to <#[CHANNEL]>",
+      "error": false
+    },
+    "reminderAlreadyExists": {
+      "title": "Already exists",
+      "description": "A reminder with this name is already exists!",
+      "error": true
+    },
+    "invalidDate": {
+      "title": "Invalid date format",
+      "description": "You have to provide a valid date, like: 2020.11.24-20:30",
+      "error": true
+    },
+    "reminderAdded": {
+      "title": "🧐 Reminder added!",
+      "description": "Reminder: [REMINDER] is set for: [MENTION], at: [DATE]",
+      "error": false
+    },
+    "tooManyArguments": {
+      "title": "‼ Invalid",
+      "description": "Too many arguments!",
+      "error": true
+    },
+    "missingReminderMention": {
+      "title": "‼ Invalid mention",
+      "description": "You have to mention a role/user/everyone!",
+      "error": true
+    },
+    "reminderDeleted": {
+      "title": "✅ Deleted",
+      "description": "Reminder: **[REMINDER]** successfully deleted!",
+      "error": false
+    },
+    "reminderNotFound": {
+      "title": "🔎 Not Found",
+      "description": "Reminder: **[REMINDER]** not found!",
+      "error": true
+    },
+    "notEnoughArguments": {
+      "title": "‼ Invalid",
+      "description": "There isn't enough arguments to operate with!",
+      "error": true
+    },
+    "noUserPerm": {
+      "title": "❌ No permission",
+      "description": "You don't have permission to use this command!",
+      "error": true
+    },
+    "noVoiceChannelMatch": {
+      "title": "Ooops",
+      "description": "You are not listening with the bot, you can't use this command now!",
+      "error": true
+    },
+    "musicChannelOff": {
+      "title": "🔉 Music Channel",
+      "description": "Music channel restrictions are turned off!",
+      "error": false
+    },
+    "musicChannelSet": {
+      "title": "🔉 Music Channel",
+      "description": "Music channel set to: <#[CHANNEL]>",
+      "error": false
+    },
+    "nothingToPause": {
+      "title": "Ooops",
+      "description": "There isn't any music to pause!",
+      "error": true
+    },
+    "musicPaused": {
+      "title": "⏸ Paused",
+      "description": "**[SONG]** paused!",
+      "error": false
+    },
+    "musicResumed": {
+      "title": "▶ Resumed",
+      "description": "**[SONG]** has been resumed!",
+      "error": false
+    },
+    "noMusicToSkip": {
+      "title": "Ooops",
+      "description": "There is nothing playing that I could skip for you.",
+      "error": true
+    },
+    "musicSkipped": {
+      "title": "▶ Skipped",
+      "description": "**[SONG]** is skipped for you!"
+    },
+    "noMusicToStop": {
+      "title": "Ooops",
+      "description": "There is nothing playing that I could stop for you.",
+      "error": true
+    },
+    "musicStoppedCleared": {
+      "title": "🧐 Cleared",
+      "description": "Music stopped, queue emptied!",
+      "error": false
+    },
+    "cantChangeVolume": {
+      "title": "Ooops",
+      "description": "There is nothing playing",
+      "error": true
+    },
+    "currentVolume": {
+      "title": "🔊 Volume",
+      "description": "The current volume is: **[VOLUME]**",
+      "error": false
+    },
+    "notNumberVolume": {
+      "title": "🔊 Volume",
+      "description": "You have to provide a valid number as the volume!",
+      "error": true
+    },
+    "volumeSet": {
+      "title": "🔊 Volume",
+      "description": "Volume set to: **[VOLUME]**",
+      "error": false
+    },
+    "songNotFound": {
+      "title": "🔎 Not Found",
+      "description": "We can't find any songs that matches this: [SONG]",
+      "error": true
+    },
+    "songQueued": {
+      "title": "✅ Queued",
+      "description": "**[SONG]** has been added to the queue!",
+      "error": false
+    },
+    "cantJoinVoice": {
+      "title": "😓 Can't join",
+      "description": "I could not join the voice channel!",
+      "error": true
+    },
+    "notInVoiceChannel": {
+      "title": "🔉 Music",
+      "description": "You have to be in a voice channel to play music!",
+      "error": true
+    },
+    "noBotPermToJoinVoice": {
+      "title": "No permission",
+      "description": "I don't have permission to connect to your voice channel!",
+      "error": true
+    },
+    "noBotPermToSpeak": {
+      "title": "No permission",
+      "description": "I don't have permission to speak in your voice channel!",
+      "error": true
+    },
+    "songQueueEmpty": {
+      "title": "Empty!",
+      "description": "There isn't anything in the queue!",
+      "error": false
+    },
+    "songQueue": {
+      "title": "Song queue:",
+      "description": "[SONGS]\n Now playing: [SONG]",
+      "error": false
+    },
+    "invalidLanguage": {
+      "title": "Ooops",
+      "description": "I can't speak this language yet! :(",
+      "error": true
+    },
+    "languageSet": {
+      "title": "Language",
+      "description": "The language updated successfully!",
+      "error": false
+    }
   },
-  "roleSet": {
-    "title": "💙 Role",
-    "description": "[ROLETYPE] role set to <@&${[ROLE]}>",
-    "error": false
-  },
-  "roleSetOff": {
-    "title": "💙 Role",
-    "description": "[ROLETYPE] role turned off",
-    "error": false
-  },
-  "roleHelp": {
-    "title": "💙 Role help",
-    "description": "[PREFIX]set-role mod @role -- moderation/admin\n[PREFIX]set-role poll @role -- create polls\n**You have to mention the role!**\nOnly the specified role will have access (no hierarchy)",
-    "error": false
-  },
-  "leaveMessageOff": {
-    "title": "🗨 Leave Message",
-    "description": "Now I will **not** send leave messages when someone leaves!",
-    "error": false
-  },
-  "leaveMessageEmpty": {
-    "title": "Empty",
-    "description": "Leave message can not be nothing, use \"off\" if you want to turn the feature off",
-    "error": true
-  },
-  "leaveMessageSet": {
-    "title": "🗨 Leave Message",
-    "description": "Leave message set to: **[MESSAGE]**",
-    "error": false
-  },
-  "welcomeMessageOff": {
-    "title": "🗨 Welcome Message",
-    "description": "Now I will **not** send welcome messages when someone leaves!",
-    "error": false
-  },
-  "welcomeMessageEmpty": {
-    "title": "Empty",
-    "description": "Welcome message can not be nothing, use \"off\" if you want to turn the feature off",
-    "error": true
-  },
-  "welcomeMessageSet": {
-    "title": "🗨 Welcome Message",
-    "description": "welcome message set to: **[MESSAGE]**",
-    "error": false
-  },
-  "welcomeChannelOff": {
-    "title": "🙋‍♂️ Welcome Channel",
-    "description": "Welcome and leave messages will no longer appear!",
-    "error": false
-  },
-  "noChannelMention": {
-    "title": "No channel",
-    "description": "You have to mention a channel, like: #channelname",
-    "error": true
-  },
-  "notTextChannel": {
-    "title": "Not text channel",
-    "description": "You have to provide a valid **text** channel!",
-    "error": true
-  },
-  "noReadSendPerm": {
-    "title": "No permission",
-    "description": "I don't have **read** or **send** permission for the channel!",
-    "error": true
-  },
-  "welcomeChannelSet": {
-    "title": "🙋‍♂️ Welcome Channel",
-    "description": "Welcome channel set to <#[CHANNEL]>",
-    "error": false
-  },
-  "reminderAlreadyExists": {
-    "title": "Already exists",
-    "description": "A reminder with this name is already exists!",
-    "error": true
-  },
-  "invalidDate": {
-    "title": "Invalid date format",
-    "description": "You have to provide a valid date, like: 2020.11.24-20:30",
-    "error": true
-  },
-  "reminderAdded": {
-    "title": "🧐 Reminder added!",
-    "description": "Reminder: [REMINDER] is set for: [MENTION], at: [DATE]",
-    "error": false
-  },
-  "tooManyArguments": {
-    "title": "‼ Invalid",
-    "description": "Too many arguments!",
-    "error": true
-  },
-  "missingReminderMention": {
-    "title": "‼ Invalid mention",
-    "description": "You have to mention a role/user/everyone!",
-    "error": true
-  },
-  "reminderDeleted": {
-    "title": "✅ Deleted",
-    "description": "Reminder: **[REMINDER]** successfully deleted!",
-    "error": false
-  },
-  "reminderNotFound": {
-    "title": "🔎 Not Found",
-    "description": "Reminder: **[REMINDER]** not found!",
-    "error": true
-  },
-  "notEnoughArguments": {
-    "title": "‼ Invalid",
-    "description": "There isn't enough arguments to operate with!",
-    "error": true
-  },
-  "noUserPerm": {
-    "title": "❌ No permission",
-    "description": "You don't have permission to use this command!",
-    "error": true
-  },
-  "noVoiceChannelMatch": {
-    "title": "Ooops",
-    "description": "You are not listening with the bot, you can't use this command now!",
-    "error": true
-  },
-  "musicChannelOff": {
-    "title": "🔉 Music Channel",
-    "description": "Music channel restrictions are turned off!",
-    "error": false
-  },
-  "musicChannelSet": {
-    "title": "🔉 Music Channel",
-    "description": "Music channel set to: <#[CHANNEL]>",
-    "error": false
-  },
-  "nothingToPause": {
-    "title": "Ooops",
-    "description": "There isn't any music to pause!",
-    "error": true
-  },
-  "musicPaused": {
-    "title": "⏸ Paused",
-    "description": "**[SONG]** paused!",
-    "error": false
-  },
-  "musicResumed": {
-    "title": "▶ Resumed",
-    "description": "**[SONG]** has been resumed!",
-    "error": false
-  },
-  "noMusicToSkip": {
-    "title": "Ooops",
-    "description": "There is nothing playing that I could skip for you.",
-    "error": true
-  },
-  "musicSkipped": {
-    "title": "▶ Skipped",
-    "description": "**[SONG]** is skipped for you!"
-  },
-  "noMusicToStop": {
-    "title": "Ooops",
-    "description": "There is nothing playing that I could stop for you.",
-    "error": true
-  },
-  "musicStoppedCleared": {
-    "title": "🧐 Cleared",
-    "description": "Music stopped, queue emptied!",
-    "error": false
-  },
-  "cantChangeVolume": {
-    "title": "Ooops",
-    "description": "There is nothing playing",
-    "error": true
-  },
-  "currentVolume": {
-    "title": "🔊 Volume",
-    "description": "The current volume is: **[VOLUME]**",
-    "error": false
-  },
-  "notNumberVolume": {
-    "title": "🔊 Volume",
-    "description": "You have to provide a valid number as the volume!",
-    "error": true
-  },
-  "volumeSet": {
-    "title": "🔊 Volume",
-    "description": "Volume set to: **[VOLUME]**",
-    "error": false
-  },
-  "songNotFound": {
-    "title": "🔎 Not Found",
-    "description": "We can't find any songs that matches this: [SONG]",
-    "error": true
-  },
-  "songQueued": {
-    "title": "✅ Queued",
-    "description": "**[SONG]** has been added to the queue!",
-    "error": false
-  },
-  "cantJoinVoice": {
-    "title": "😓 Can't join",
-    "description": "I could not join the voice channel!",
-    "error": true
-  },
-  "notInVoiceChannel": {
-    "title": "🔉 Music",
-    "description": "You have to be in a voice channel to play music!",
-    "error": true
-  },
-  "noBotPermToJoinVoice": {
-    "title": "No permission",
-    "description": "I don't have permission to connect to your voice channel!",
-    "error": true
-  },
-  "noBotPermToSpeak": {
-    "title": "No permission",
-    "description": "I don't have permission to speak in your voice channel!",
-    "error": true
-  },
-  "songQueueEmpty": {
-    "title": "Empty!",
-    "description": "There isn't anything in the queue!",
-    "error": false
-  },
-  "songQueue": {
-    "title": "Song queue:",
-    "description": "[SONGS]\n Now playing: [SONG]",
-    "error": false
-  },
-  "invalidLanguage": {
-    "title": "Ooops",
-    "description": "I can't speak this language yet! :(",
-    "error": true
-  },
-  "languageSet": {
-    "title": "Language",
-    "description": "The language updated successfully!",
-    "error": false
+  "commands": {
+    "help": "displays this help page",
+    "language": "sets the new language for your server",
+    "set-role": "sets the required roles for specific commands\nFor help: **set-role help**",
+    "leave-message": "sets the leave message for the server, [USER] placeholder can be used, set to \"off\" to disable",
+    "welcome-message": "sets the welcome message for the server, [USER] placeholder can be used, set to \"off\" to disable",
+    "welcome-channel": "welcome, and leave messages will appear in this channel, set to \"off\" to disable",
+    "r-add": "adds a new reminder",
+    "r-delete": "deletes a reminder",
+    "music-channel": "sets the music channel, by default every channel is allowed, (write 'off' if you want to reset this)",
+    "pause": "paueses the current music",
+    "play": "plays a music by link or name",
+    "queue": "shows the music queue",
+    "resume": "resumes the paused music",
+    "skip": "skips the current music",
+    "stop": "stops the music and clears the queue",
+    "volume": "sets or displays the volume"
   }
 }

@@ -25,9 +25,11 @@ interface PlaceholderOptions {
 
 class LanguageManager {
   private readonly languages: Map<string, Map<string, LanguageProp>>;
+  private readonly commands: Map<string, Map<string, string>>;
 
   constructor() {
     this.languages = new Map<string, Map<string, LanguageProp>>();
+    this.commands = new Map<string, Map<string, string>>();
     this.loadLangFiles();
   }
 
@@ -39,6 +41,13 @@ class LanguageManager {
     const message = this.languages.get(localization).get(prop);
     message.description = this.handlePlaceholders(message.description, options);
     return createEmbed(message.title, message.description, message.error);
+  }
+
+  public getCommandDescription(
+    localization: string,
+    commandName: string
+  ): string {
+    return this.commands.get(localization).get(commandName);
   }
 
   public has(locale: string): boolean {
@@ -62,11 +71,16 @@ class LanguageManager {
           .toString()
       );
       const langMap = new Map<string, LanguageProp>();
-      for (let prop in language) {
-        langMap.set(prop, language[prop]);
+      const commandMap = new Map<string, string>();
+      for (let prop in language.messages) {
+        langMap.set(prop, language.messages[prop]);
+      }
+      for (let prop in language.commands) {
+        commandMap.set(prop, language.commands[prop]);
       }
       const langLocale = fileName.substring(0, 2);
       this.languages.set(langLocale, langMap);
+      this.commands.set(langLocale, commandMap);
     }
   }
 

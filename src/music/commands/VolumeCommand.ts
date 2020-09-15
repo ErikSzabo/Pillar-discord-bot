@@ -7,7 +7,7 @@ import { language } from '../../language/LanguageManager';
 
 export class VolumeCommand extends Command {
   constructor() {
-    super('volume', 'volume <number>', 'sets or displays the volume');
+    super('volume', 'volume <number>');
   }
 
   public execute(args: Array<string>, message: Message): void {

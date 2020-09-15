@@ -8,11 +8,7 @@ import { language } from '../../language/LanguageManager';
 
 export class AddCommand extends Command {
   constructor() {
-    super(
-      'r-add',
-      'r-add <mention> <2020.12.24-20:30> "name" "description"',
-      'adds a new reminder'
-    );
+    super('r-add', 'r-add <mention> <2020.12.24-20:30> "name" "description"');
   }
 
   public execute(args: Array<string>, message: Message): void {

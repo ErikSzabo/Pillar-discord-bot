@@ -7,7 +7,7 @@ import { language } from '../../language/LanguageManager';
 
 export class StopCommand extends Command {
   constructor() {
-    super('stop', 'stop', 'stops the music and clears the queue');
+    super('stop', 'stop');
   }
 
   public execute(args: Array<string>, message: Message): void {

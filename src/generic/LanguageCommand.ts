@@ -6,11 +6,7 @@ import { roleType, serverCache } from './ServerCache';
 
 export class LanguageCommand extends Command {
   constructor() {
-    super(
-      'language',
-      'language [new language]',
-      'sets the new language for your server'
-    );
+    super('language', 'language [new language]');
   }
 
   execute(args: string[], message: Message): void {

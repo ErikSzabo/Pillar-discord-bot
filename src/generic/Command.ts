@@ -1,4 +1,6 @@
 import { Message } from 'discord.js';
+import { language } from '../language/LanguageManager';
+import { serverCache } from './ServerCache';
 
 export abstract class Command {
   /**
@@ -13,19 +15,13 @@ export abstract class Command {
   private usage: string;
 
   /**
-   * Description which used by the help command mainly.
-   */
-  private description: string;
-
-  /**
    * Constructor to initialize the name.
    *
    * @param name name/prefix for the command.
    */
-  constructor(name: string, usage: string, description: string) {
+  constructor(name: string, usage: string) {
     this.name = name;
     this.usage = usage;
-    this.description = description;
   }
 
   /**
@@ -46,8 +42,8 @@ export abstract class Command {
   /**
    * @returns the description of the command
    */
-  public getDescription(): string {
-    return this.description;
+  public getDescription(currLang: string): string {
+    return language.getCommandDescription(currLang, this.name);
   }
 
   /**

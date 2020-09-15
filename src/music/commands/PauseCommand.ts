@@ -7,7 +7,7 @@ import { language } from '../../language/LanguageManager';
 
 export class PauseCommand extends Command {
   constructor() {
-    super('pause', 'pause', 'paueses the current musc');
+    super('pause', 'pause');
   }
 
   public execute(args: Array<string>, message: Message): void {
