@@ -11,6 +11,7 @@ export interface ServerInfo {
   welcomeChannel: string;
   welcomeMessage: string;
   leaveMessage: string;
+  language: string;
 }
 
 /**
@@ -160,6 +161,28 @@ class ServerCache {
   }
 
   /**
+   * @param serverID id of the requested server
+   * @returns        the preferred langauge on the server
+   */
+  public getLang(serverID: string): string {
+    return this.cache.get(serverID).language;
+  }
+
+  /**
+   * Sets the preferred language for a server in the
+   * cache and in the database.
+   *
+   * @param serverID id of the requested server
+   * @param langauge new preferred langauge on the server
+   */
+  public setLang(serverID: string, langauge: string): void {
+    this.cache.get(serverID).language = langauge;
+    serverInfo
+      .findOneAndUpdate({ serverID }, { $set: { langauge } })
+      .catch((err) => console.log(err));
+  }
+
+  /**
    * Deletes a server from the cache and from the database.
    *
    * @param serverID id of the requested server
@@ -193,6 +216,7 @@ class ServerCache {
       welcomeChannel: 'off',
       welcomeMessage: '[USER] joined the server!',
       leaveMessage: '[USER] leaved the server!',
+      language: 'en',
     };
   }
 }
