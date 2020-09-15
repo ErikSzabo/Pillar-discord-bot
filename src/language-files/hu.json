@@ -1,0 +1,261 @@
+{
+  "messages": {
+    "invalid": {
+      "title": "‼ Hibás",
+      "description": "Hibás parancs használat!, Próbáld: **[PREFIX]help**",
+      "error": true
+    },
+    "roleSet": {
+      "title": "💙 Rang",
+      "description": "[ROLETYPE] rang beállítva erre: <@&${[ROLE]}>",
+      "error": false
+    },
+    "roleSetOff": {
+      "title": "💙 Rang",
+      "description": "[ROLETYPE] rang kikapcsolva!",
+      "error": false
+    },
+    "roleHelp": {
+      "title": "💙 Rang segítség",
+      "description": "[PREFIX]set-role mod @role -- moderáció/admin\n[PREFIX]set-role poll @role -- kérdőívek létrehozása\n**Meg kell tagelned egy rangot!**\nCsak a megadott rangnak lesz jogosultsága (nincs öröklés)",
+      "error": false
+    },
+    "leaveMessageOff": {
+      "title": "🗨 Kilépő üzenet",
+      "description": "Mostantól **nem** fogok a felhasználók kilépésekor üznetet küldeni!",
+      "error": false
+    },
+    "leaveMessageEmpty": {
+      "title": "Üres",
+      "description": "A kilépéskor küldött üzenet nem lehet üres, írd be az \"off\"-ot ha ki akarod kapcsolni.",
+      "error": true
+    },
+    "leaveMessageSet": {
+      "title": "🗨 Kilépő üzenet",
+      "description": "Kilépő üzenet beállítva erre: **[MESSAGE]**",
+      "error": false
+    },
+    "welcomeMessageOff": {
+      "title": "🗨 Üdvözlő üzenet",
+      "description": "Mostantól **nem** nem fogok üdvözlő üzeneteket küldeni mikor valaki csatlakozik!",
+      "error": false
+    },
+    "welcomeMessageEmpty": {
+      "title": "Üres",
+      "description": "Az üdvözlő üzenet nem lehet üres, írj be \"off\"-ot ha ki akarod kapcsolni.",
+      "error": true
+    },
+    "welcomeMessageSet": {
+      "title": "🗨 Üdvözlő üzenet",
+      "description": "Üdvözlő üzenet beállítva erre: **[MESSAGE]**",
+      "error": false
+    },
+    "welcomeChannelOff": {
+      "title": "🙋‍♂️ Üdvözlő csatorna",
+      "description": "Az üdvözlő és kilépő üzenetek nem fognak mostantól megjelenni!",
+      "error": false
+    },
+    "noChannelMention": {
+      "title": "Nincs csatorna",
+      "description": "Meg kell tag-elned egy csatornát, például: #csatorna_neve",
+      "error": true
+    },
+    "notTextChannel": {
+      "title": "Nem szöveges csatorna",
+      "description": "Egy létező **szöveges** csatornát kell megadni!",
+      "error": true
+    },
+    "noReadSendPerm": {
+      "title": "Nincs jogosultságom",
+      "description": "Nincs **olvasási** vagy **üzenet küldési** jogosultságom a kívánt csatornához!",
+      "error": true
+    },
+    "welcomeChannelSet": {
+      "title": "🙋‍♂️ Üdvözlő csatorna",
+      "description": "Üdvözlő csatorna beállítva erre: <#[CHANNEL]>",
+      "error": false
+    },
+    "reminderAlreadyExists": {
+      "title": "Már létezik",
+      "description": "Egy emlékeztető ezzel a névvel már létezik!",
+      "error": true
+    },
+    "invalidDate": {
+      "title": "Hibás dátum formátum",
+      "description": "Ennél egy kicsit pontosabban kell megadnod a dátumot, például így: 2020.11.24-20:30",
+      "error": true
+    },
+    "reminderAdded": {
+      "title": "🧐 Emlékeztető létrehozva!",
+      "description": "Emlékeztető: [REMINDER] beállítva neki: [MENTION], ekkor: [DATE]",
+      "error": false
+    },
+    "tooManyArguments": {
+      "title": "‼ Hibás",
+      "description": "Túl sok paraméter!",
+      "error": true
+    },
+    "missingReminderMention": {
+      "title": "‼ Hibás tagelés",
+      "description": "Meg kell tagelned egy rangot/felhasználót/vagy mindenkit!",
+      "error": true
+    },
+    "reminderDeleted": {
+      "title": "✅ Törölve",
+      "description": "Emlékeztető: **[REMINDER]** sikeresen törölve!",
+      "error": false
+    },
+    "reminderNotFound": {
+      "title": "🔎 Nincs találat",
+      "description": "Emlékeztető: **[REMINDER]** nem található!",
+      "error": true
+    },
+    "notEnoughArguments": {
+      "title": "‼ Hibás",
+      "description": "Nincs elég paraméter amivel dolgozhatok!",
+      "error": true
+    },
+    "noUserPerm": {
+      "title": "❌ Nincs jogosultságod",
+      "description": "Nincs jogod használni ezt a parancsot!",
+      "error": true
+    },
+    "noVoiceChannelMatch": {
+      "title": "Ooops",
+      "description": "Nem hallgatsz zenét a bottal, ezért ezt a parancsot most nem használhatod!",
+      "error": true
+    },
+    "musicChannelOff": {
+      "title": "🔉 Zene csatorna",
+      "description": "A zene csatorna korlátozásai fel lettek oldva!",
+      "error": false
+    },
+    "musicChannelSet": {
+      "title": "🔉 Zene csatorna",
+      "description": "Zene csatorna beállítva erre: <#[CHANNEL]>",
+      "error": false
+    },
+    "nothingToPause": {
+      "title": "Ooops",
+      "description": "Nincs semmilyen zene amit meg tudnák állítani neked!",
+      "error": true
+    },
+    "musicPaused": {
+      "title": "⏸ Megállítva",
+      "description": "**[SONG]** megállítva!",
+      "error": false
+    },
+    "musicResumed": {
+      "title": "▶ Folytatva",
+      "description": "**[SONG]** folytatva!",
+      "error": false
+    },
+    "noMusicToSkip": {
+      "title": "Ooops",
+      "description": "Nem megy semmi amit át tudnék ugrani!",
+      "error": true
+    },
+    "musicSkipped": {
+      "title": "▶ Átugorva",
+      "description": "**[SONG]** átugorva!"
+    },
+    "noMusicToStop": {
+      "title": "Ooops",
+      "description": "Nem megy semmi amit le tudnék állítani!",
+      "error": true
+    },
+    "musicStoppedCleared": {
+      "title": "🧐 Kipuculva",
+      "description": "Zene leállítva, várakozási sor kiürítve!",
+      "error": false
+    },
+    "cantChangeVolume": {
+      "title": "Ooops",
+      "description": "Semmi se megy éppen!",
+      "error": true
+    },
+    "currentVolume": {
+      "title": "🔊 Hangerő",
+      "description": "A jelenlegi hangerő: **[VOLUME]**",
+      "error": false
+    },
+    "notNumberVolume": {
+      "title": "🔊 Hangerő",
+      "description": "Egy számot adj meg kérlek mint hangerő!",
+      "error": true
+    },
+    "volumeSet": {
+      "title": "🔊 Hangerő",
+      "description": "Hangerő beállítva erre: **[VOLUME]**",
+      "error": false
+    },
+    "songNotFound": {
+      "title": "🔎 Nem található",
+      "description": "Egy zenét se találtam aminek ez lenne a neve: [SONG]",
+      "error": true
+    },
+    "songQueued": {
+      "title": "✅ Hozzáadva",
+      "description": "**[SONG]** bekerült a lejátszási listába!",
+      "error": false
+    },
+    "cantJoinVoice": {
+      "title": "😓 Nem tudok csatlakozni",
+      "description": "Nem tudtam csatlakozni a csatornához!",
+      "error": true
+    },
+    "notInVoiceChannel": {
+      "title": "🔉 Zene",
+      "description": "Egy hangalapú csatornában kell lenned hogy zenét játszhass le!",
+      "error": true
+    },
+    "noBotPermToJoinVoice": {
+      "title": "Nincs jogom",
+      "description": "Nincs jogosultságom csatlkozni a csatornádhoz!",
+      "error": true
+    },
+    "noBotPermToSpeak": {
+      "title": "Nincs jogom",
+      "description": "Nincs jogom zenét lejátszani a csatornádban!",
+      "error": true
+    },
+    "songQueueEmpty": {
+      "title": "Üres!",
+      "description": "Semmi sincs a lejátszási listában!",
+      "error": false
+    },
+    "songQueue": {
+      "title": "Lejátszási lista:",
+      "description": "[SONGS]\n **Jelenleg játszott**: [SONG]",
+      "error": false
+    },
+    "invalidLanguage": {
+      "title": "Ooops",
+      "description": "Még nem tudok ilyen nyelven!",
+      "error": true
+    },
+    "languageSet": {
+      "title": "Nyelv",
+      "description": "Nyelv sikeresen frissítve!",
+      "error": false
+    }
+  },
+  "commands": {
+    "help": "megmutatja ezt az oldalt",
+    "language": "beállítja az új nyelvet a szerveren",
+    "set-role": "beállítja a szükséges rangokat bizonyos parancsokhoz\nSegítségért: **set-role help**",
+    "leave-message": "beállítja a kilépő üzenetet a szerveren, [USER] helyettesítő szöveg használható, állítsd \"off\"-ra a kikapcsoláshoz",
+    "welcome-message": "beállítja az üdvözlő üzenetet a szerveren, [USER] helyettesítő szöveg használható, állítsd \"off\"-ra a kikapcsoláshoz",
+    "welcome-channel": "az üdvözlő és kilépő üzenetek ezen a csatornán fognak megjelenni, állítsd \"off\"-ra a kikapcsoláshoz",
+    "r-add": "létrehoz egy új emlékeztetőt",
+    "r-delete": "töröl egy emlékeztetőt",
+    "music-channel": "beállítja a zene csatornát, alapértelmezetten minden csatorna engedélyezett, állítsd \"off\"-ra a kikapcsoláshoz",
+    "pause": "megállítja az épp játszott zenét",
+    "play": "lejátszik egy zenét link vagy név alapján",
+    "queue": "megmutatja mi van a lejátszási listában",
+    "resume": "folytatja a leállított zenét",
+    "skip": "átugorja az épp hallgatott zenét",
+    "stop": "megállítja a zenét és törli a lejátszási listát",
+    "volume": "beállítja vagy megmutatja a jelenlegi hangerőt"
+  }
+}
