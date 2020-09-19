@@ -2,7 +2,7 @@ import { CommandManager } from '../generic/ICommandManager';
 import { AddCommand } from './commands/AddCommand';
 import { DeleteCommand } from './commands/DeleteCommand';
 import { Message } from 'discord.js';
-import { serverCache, roleType } from '../generic/ServerCache';
+import { serverCache } from '../generic/ServerCache';
 import { checkPermission } from '../utils';
 
 export class ReminderManager extends CommandManager {
@@ -15,7 +15,7 @@ export class ReminderManager extends CommandManager {
   public handle(command: string, args: Array<string>, message: Message): void {
     if (!this.commands.has(command)) return;
     const serverID = message.guild.id;
-    const modRole = serverCache.getRole(roleType.MODERATION, serverID);
+    const modRole = serverCache.get(serverID).moderationRole;
     try {
       checkPermission(modRole, message.member, serverID);
     } catch (error) {

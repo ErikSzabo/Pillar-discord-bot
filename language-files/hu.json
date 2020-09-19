@@ -7,7 +7,7 @@
     },
     "roleSet": {
       "title": "💙 Rang",
-      "description": "[ROLETYPE] rang beállítva erre: <@&${[ROLE]}>",
+      "description": "[ROLETYPE] rang beállítva erre: <@&[ROLE]>",
       "error": false
     },
     "roleSetOff": {

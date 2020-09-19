@@ -1,9 +1,11 @@
 import { Message } from 'discord.js';
 import { parseQuotedArgs } from '../../utils';
-import { reminderCache, Reminder } from '../ReminderCache';
+import { reminderCache } from '../ReminderCache';
 import { Command } from '../../generic/Command';
 import { CustomError } from '../../generic/CustomError';
 import { language } from '../../language/LanguageManager';
+import { reminderRepository } from '../../database/ReminderRepository';
+import { Reminder } from '../Reminder';
 
 export class AddCommand extends Command {
   constructor() {
@@ -20,7 +22,8 @@ export class AddCommand extends Command {
       );
       if (duplicate)
         throw new CustomError(language.get(serverID, 'reminderAlreadyExists'));
-      reminderCache.addReminder(reminder, message.channel, false);
+      reminderCache.add(serverID, reminder);
+      reminderRepository.add(serverID, reminder);
       this.sendResponse(
         message,
         `${
@@ -120,11 +123,11 @@ export class AddCommand extends Command {
     return {
       serverID: message.guild.id,
       mentionID: mentionID ? mentionID : '',
-      channelID: message.channel.id,
       type: mentionType,
       title: title,
       description: description ? description : '',
       date: date,
+      channel: message.channel.id,
     };
   }
 }

@@ -34,21 +34,21 @@ export class PlayCommand extends Command {
         );
         return;
       }
-      musicCache.getServerData(serverID).songs.push(song);
+      musicCache.get(serverID).songs.push(song);
       message.channel.send(
         language.get(serverID, 'songQueued', { song: song.title })
       );
       return;
     }
 
-    musicCache.addToCache(serverID, {
+    musicCache.add(serverID, {
       voiceChannel,
       songs: [],
       connection: null,
       volume: 2,
       isPlaying: false,
     });
-    const serverData = musicCache.getServerData(serverID);
+    const serverData = musicCache.get(serverID);
 
     try {
       const song = await this.getSong(args.join(' '));

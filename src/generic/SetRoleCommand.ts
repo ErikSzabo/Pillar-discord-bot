@@ -1,10 +1,11 @@
 import { Command } from './Command';
 import { Message, MessageEmbed } from 'discord.js';
 import { checkPermission } from '../utils';
-import { serverCache, roleType } from './ServerCache';
+import { serverCache } from './ServerCache';
 import config from '../config';
 import { CustomError } from './CustomError';
 import { language } from '../language/LanguageManager';
+import { serverRepository } from '../database/ServerRepository';
 
 export class SetRoleCommand extends Command {
   constructor() {
@@ -13,9 +14,9 @@ export class SetRoleCommand extends Command {
 
   public async execute(args: Array<string>, message: Message): Promise<void> {
     const serverID = message.guild.id;
-    const modRole = serverCache.getRole(roleType.MODERATION, message.guild.id);
+    const serverData = serverCache.get(serverID);
     try {
-      checkPermission(modRole, message.member, serverID);
+      checkPermission(serverData.moderationRole, message.member, serverID);
       this.checkErrors(args, message);
     } catch (error) {
       message.channel.send(error.embed);
@@ -36,13 +37,15 @@ export class SetRoleCommand extends Command {
     const isOff = newValue === 'off';
 
     if (type === 'mod') {
-      serverCache.setRole(roleType.MODERATION, serverID, newValue);
+      serverCache.set(serverID, { moderationRole: newValue });
+      serverRepository.update(serverID, { moderationRole: newValue });
       message.channel.send(
         // TODO: [ROLETYPE] is in english -> that's sucks
         this.createRoleEmbed('Moderation', newValue, serverID, isOff)
       );
     } else if (type === 'poll') {
-      serverCache.setRole(roleType.POLL, serverID, newValue);
+      serverCache.set(serverID, { pollRole: newValue });
+      serverRepository.update(serverID, { pollRole: newValue });
       message.channel.send(
         this.createRoleEmbed('Poll', newValue, serverID, isOff)
       );

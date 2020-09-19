@@ -10,17 +10,17 @@ export class QueueCommand extends Command {
 
   public execute(args: Array<string>, message: Message): void {
     const serverID = message.guild.id;
-    const serverData = musicCache.getServerData(message.guild.id);
+    const musicData = musicCache.get(serverID);
 
-    if (!serverData) {
+    if (!musicData) {
       message.channel.send(language.get(serverID, 'songQueueEmpty'));
       return;
     }
 
     message.channel.send(
       language.get(serverID, 'songQueue', {
-        songs: serverData.songs.map((song) => `**-** ${song.title}`).join('\n'),
-        song: serverData.songs[0].title,
+        songs: musicData.songs.map((song) => `**-** ${song.title}`).join('\n'),
+        song: musicData.songs[0].title,
       })
     );
   }

@@ -4,6 +4,7 @@ import { reminderCache } from '../ReminderCache';
 import { CustomError } from '../../generic/CustomError';
 import { Command } from '../../generic/Command';
 import { language } from '../../language/LanguageManager';
+import { reminderRepository } from '../../database/ReminderRepository';
 
 export class DeleteCommand extends Command {
   constructor() {
@@ -23,7 +24,8 @@ export class DeleteCommand extends Command {
 
     const [reminder] = reminderCache.findReminder(reminderName, serverID);
     if (reminder) {
-      reminderCache.deleteReminder(message.guild.id, reminderName);
+      reminderCache.remove(message.guild.id, { title: reminderName });
+      reminderRepository.delete(message.guild.id, { title: reminderName });
       message.channel.send(
         language.get(serverID, 'reminderDeleted', { reminder: reminderName })
       );

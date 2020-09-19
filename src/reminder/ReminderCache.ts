@@ -1,20 +1,13 @@
-import { reminders } from '../database';
 import { Job, scheduleJob } from 'node-schedule';
-import { Client, Channel } from 'discord.js';
+import { Channel } from 'discord.js';
 import { createEmbed } from '../utils';
+import { Reminder } from './Reminder';
+import { ICache } from '../generic/ICache';
+import { IDataStore } from '../database/IDataStore';
+import { client } from '../client';
+import { reminderRepository } from '../database/ReminderRepository';
 
-export interface Reminder {
-  _id?: string;
-  serverID: string;
-  mentionID: string;
-  channelID: string;
-  type: 'everyone' | 'role' | 'user';
-  title: string;
-  description: string;
-  date: Date;
-}
-
-class ReminderCache {
+class ReminderCache implements ICache<Reminder> {
   private static oneWeekTime = 7 * 24 * 60 * 60 * 1000;
   private static threeDaysTime = 3 * 24 * 60 * 60 * 1000;
   private static threeHoursTime = 3 * 60 * 60 * 1000;
@@ -27,6 +20,81 @@ class ReminderCache {
     this.jobs = new Map<string, Map<string, Job[]>>();
   }
 
+  public isCached(serverID: string): boolean {
+    return this.cache.has(serverID);
+  }
+
+  public async add(serverID: string, data: Reminder) {
+    const channel = await client.channels.fetch(data.channel);
+    if (this.cache.has(serverID)) {
+      this.cache.get(serverID).push(data);
+      if (this.jobs.has(serverID)) {
+        this.jobs.get(serverID).set(data.title, this.schedule(data, channel));
+      } else {
+        const jobMap = new Map<string, Job[]>();
+        jobMap.set(data.title, this.schedule(data, channel));
+        this.jobs.set(serverID, jobMap);
+      }
+    } else {
+      this.cache.set(serverID, [data]);
+      const jobMap = new Map<string, Job[]>();
+      jobMap.set(data.title, this.schedule(data, channel));
+      this.jobs.set(serverID, jobMap);
+    }
+  }
+
+  public remove(serverID: string, data: Partial<Reminder>): void {
+    const serverReminders = this.cache.get(serverID);
+    const [reminder, index] = this.findReminder(data.title, serverID);
+    if (reminder) {
+      this.cache.set(serverID, [
+        ...serverReminders.slice(0, index),
+        ...serverReminders.slice(index + 1, serverReminders.length),
+      ]);
+
+      this.jobs
+        .get(serverID)
+        .get(data.title)
+        .forEach((job) => job.cancel());
+
+      this.jobs.get(serverID).delete(data.title);
+    } else {
+      throw new Error('Invalid reminder name');
+    }
+  }
+
+  public get(serverID: string): Reminder[] {
+    return this.cache.get(serverID);
+  }
+
+  public set(serverID: string, data: Partial<Reminder>): Reminder {
+    return;
+  }
+
+  public async loadFromDatastore(dataStore: IDataStore<Reminder>) {
+    const shouldDelete: Reminder[] = [];
+    const loadedReminders = await dataStore.findAll();
+    loadedReminders.forEach(async (reminder: Reminder) => {
+      if (reminder.date.getTime() - Date.now() <= 0) {
+        shouldDelete.push(reminder);
+        return;
+      }
+
+      const channel = await client.channels.fetch(reminder.channel);
+
+      if (channel.type !== 'text') {
+        shouldDelete.push(reminder);
+        return;
+      }
+
+      this.add(reminder.serverID, reminder);
+    });
+
+    shouldDelete.forEach((reminder) =>
+      dataStore.delete(reminder.serverID, { title: reminder.title })
+    );
+  }
+
   public findReminder(title: string, serverID: string): [Reminder, number] {
     const reminders = this.cache.get(serverID);
     if (!reminders) return [null, null];
@@ -36,78 +104,6 @@ class ReminderCache {
       }
     }
     return [null, null];
-  }
-
-  public addReminder(reminder: Reminder, channel: Channel, onlyCache: boolean) {
-    if (this.cache.has(reminder.serverID)) {
-      this.cache.get(reminder.serverID).push(reminder);
-      if (this.jobs.has(reminder.serverID)) {
-        this.jobs
-          .get(reminder.serverID)
-          .set(reminder.title, this.schedule(reminder, channel));
-      } else {
-        const jobMap = new Map<string, Job[]>();
-        jobMap.set(reminder.title, this.schedule(reminder, channel));
-        this.jobs.set(reminder.serverID, jobMap);
-      }
-    } else {
-      this.cache.set(reminder.serverID, [reminder]);
-      const jobMap = new Map<string, Job[]>();
-      jobMap.set(reminder.title, this.schedule(reminder, channel));
-      this.jobs.set(reminder.serverID, jobMap);
-    }
-    if (!onlyCache)
-      reminders.insert(reminder).catch((error) => console.log(error));
-  }
-
-  public deleteReminder(serverID: string, reminderTitle: string): void {
-    const serverReminders = this.cache.get(serverID);
-    const [reminder, index] = this.findReminder(reminderTitle, serverID);
-    if (reminder) {
-      this.cache.set(serverID, [
-        ...serverReminders.slice(0, index),
-        ...serverReminders.slice(index + 1, serverReminders.length),
-      ]);
-
-      this.jobs
-        .get(serverID)
-        .get(reminderTitle)
-        .forEach((job) => job.cancel());
-
-      this.jobs.get(serverID).delete(reminderTitle);
-
-      reminders
-        .findOneAndDelete({ serverID: serverID, title: reminderTitle })
-        .catch((err) => console.log(err));
-    } else {
-      throw new Error('Invalid reminder name');
-    }
-  }
-
-  public async loadAndSetup(client: Client): Promise<void> {
-    const shouldDelete: Reminder[] = [];
-    const loadedReminders = await reminders.find({});
-    loadedReminders.forEach(async (reminder: Reminder) => {
-      if (reminder.date.getTime() - Date.now() <= 0) {
-        shouldDelete.push(reminder);
-        return;
-      }
-
-      const channel = await client.channels.fetch(reminder.channelID);
-
-      if (channel.type !== 'text') {
-        shouldDelete.push(reminder);
-        return;
-      }
-
-      this.addReminder(reminder, channel, true);
-    });
-
-    shouldDelete.forEach((reminder) =>
-      reminders
-        .findOneAndDelete({ _id: reminder._id })
-        .catch((err) => console.log(err))
-    );
   }
 
   private schedule(reminder: Reminder, channel: Channel): Job[] {
@@ -135,12 +131,9 @@ class ReminderCache {
             )
           );
           if (timeOffset === 0)
-            reminders
-              .findOneAndDelete({
-                serverID: reminder.serverID,
-                title: reminder.title,
-              })
-              .catch((err) => console.log(err));
+            reminderRepository.delete(reminder.serverID, {
+              title: reminder.title,
+            });
         });
         jobs.push(task);
       }

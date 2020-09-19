@@ -12,7 +12,7 @@ export class VolumeCommand extends Command {
   public execute(args: Array<string>, message: Message): void {
     const voiceChannel = message.member.voice.channel;
     const serverID = message.guild.id;
-    const serverData = musicCache.getServerData(serverID);
+    const musicData = musicCache.get(serverID);
 
     try {
       checkVoiceChannelMatch(message, voiceChannel, serverID);
@@ -21,14 +21,14 @@ export class VolumeCommand extends Command {
       return;
     }
 
-    if (!serverData) {
+    if (!musicData) {
       message.channel.send(language.get(serverID, 'cantChangeVolume'));
       return;
     }
 
     if (!args[0]) {
       message.channel.send(
-        language.get(serverID, 'currentVolume', { volume: serverData.volume })
+        language.get(serverID, 'currentVolume', { volume: musicData.volume })
       );
       return;
     }
@@ -38,8 +38,9 @@ export class VolumeCommand extends Command {
       message.channel.send(language.get(serverID, 'notNumberVolume'));
       return;
     }
-    serverData.volume = volume;
-    serverData.connection.dispatcher.setVolumeLogarithmic(volume / 5);
+
+    musicData.volume = volume;
+    musicData.connection.dispatcher.setVolumeLogarithmic(volume / 5);
     message.channel.send(language.get(serverID, 'volumeSet', { volume }));
   }
 }

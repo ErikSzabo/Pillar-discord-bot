@@ -1,6 +1,7 @@
 import { Message } from 'discord.js';
+import { serverRepository } from '../../database/ServerRepository';
 import { Command } from '../../generic/Command';
-import { serverCache, channelType } from '../../generic/ServerCache';
+import { serverCache } from '../../generic/ServerCache';
 import { language } from '../../language/LanguageManager';
 
 export class WelcomeChannelCommand extends Command {
@@ -12,7 +13,8 @@ export class WelcomeChannelCommand extends Command {
     const serverID = message.guild.id;
 
     if (args[0].toLowerCase() === 'off') {
-      serverCache.setChannel(channelType.WELCOME, serverID, 'off');
+      serverCache.set(serverID, { welcomeChannel: 'off' });
+      serverRepository.update(serverID, { welcomeChannel: 'off' });
       message.channel.send(language.get(serverID, 'welcomeChannelOff'));
       return;
     }
@@ -38,7 +40,8 @@ export class WelcomeChannelCommand extends Command {
       return;
     }
 
-    serverCache.setChannel(channelType.WELCOME, serverID, channel.id);
+    serverCache.set(serverID, { welcomeChannel: channel.id });
+    serverRepository.update(serverID, { welcomeChannel: channel.id });
     message.channel.send(
       language.get(serverID, 'welcomeChannelSet', { channel: channel.id })
     );

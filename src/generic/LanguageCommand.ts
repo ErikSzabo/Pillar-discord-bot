@@ -1,8 +1,9 @@
 import { Message } from 'discord.js';
+import { serverRepository } from '../database/ServerRepository';
 import { language } from '../language/LanguageManager';
 import { checkPermission } from '../utils';
 import { Command } from './Command';
-import { roleType, serverCache } from './ServerCache';
+import { serverCache } from './ServerCache';
 
 export class LanguageCommand extends Command {
   constructor() {
@@ -11,12 +12,9 @@ export class LanguageCommand extends Command {
 
   execute(args: string[], message: Message): void {
     const serverID = message.guild.id;
+    const serverData = serverCache.get(serverID);
     try {
-      checkPermission(
-        serverCache.getRole(roleType.MODERATION, message.guild.id),
-        message.member,
-        serverID
-      );
+      checkPermission(serverData.moderationRole, message.member, serverID);
     } catch (err) {
       message.channel.send(language.get(serverID, 'noUserPerm'));
       return;
@@ -34,7 +32,8 @@ export class LanguageCommand extends Command {
       return;
     }
 
-    serverCache.setLang(serverID, newLang);
+    serverCache.set(serverID, { language: newLang });
+    serverRepository.update(serverID, { language: newLang });
 
     message.channel.send(language.get(serverID, 'languageSet'));
   }

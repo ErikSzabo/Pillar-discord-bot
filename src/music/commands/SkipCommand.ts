@@ -13,7 +13,7 @@ export class SkipCommand extends Command {
     const serverID = message.guild.id;
     const voiceChannel = message.member.voice.channel;
 
-    const serverData = musicCache.getServerData(message.guild.id);
+    const musicData = musicCache.get(message.guild.id);
 
     try {
       checkVoiceChannelMatch(message, voiceChannel, serverID);
@@ -22,17 +22,17 @@ export class SkipCommand extends Command {
       return;
     }
 
-    if (!serverData) {
+    if (!musicData) {
       message.channel.send(language.get(serverID, 'noMusicToSkip'));
       return;
     }
 
     message.channel.send(
       language.get(serverID, 'musicSkipped', {
-        song: serverData.songs[0].title,
+        song: musicData.songs[0].title,
       })
     );
 
-    serverData.connection.dispatcher.end();
+    musicData.connection.dispatcher.end();
   }
 }

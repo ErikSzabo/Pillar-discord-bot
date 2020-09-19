@@ -1,7 +1,15 @@
-import { MessageEmbed, Message, VoiceChannel, GuildMember } from 'discord.js';
+import {
+  MessageEmbed,
+  Message,
+  VoiceChannel,
+  GuildMember,
+  PartialGuildMember,
+} from 'discord.js';
 import { CustomError } from './generic/CustomError';
 import config from './config';
 import { language } from './language/LanguageManager';
+import { ServerInfo } from './generic/ServerInfo';
+import { serverCache } from './generic/ServerCache';
 
 export function createEmbed(
   title: string,
@@ -51,4 +59,33 @@ export function parseQuotedArgs(
     .split(/('.*?'|".*?"|\S+)/g)
     .map((el) => el.trim().replace(/"/g, ''))
     .filter((el) => el !== '');
+}
+
+export function createServerConstruct(serverID: string): ServerInfo {
+  return {
+    serverID: serverID,
+    musicChannel: 'off',
+    moderationRole: 'off',
+    pollRole: 'off',
+    welcomeChannel: 'off',
+    welcomeMessage: '[USER] joined the server!',
+    leaveMessage: '[USER] leaved the server!',
+    language: 'en',
+  };
+}
+
+export function handleWelcomeLeaveMessage(
+  messageType: 'leaveMessage' | 'welcomeMessage',
+  member: GuildMember | PartialGuildMember
+): void {
+  const serverData = serverCache.get(member.guild.id);
+  const welcomeChannel = serverData.welcomeChannel;
+  const message = serverData[messageType];
+
+  if (welcomeChannel === 'off' || message === 'off') return;
+
+  let realChannel = member.guild.channels.cache.get(welcomeChannel);
+  if (realChannel.type !== 'text') return;
+  // @ts-ignore
+  realChannel.send(message.replace('[USER]', `<@${member.id}>`));
 }

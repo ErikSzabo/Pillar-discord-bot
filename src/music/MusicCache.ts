@@ -1,4 +1,6 @@
 import { VoiceChannel, VoiceConnection } from 'discord.js';
+import { IDataStore } from '../database/IDataStore';
+import { ICache } from '../generic/ICache';
 
 export interface SongData {
   title: string;
@@ -16,7 +18,7 @@ export interface ServerMusicData {
 /**
  * Caches music information about the servers.
  */
-class MusicCache {
+class MusicCache implements ICache<ServerMusicData> {
   /**
    * Map to hold the information about the servers.
    */
@@ -29,41 +31,30 @@ class MusicCache {
     this.cache = new Map<string, ServerMusicData>();
   }
 
-  /**
-   * Shows whether the server is already cached or not.
-   *
-   * @param guildID id of the guild/server
-   */
   public isCached(guildID: string): boolean {
     return this.cache.has(guildID);
   }
 
-  /**
-   * @param guildID id of the guild/server
-   * @returns       cached data from the server
-   */
-  public getServerData(guildID: string): ServerMusicData {
-    return this.cache.get(guildID);
+  public add(serverID: string, data: ServerMusicData): void {
+    if (this.isCached(serverID)) return;
+    this.cache.set(serverID, data);
   }
 
-  /**
-   * Adds a server to the cache if it's not already in it.
-   *
-   * @param guildID     id of the guild/server
-   * @param serverData  server data about the bot state
-   */
-  public addToCache(guildID: string, serverData: ServerMusicData): void {
-    if (this.isCached(guildID)) return;
-    this.cache.set(guildID, serverData);
+  public get(serverID: string) {
+    return this.cache.get(serverID);
   }
 
-  /**
-   * Removes a server from the cache.
-   *
-   * @param guildID id of the guild/server
-   */
-  public remove(guildID: string): void {
-    this.cache.delete(guildID);
+  public set(
+    serverID: string,
+    data: Partial<ServerMusicData>
+  ): ServerMusicData {
+    const newData = { ...this.cache.get(serverID), ...data };
+    this.cache.set(serverID, newData);
+    return newData;
+  }
+
+  public remove(serverID: string, data?: Partial<ServerMusicData>): void {
+    this.cache.delete(serverID);
   }
 }
 

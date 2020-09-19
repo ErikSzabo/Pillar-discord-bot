@@ -12,9 +12,9 @@ export class PauseCommand extends Command {
   public execute(args: Array<string>, message: Message): void {
     const voiceChannel = message.member.voice.channel;
     const serverID = message.guild.id;
-    const serverData = musicCache.getServerData(message.guild.id);
+    const musicData = musicCache.get(serverID);
 
-    if (serverData && !serverData.isPlaying) {
+    if (musicData && !musicData.isPlaying) {
       message.channel.send(language.get(serverID, 'nothingToPause'));
       return;
     }
@@ -26,11 +26,11 @@ export class PauseCommand extends Command {
       return;
     }
 
-    serverData.isPlaying = false;
-    serverData.connection.dispatcher.pause();
+    musicData.isPlaying = false;
+    musicData.connection.dispatcher.pause();
     message.channel.send(
       language.get(serverID, 'musicPaused', {
-        song: musicCache.getServerData(serverID).songs[0].title,
+        song: musicData.songs[0].title,
       })
     );
   }

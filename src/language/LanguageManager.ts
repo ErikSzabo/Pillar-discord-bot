@@ -39,7 +39,7 @@ class LanguageManager {
     prop: string,
     options?: PlaceholderOptions
   ): MessageEmbed {
-    const locale = serverCache.getLang(serverID);
+    const locale = serverCache.get(serverID).language;
     let message = this.languages.get(locale).get(prop);
     if (!message) message = this.languages.get('en').get(prop);
     const description = this.handlePlaceholders(message.description, options);
@@ -47,7 +47,7 @@ class LanguageManager {
   }
 
   public getCommandDescription(serverID: string, commandName: string): string {
-    const locale = serverCache.getLang(serverID);
+    const locale = serverCache.get(serverID).language;
     let cmdDescription = this.commands.get(locale).get(commandName);
     if (!cmdDescription)
       cmdDescription = this.commands.get('en').get(commandName);
@@ -64,13 +64,13 @@ class LanguageManager {
 
   private loadLangFiles(): void {
     const fileNames = fs.readdirSync(
-      path.resolve(__dirname + '/../language-files')
+      path.resolve(__dirname + '/../../language-files')
     );
     for (let fileName of fileNames) {
       const language = JSON.parse(
         fs
           .readFileSync(
-            path.resolve(__dirname + `/../language-files/${fileName}`)
+            path.resolve(__dirname + `/../../language-files/${fileName}`)
           )
           .toString()
       );

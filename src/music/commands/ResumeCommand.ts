@@ -13,9 +13,9 @@ export class ResumeCommand extends Command {
     const serverID = message.guild.id;
     const voiceChannel = message.member.voice.channel;
 
-    const serverData = musicCache.getServerData(serverID);
+    const musicData = musicCache.get(serverID);
 
-    if (serverData && serverData.isPlaying) {
+    if (musicData && musicData.isPlaying) {
       message.delete();
       return;
     }
@@ -27,11 +27,11 @@ export class ResumeCommand extends Command {
       return;
     }
 
-    serverData.isPlaying = true;
-    serverData.connection.dispatcher.resume();
+    musicData.isPlaying = true;
+    musicData.connection.dispatcher.resume();
     message.channel.send(
       language.get(serverID, 'musicResumed', {
-        song: serverData.songs[0].title,
+        song: musicData.songs[0].title,
       })
     );
   }

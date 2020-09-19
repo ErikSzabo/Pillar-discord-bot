@@ -1,8 +1,9 @@
 import { Command } from '../../generic/Command';
 import { Message } from 'discord.js';
 import { checkPermission } from '../../utils';
-import { serverCache, roleType, channelType } from '../../generic/ServerCache';
+import { serverCache } from '../../generic/ServerCache';
 import { language } from '../../language/LanguageManager';
+import { serverRepository } from '../../database/ServerRepository';
 
 export class MusicChannelCommand extends Command {
   constructor() {
@@ -11,16 +12,17 @@ export class MusicChannelCommand extends Command {
 
   public async execute(args: Array<string>, message: Message): Promise<void> {
     const serverID = message.guild.id;
-    const modRole = serverCache.getRole(roleType.MODERATION, message.guild.id);
+    const serverData = serverCache.get(serverID);
     try {
-      checkPermission(modRole, message.member, serverID);
+      checkPermission(serverData.moderationRole, message.member, serverID);
     } catch (error) {
       message.channel.send(error.embed);
       return;
     }
 
     if (args[0].toLowerCase() === 'off') {
-      serverCache.setChannel(channelType.MUSIC, message.guild.id, 'off');
+      serverCache.set(serverID, { musicChannel: 'off' });
+      serverRepository.update(serverID, { musicChannel: 'off' });
       message.channel.send(language.get(serverID, 'musicChannelOff'));
       return;
     }
@@ -46,7 +48,10 @@ export class MusicChannelCommand extends Command {
       return;
     }
 
-    serverCache.setChannel(channelType.MUSIC, message.guild.id, channel.id);
-    message.channel.send(language.get(serverID, 'musicChannelSet'));
+    serverCache.set(serverID, { musicChannel: channel.id });
+    serverRepository.update(serverID, { musicChannel: channel.id });
+    message.channel.send(
+      language.get(serverID, 'musicChannelSet', { channel: channel.id })
+    );
   }
 }

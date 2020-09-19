@@ -1,8 +1,9 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { serverCache, messageType } from '../../generic/ServerCache';
+import { serverCache } from '../../generic/ServerCache';
 import config from '../../config';
 import { language } from '../../language/LanguageManager';
+import { serverRepository } from '../../database/ServerRepository';
 
 export class LeaveMessageCommand extends Command {
   constructor() {
@@ -12,7 +13,7 @@ export class LeaveMessageCommand extends Command {
   public execute(args: Array<string>, message: Message): void {
     const serverID = message.guild.id;
     if (args[0].toLowerCase() === 'off') {
-      serverCache.setMessage(messageType.LEAVE, serverID, 'off');
+      serverCache.set(serverID, { leaveMessage: 'off' });
       message.channel.send(language.get(serverID, 'leaveMessageOff'));
       return;
     }
@@ -26,7 +27,7 @@ export class LeaveMessageCommand extends Command {
       return;
     }
 
-    serverCache.setMessage(messageType.LEAVE, serverID, leaveMessage);
+    serverCache.set(serverID, { leaveMessage });
 
     message.channel.send(
       language.get(serverID, 'leaveMessageSet', { message: leaveMessage })

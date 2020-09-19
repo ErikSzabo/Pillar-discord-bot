@@ -12,7 +12,7 @@ export class StopCommand extends Command {
   public execute(args: Array<string>, message: Message): void {
     const voiceChannel = message.member.voice.channel;
     const serverID = message.guild.id;
-    const serverData = musicCache.getServerData(serverID);
+    const musicData = musicCache.get(serverID);
 
     try {
       checkVoiceChannelMatch(message, voiceChannel, serverID);
@@ -21,13 +21,13 @@ export class StopCommand extends Command {
       return;
     }
 
-    if (!serverData) {
+    if (!musicData) {
       message.channel.send(language.get(serverID, 'noMusicToStop'));
       return;
     }
 
-    serverData.songs = [];
-    serverData.connection.dispatcher.end();
+    musicData.songs = [];
+    musicData.connection.dispatcher.end();
     message.channel.send(language.get(serverID, 'musicStoppedCleared'));
   }
 }
