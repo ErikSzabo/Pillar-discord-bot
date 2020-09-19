@@ -32,6 +32,9 @@ For now, reminder notifications **does not** support different languages and the
 
 **It's highly recommended to setup the moderation role (with !set-role mod @role)** If you don't set it up, everyone can change you music channel, your welcome channel, and even the moderation role. By default every restrictions are turned off, and **users with administrator permission can bypass every restriction!**
 
+**Reminders**
+- reminders will trigger 1 week / 3 days / 3 hours before the event, and at the time of the event.
+
 # Setup
 
 1. Invite the bot
