@@ -16,5 +16,5 @@
 - [x] should send messages what is playing now
 - [x] enchance language command
   - if it is just !language without params, then display the available locales.
-- [ ] Add operator id to the config
-  - Opertor user should have access to reload the config and the language files.
+- [x] Add operator id to the config
+  - Opertor user should have access to reload the language files.

@@ -10,6 +10,7 @@ import { client } from './client';
 import { serverRepository } from './database/ServerRepository';
 import { reminderRepository } from './database/ReminderRepository';
 import { createServerConstruct, handleWelcomeLeaveMessage } from './utils';
+import { language } from './language/LanguageManager';
 
 const musicManager = new MusicManager('Music');
 const reminderManager = new ReminderManager('Reminder');
@@ -38,6 +39,17 @@ client.on('message', (message) => {
       .trim()
       .substring(config.prefix.length)
       .split(/\s+/);
+
+    if (message.author.id === config.operator) {
+      if (command === 'reload') {
+        return language
+          .reload()
+          .then(() => message.channel.send('Language files reloaded'))
+          .catch((err) =>
+            message.channel.send('Error while reloading language files.')
+          );
+      }
+    }
 
     generalManager.handle(command, args, message);
   }
