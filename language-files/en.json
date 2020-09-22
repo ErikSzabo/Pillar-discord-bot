@@ -269,6 +269,7 @@
     "welcome-channel": "welcome, and leave messages will appear in this channel, set to \"off\" to disable",
     "r-add": "adds a new reminder",
     "r-delete": "deletes a reminder",
+    "r-info": "displays the currently scheduled reminders",
     "music-channel": "sets the music channel, by default every channel is allowed, (write 'off' if you want to reset this)",
     "pause": "paueses the current music",
     "play": "plays a music by link or name",

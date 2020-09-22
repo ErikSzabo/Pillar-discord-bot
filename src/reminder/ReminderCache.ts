@@ -131,10 +131,14 @@ class ReminderCache implements ICache<Reminder> {
               false
             )
           );
-          if (timeOffset === 0)
-            reminderRepository.delete(reminder.serverID, {
-              title: reminder.title,
-            });
+          if (timeOffset === 0) {
+            reminderRepository
+              .delete(reminder.serverID, {
+                title: reminder.title,
+              })
+              .catch((err) => console.error(err));
+            reminderCache.remove(reminder.serverID, { title: reminder.title });
+          }
         });
         jobs.push(task);
       }

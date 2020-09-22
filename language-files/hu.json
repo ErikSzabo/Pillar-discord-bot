@@ -269,6 +269,7 @@
     "welcome-channel": "az üdvözlő és kilépő üzenetek ezen a csatornán fognak megjelenni, állítsd \"off\"-ra a kikapcsoláshoz",
     "r-add": "létrehoz egy új emlékeztetőt",
     "r-delete": "töröl egy emlékeztetőt",
+    "r-info": "megmutatja a már beütemezett emlékeztetőket",
     "music-channel": "beállítja a zene csatornát, alapértelmezetten minden csatorna engedélyezett, állítsd \"off\"-ra a kikapcsoláshoz",
     "pause": "megállítja az épp játszott zenét",
     "play": "lejátszik egy zenét link vagy név alapján",
