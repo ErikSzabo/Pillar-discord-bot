@@ -43,7 +43,11 @@ client.on('message', (message) => {
   }
 });
 
-client.on('guildCreate', (guild) => {
+client.on('guildCreate', async (guild) => {
+  if (!serverCache.canJoin()) {
+    await guild.leave();
+    return;
+  }
   const { id } = guild;
   serverCache.add(id, createServerConstruct(id));
   serverRepository.add(id, createServerConstruct(id));

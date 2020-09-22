@@ -7,6 +7,8 @@ import { ServerInfo } from './ServerInfo';
  * It's also saves data into the database.
  */
 class ServerCache implements ICache<ServerInfo> {
+  private static maxServers = 99;
+
   /**
    * Cache Map which will hold all of the servers' information.
    * It's indexed with the server IDs.
@@ -44,6 +46,10 @@ class ServerCache implements ICache<ServerInfo> {
     servers.forEach((server) => {
       this.cache.set(server.serverID, server);
     });
+  }
+
+  public canJoin(): boolean {
+    return Array.from(this.cache.keys()).length < ServerCache.maxServers;
   }
 }
 
