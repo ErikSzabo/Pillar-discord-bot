@@ -11,7 +11,7 @@ export class DeleteCommand extends Command {
     super('r-delete', 'r-delete "name"');
   }
 
-  public execute(args: Array<string>, message: Message): void {
+  public async execute(args: Array<string>, message: Message) {
     const serverID = message.guild.id;
     let reminderName: string;
 
@@ -24,11 +24,19 @@ export class DeleteCommand extends Command {
 
     const [reminder] = reminderCache.findReminder(reminderName, serverID);
     if (reminder) {
-      reminderCache.remove(message.guild.id, { title: reminderName });
-      reminderRepository.delete(message.guild.id, { title: reminderName });
-      message.channel.send(
-        language.get(serverID, 'reminderDeleted', { reminder: reminderName })
-      );
+      try {
+        await reminderRepository.delete(message.guild.id, {
+          title: reminderName,
+        });
+        reminderCache.remove(message.guild.id, { title: reminderName });
+
+        message.channel.send(
+          language.get(serverID, 'reminderDeleted', { reminder: reminderName })
+        );
+      } catch (error) {
+        message.channel.send(language.get(serverID, 'botError'));
+        console.error(error);
+      }
     } else {
       message.channel.send(
         language.get(serverID, 'reminderNotFound', { reminder: reminderName })

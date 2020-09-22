@@ -37,18 +37,27 @@ export class SetRoleCommand extends Command {
     const isOff = newValue === 'off';
 
     if (type === 'mod') {
-      serverCache.set(serverID, { moderationRole: newValue });
-      serverRepository.update(serverID, { moderationRole: newValue });
-      message.channel.send(
-        // TODO: [ROLETYPE] is in english -> that's sucks
-        this.createRoleEmbed('Moderation', newValue, serverID, isOff)
-      );
+      try {
+        await serverRepository.update(serverID, { moderationRole: newValue });
+        serverCache.set(serverID, { moderationRole: newValue });
+        message.channel.send(
+          this.createRoleEmbed('Moderation', newValue, serverID, isOff)
+        );
+      } catch (error) {
+        message.channel.send(language.get(serverID, 'botError'));
+        console.error(error);
+      }
     } else if (type === 'poll') {
-      serverCache.set(serverID, { pollRole: newValue });
-      serverRepository.update(serverID, { pollRole: newValue });
-      message.channel.send(
-        this.createRoleEmbed('Poll', newValue, serverID, isOff)
-      );
+      try {
+        await serverRepository.update(serverID, { pollRole: newValue });
+        serverCache.set(serverID, { pollRole: newValue });
+        message.channel.send(
+          this.createRoleEmbed('Poll', newValue, serverID, isOff)
+        );
+      } catch (error) {
+        message.channel.send(language.get(serverID, 'botError'));
+        console.error(error);
+      }
     }
   }
 

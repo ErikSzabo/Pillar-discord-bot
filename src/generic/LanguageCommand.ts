@@ -10,7 +10,7 @@ export class LanguageCommand extends Command {
     super('language', 'language [new language]');
   }
 
-  execute(args: string[], message: Message): void {
+  async execute(args: string[], message: Message) {
     const serverID = message.guild.id;
     const serverData = serverCache.get(serverID);
     try {
@@ -36,9 +36,13 @@ export class LanguageCommand extends Command {
       return;
     }
 
-    serverCache.set(serverID, { language: newLang });
-    serverRepository.update(serverID, { language: newLang });
-
-    message.channel.send(language.get(serverID, 'languageSet'));
+    try {
+      await serverRepository.update(serverID, { language: newLang });
+      serverCache.set(serverID, { language: newLang });
+      message.channel.send(language.get(serverID, 'languageSet'));
+    } catch (error) {
+      message.channel.send(language.get(serverID, 'botError'));
+      console.error(error);
+    }
   }
 }

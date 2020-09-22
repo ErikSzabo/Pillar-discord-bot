@@ -253,6 +253,11 @@
       "title": "Languages",
       "description": "Currently available locales: **[LANGUAGE]**",
       "error": false
+    },
+    "botError": {
+      "title": "🆘 Failed",
+      "description": "The bot failed to handle your command.",
+      "error": true
     }
   },
   "commands": {

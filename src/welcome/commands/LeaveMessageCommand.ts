@@ -10,12 +10,19 @@ export class LeaveMessageCommand extends Command {
     super('leave-message', 'leave-message <message>');
   }
 
-  public execute(args: Array<string>, message: Message): void {
+  public async execute(args: Array<string>, message: Message) {
     const serverID = message.guild.id;
     if (args[0].toLowerCase() === 'off') {
-      serverCache.set(serverID, { leaveMessage: 'off' });
-      message.channel.send(language.get(serverID, 'leaveMessageOff'));
-      return;
+      try {
+        await serverRepository.update(serverID, { leaveMessage: 'off' });
+        serverCache.set(serverID, { leaveMessage: 'off' });
+        message.channel.send(language.get(serverID, 'leaveMessageOff'));
+      } catch (error) {
+        message.channel.send(language.get(serverID, 'botError'));
+        console.error(error);
+      } finally {
+        return;
+      }
     }
 
     const leaveMessage = message.content
@@ -27,10 +34,15 @@ export class LeaveMessageCommand extends Command {
       return;
     }
 
-    serverCache.set(serverID, { leaveMessage });
-
-    message.channel.send(
-      language.get(serverID, 'leaveMessageSet', { message: leaveMessage })
-    );
+    try {
+      await serverRepository.update(serverID, { leaveMessage });
+      serverCache.set(serverID, { leaveMessage });
+      message.channel.send(
+        language.get(serverID, 'leaveMessageSet', { message: leaveMessage })
+      );
+    } catch (error) {
+      message.channel.send(language.get(serverID, 'botError'));
+      console.error(error);
+    }
   }
 }

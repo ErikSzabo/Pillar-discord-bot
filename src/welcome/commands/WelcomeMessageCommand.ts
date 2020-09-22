@@ -10,13 +10,19 @@ export class WelcomeMessageCommand extends Command {
     super('welcome-message', 'welcome-message <message>');
   }
 
-  public execute(args: Array<string>, message: Message): void {
+  public async execute(args: Array<string>, message: Message) {
     const serverID = message.guild.id;
     if (args[0].toLowerCase() === 'off') {
-      serverCache.set(serverID, { welcomeMessage: 'off' });
-      serverRepository.update(serverID, { welcomeMessage: 'off' });
-      message.channel.send(language.get(serverID, 'welcomeMessageOff'));
-      return;
+      try {
+        await serverRepository.update(serverID, { welcomeMessage: 'off' });
+        serverCache.set(serverID, { welcomeMessage: 'off' });
+        message.channel.send(language.get(serverID, 'welcomeMessageOff'));
+      } catch (error) {
+        message.channel.send(language.get(serverID, 'botError'));
+        console.error(error);
+      } finally {
+        return;
+      }
     }
 
     const welcomeMessage = message.content
@@ -28,11 +34,15 @@ export class WelcomeMessageCommand extends Command {
       return;
     }
 
-    serverCache.set(serverID, { welcomeMessage });
-    serverRepository.update(serverID, { welcomeMessage });
-
-    message.channel.send(
-      language.get(serverID, 'welcomeMessageSet', { message: welcomeMessage })
-    );
+    try {
+      await serverRepository.update(serverID, { welcomeMessage });
+      serverCache.set(serverID, { welcomeMessage });
+      message.channel.send(
+        language.get(serverID, 'welcomeMessageSet', { message: welcomeMessage })
+      );
+    } catch (error) {
+      message.channel.send(language.get(serverID, 'botError'));
+      console.error(error);
+    }
   }
 }

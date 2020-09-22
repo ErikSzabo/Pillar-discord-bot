@@ -11,26 +11,21 @@ class ReminderRepository implements IDataStore<Reminder> {
     this.collection.createIndex('serverID title');
   }
 
-  public async add(serverID: string, data: Reminder): Promise<void> {
-    try {
-      const duplicate = await this.collection.findOne({ serverID });
-      if (duplicate) return;
-      await this.collection.insert(data);
-    } catch (err) {
-      console.error(err);
-    }
+  public async add(serverID: string, data: Reminder) {
+    const duplicate = await this.collection.findOne({ serverID });
+    if (duplicate) return;
+    return this.collection.insert(data);
   }
 
-  public delete(serverID: string, data: Partial<Reminder>): void {
-    this.collection
-      .findOneAndDelete({ serverID: serverID, ...data })
-      .catch((err) => console.error(err));
+  public delete(serverID: string, data: Partial<Reminder>) {
+    return this.collection.findOneAndDelete({ serverID: serverID, ...data });
   }
 
-  public update(serverID: string, data: Partial<Reminder>): void {
-    this.collection
-      .findOneAndUpdate({ serverID }, { $set: { ...data } })
-      .catch((err) => console.error(err));
+  public update(serverID: string, data: Partial<Reminder>) {
+    return this.collection.findOneAndUpdate(
+      { serverID },
+      { $set: { ...data } }
+    );
   }
 
   async findAll(): Promise<Reminder[]> {

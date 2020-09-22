@@ -12,7 +12,7 @@ export class AddCommand extends Command {
     super('r-add', 'r-add <mention> <2020.12.24-20:30> "name" "description"');
   }
 
-  public execute(args: Array<string>, message: Message): void {
+  public async execute(args: Array<string>, message: Message) {
     const serverID = message.guild.id;
     if (!reminderCache.canHaveMore(serverID)) {
       message.channel.send(language.get(serverID, 'maxRemindersReached'));
@@ -26,8 +26,16 @@ export class AddCommand extends Command {
       );
       if (duplicate)
         throw new CustomError(language.get(serverID, 'reminderAlreadyExists'));
-      reminderCache.add(serverID, reminder);
-      reminderRepository.add(serverID, reminder);
+
+      try {
+        await reminderRepository.add(serverID, reminder);
+        reminderCache.add(serverID, reminder);
+      } catch (error) {
+        message.channel.send(language.get(serverID, 'botError'));
+        console.error(error);
+        return;
+      }
+
       this.sendResponse(
         message,
         `${

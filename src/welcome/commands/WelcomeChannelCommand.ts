@@ -9,14 +9,20 @@ export class WelcomeChannelCommand extends Command {
     super('welcome-channel', 'welcome-channel <text channel>');
   }
 
-  public execute(args: Array<string>, message: Message): void {
+  public async execute(args: Array<string>, message: Message) {
     const serverID = message.guild.id;
 
     if (args[0].toLowerCase() === 'off') {
-      serverCache.set(serverID, { welcomeChannel: 'off' });
-      serverRepository.update(serverID, { welcomeChannel: 'off' });
-      message.channel.send(language.get(serverID, 'welcomeChannelOff'));
-      return;
+      try {
+        await serverRepository.update(serverID, { welcomeChannel: 'off' });
+        serverCache.set(serverID, { welcomeChannel: 'off' });
+        message.channel.send(language.get(serverID, 'welcomeChannelOff'));
+      } catch (error) {
+        message.channel.send(language.get(serverID, 'botError'));
+        console.error(error);
+      } finally {
+        return;
+      }
     }
 
     const channels = message.mentions.channels;
@@ -40,10 +46,15 @@ export class WelcomeChannelCommand extends Command {
       return;
     }
 
-    serverCache.set(serverID, { welcomeChannel: channel.id });
-    serverRepository.update(serverID, { welcomeChannel: channel.id });
-    message.channel.send(
-      language.get(serverID, 'welcomeChannelSet', { channel: channel.id })
-    );
+    try {
+      await serverRepository.update(serverID, { welcomeChannel: channel.id });
+      serverCache.set(serverID, { welcomeChannel: channel.id });
+      message.channel.send(
+        language.get(serverID, 'welcomeChannelSet', { channel: channel.id })
+      );
+    } catch (error) {
+      message.channel.send(language.get(serverID, 'botError'));
+      console.error(error);
+    }
   }
 }

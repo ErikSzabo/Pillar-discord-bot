@@ -11,26 +11,21 @@ class ServerRepository implements IDataStore<ServerInfo> {
     this.collection.createIndex('serverID');
   }
 
-  public async add(serverID: string, data: ServerInfo): Promise<void> {
-    try {
-      const duplicate = await this.collection.findOne({ serverID });
-      if (duplicate) return;
-      await this.collection.insert(data);
-    } catch (err) {
-      console.error(err);
-    }
+  public async add(serverID: string, data: ServerInfo) {
+    const duplicate = await this.collection.findOne({ serverID });
+    if (duplicate) return;
+    return this.collection.insert(data);
   }
 
-  public delete(serverID: string): void {
-    this.collection
-      .findOneAndDelete({ serverID })
-      .catch((err) => console.error(err));
+  public delete(serverID: string) {
+    return this.collection.findOneAndDelete({ serverID });
   }
 
-  public update(serverID: string, data: Partial<ServerInfo>): void {
-    this.collection
-      .findOneAndUpdate({ serverID }, { $set: { ...data } })
-      .catch((err) => console.error(err));
+  public update(serverID: string, data: Partial<ServerInfo>) {
+    return this.collection.findOneAndUpdate(
+      { serverID },
+      { $set: { ...data } }
+    );
   }
 
   public async findAll(): Promise<ServerInfo[]> {

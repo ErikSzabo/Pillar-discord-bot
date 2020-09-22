@@ -253,6 +253,11 @@
       "title": "Nyelvek",
       "description": "Jelenleg elérhető nyelvek: **[LANGUAGE]**",
       "error": false
+    },
+    "botError": {
+      "title": "🆘 Sikertelen",
+      "description": "A bot problémákba ütközött a parancs feldolgozása közben. Ez valószínűleg nem felhasználói hiba!",
+      "error": true
     }
   },
   "commands": {
