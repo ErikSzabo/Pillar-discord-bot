@@ -6,6 +6,7 @@ import { Command } from '../../generic/Command';
 import { musicCache, ServerMusicData, SongData } from '../MusicCache';
 import { CustomError } from '../../generic/CustomError';
 import { language } from '../../language/LanguageManager';
+import { checkVoiceChannelMatch } from '../../utils';
 
 export class PlayCommand extends Command {
   constructor() {
@@ -20,13 +21,19 @@ export class PlayCommand extends Command {
       : null;
 
     try {
-      this.checkErrors(voiceChannel, permissions, args);
+      this.checkErrors(voiceChannel, permissions, serverID, args);
     } catch (error) {
       message.channel.send(error.embed);
       return;
     }
 
     if (musicCache.isCached(serverID)) {
+      try {
+        checkVoiceChannelMatch(message, voiceChannel, serverID);
+      } catch (err) {
+        message.channel.send(err.embed);
+        return;
+      }
       const song = await this.getSong(args.join(' '), message);
       if (!song) {
         await message.channel.send(
@@ -112,9 +119,9 @@ export class PlayCommand extends Command {
   private checkErrors(
     voiceChannel: VoiceChannel,
     permissions: Readonly<Permissions>,
+    serverID: string,
     args: Array<string>
   ): void {
-    const serverID = voiceChannel.guild.id;
     if (!args || args.length < 1) {
       throw new CustomError(language.get(serverID, 'notEnoughArguments'));
     } else if (!voiceChannel) {

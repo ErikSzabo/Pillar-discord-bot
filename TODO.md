@@ -7,7 +7,7 @@
   - ServerInfo database with serverID
   - Reminders database for serverID and title
 - [ ] change prefix for something that is not "already taken"
-- [ ] If the bot is already playing music in a channel, and you aren't with the bot, you shouldn't have access to the play command
+- [x] If the bot is already playing music in a channel, and you aren't with the bot, you shouldn't have access to the play command
   - play command little refactor
 - [ ] Always perfrom database opertaions first, and only after the cache opertaions when its succeeds.
 - [ ] info commands
@@ -16,3 +16,5 @@
 - [x] should send messages what is playing now
 - [x] enchance language command
   - if it is just !language without params, then display the available locales.
+- [ ] Add operator id to the config
+  - Opertor user should have access to reload the config and the language files.
