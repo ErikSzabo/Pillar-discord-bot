@@ -34,6 +34,7 @@ For now, reminder notifications **does not** support different languages and the
 
 **Reminders**
 - reminders will trigger 1 week / 3 days / 3 hours before the event, and at the time of the event.
+- reminders are using **UTC** time.
 
 # Setup
 
@@ -44,6 +45,8 @@ For now, reminder notifications **does not** support different languages and the
 5. Enjoy!
 
 # Commands
+
+**Commands are prefixed with the & symbol on the beta client!**
 
 Music
 
@@ -60,6 +63,7 @@ Reminder
 
 - !r-add <mention> <2020.12.24-20:30> "name" "description" -- adds a new reminder
 - !r-delete "name" -- deletes a reminder
+- !r-info -- displays the currently scheduled reminders
 
 Welcome-Leave
 
