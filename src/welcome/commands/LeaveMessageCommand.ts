@@ -4,6 +4,7 @@ import { serverCache } from '../../generic/ServerCache';
 import config from '../../config';
 import { language } from '../../language/LanguageManager';
 import { serverRepository } from '../../database/ServerRepository';
+import { logger } from '../../logger';
 
 export class LeaveMessageCommand extends Command {
   constructor() {
@@ -19,7 +20,7 @@ export class LeaveMessageCommand extends Command {
         message.channel.send(language.get(serverID, 'leaveMessageOff'));
       } catch (error) {
         message.channel.send(language.get(serverID, 'botError'));
-        console.error(error);
+        logger.error(error.message);
       } finally {
         return;
       }
@@ -42,7 +43,7 @@ export class LeaveMessageCommand extends Command {
       );
     } catch (error) {
       message.channel.send(language.get(serverID, 'botError'));
-      console.error(error);
+      logger.error(error.message);
     }
   }
 }

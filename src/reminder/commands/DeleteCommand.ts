@@ -5,6 +5,7 @@ import { CustomError } from '../../generic/CustomError';
 import { Command } from '../../generic/Command';
 import { language } from '../../language/LanguageManager';
 import { reminderRepository } from '../../database/ReminderRepository';
+import { logger } from '../../logger';
 
 export class DeleteCommand extends Command {
   constructor() {
@@ -35,7 +36,7 @@ export class DeleteCommand extends Command {
         );
       } catch (error) {
         message.channel.send(language.get(serverID, 'botError'));
-        console.error(error);
+        logger.error(error.message);
       }
     } else {
       message.channel.send(

@@ -4,6 +4,7 @@ import { serverCache } from '../../generic/ServerCache';
 import config from '../../config';
 import { language } from '../../language/LanguageManager';
 import { serverRepository } from '../../database/ServerRepository';
+import { logger } from '../../logger';
 
 export class WelcomeMessageCommand extends Command {
   constructor() {
@@ -19,7 +20,7 @@ export class WelcomeMessageCommand extends Command {
         message.channel.send(language.get(serverID, 'welcomeMessageOff'));
       } catch (error) {
         message.channel.send(language.get(serverID, 'botError'));
-        console.error(error);
+        logger.error(error.message);
       } finally {
         return;
       }
@@ -42,7 +43,7 @@ export class WelcomeMessageCommand extends Command {
       );
     } catch (error) {
       message.channel.send(language.get(serverID, 'botError'));
-      console.error(error);
+      logger.error(error.message);
     }
   }
 }

@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] Add logging
+- [x] Add logging
 - [x] Limit reminders to 50/server against possible attacks
 - [x] Limit joined servers number to a 100 for now (beacuse of the need of the verification)
 - [x] Index databases

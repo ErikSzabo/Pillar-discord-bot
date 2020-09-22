@@ -3,6 +3,7 @@ import { serverRepository } from '../../database/ServerRepository';
 import { Command } from '../../generic/Command';
 import { serverCache } from '../../generic/ServerCache';
 import { language } from '../../language/LanguageManager';
+import { logger } from '../../logger';
 
 export class WelcomeChannelCommand extends Command {
   constructor() {
@@ -19,7 +20,7 @@ export class WelcomeChannelCommand extends Command {
         message.channel.send(language.get(serverID, 'welcomeChannelOff'));
       } catch (error) {
         message.channel.send(language.get(serverID, 'botError'));
-        console.error(error);
+        logger.error(error.message);
       } finally {
         return;
       }
@@ -54,7 +55,7 @@ export class WelcomeChannelCommand extends Command {
       );
     } catch (error) {
       message.channel.send(language.get(serverID, 'botError'));
-      console.error(error);
+      logger.error(error.message);
     }
   }
 }

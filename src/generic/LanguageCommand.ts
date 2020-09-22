@@ -1,6 +1,7 @@
 import { Message } from 'discord.js';
 import { serverRepository } from '../database/ServerRepository';
 import { language } from '../language/LanguageManager';
+import { logger } from '../logger';
 import { checkPermission } from '../utils';
 import { Command } from './Command';
 import { serverCache } from './ServerCache';
@@ -42,7 +43,7 @@ export class LanguageCommand extends Command {
       message.channel.send(language.get(serverID, 'languageSet'));
     } catch (error) {
       message.channel.send(language.get(serverID, 'botError'));
-      console.error(error);
+      logger.error(error.message);
     }
   }
 }

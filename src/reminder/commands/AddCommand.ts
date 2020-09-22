@@ -6,6 +6,7 @@ import { CustomError } from '../../generic/CustomError';
 import { language } from '../../language/LanguageManager';
 import { reminderRepository } from '../../database/ReminderRepository';
 import { Reminder } from '../Reminder';
+import { logger } from '../../logger';
 
 export class AddCommand extends Command {
   constructor() {
@@ -32,7 +33,7 @@ export class AddCommand extends Command {
         reminderCache.add(serverID, reminder);
       } catch (error) {
         message.channel.send(language.get(serverID, 'botError'));
-        console.error(error);
+        logger.error(error.message);
         return;
       }
 

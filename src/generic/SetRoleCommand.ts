@@ -6,6 +6,7 @@ import config from '../config';
 import { CustomError } from './CustomError';
 import { language } from '../language/LanguageManager';
 import { serverRepository } from '../database/ServerRepository';
+import { logger } from '../logger';
 
 export class SetRoleCommand extends Command {
   constructor() {
@@ -45,7 +46,7 @@ export class SetRoleCommand extends Command {
         );
       } catch (error) {
         message.channel.send(language.get(serverID, 'botError'));
-        console.error(error);
+        logger.error(error.message);
       }
     } else if (type === 'poll') {
       try {
@@ -56,7 +57,7 @@ export class SetRoleCommand extends Command {
         );
       } catch (error) {
         message.channel.send(language.get(serverID, 'botError'));
-        console.error(error);
+        logger.error(error.message);
       }
     }
   }
