@@ -29,6 +29,8 @@ You will need the **language-files** directory next to the **dist** after the bu
 For now, reminder notifications **does not** support different languages and the bot is currently in **beta**. If you find any problem open an issue please.
 
 **Invite link** for the beta: https://discord.com/api/oauth2/authorize?client_id=751808514732589076&permissions=3374080&scope=bot
+**This bot is still in beta, there might be performance or other issues!**
+If you want, you can host it for your servers locally.
 
 **It's highly recommended to setup the moderation role (with !set-role mod @role)** If you don't set it up, everyone can change you music channel, your welcome channel, and even the moderation role. By default every restrictions are turned off, and **users with administrator permission can bypass every restriction!**
 
