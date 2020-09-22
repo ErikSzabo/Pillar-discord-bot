@@ -8,6 +8,7 @@ class ReminderRepository implements IDataStore<Reminder> {
 
   constructor() {
     this.collection = db.get('reminders');
+    this.collection.createIndex('serverID title');
   }
 
   public async add(serverID: string, data: Reminder): Promise<void> {

@@ -8,6 +8,7 @@ class ServerRepository implements IDataStore<ServerInfo> {
 
   constructor() {
     this.collection = db.get('server-info');
+    this.collection.createIndex('serverID');
   }
 
   public async add(serverID: string, data: ServerInfo): Promise<void> {

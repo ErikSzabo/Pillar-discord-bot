@@ -3,8 +3,7 @@
 - [ ] Add logging
 - [x] Limit reminders to 50/server against possible attacks
 - [x] Limit joined servers number to a 100 for now (beacuse of the need of the verification)
-- [ ] Check if permission checks are performed everywhere it's needed.
-- [ ] Index databases
+- [x] Index databases
   - ServerInfo database with serverID
   - Reminders database for serverID and title
 - [ ] change prefix for something that is not "already taken"
