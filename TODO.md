@@ -8,3 +8,5 @@
   - ServerInfo database with serverID
   - Reminders database for serverID and title
 - [ ] change prefix for something that is not "already taken"
+- [ ] If the bot is already playing music in a channel, and you aren't with the bot, you shouldn't have access to the play command
+  - play command little refactor
