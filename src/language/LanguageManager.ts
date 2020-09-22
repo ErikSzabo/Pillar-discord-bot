@@ -15,6 +15,20 @@ interface LanguageProp {
   error: boolean;
 }
 
+type placeHolderProp =
+  | 'prefix'
+  | 'roleType'
+  | 'role'
+  | 'message'
+  | 'channel'
+  | 'reminder'
+  | 'mention'
+  | 'date'
+  | 'song'
+  | 'volume'
+  | 'songs'
+  | 'language';
+
 interface PlaceholderOptions {
   prefix?: string;
   roleType?: string;
@@ -115,43 +129,12 @@ class LanguageManager {
     options: PlaceholderOptions
   ): string {
     if (!options) return description;
-
-    if (options.channel)
-      description = description.replace(/\[CHANNEL\]/g, options.channel);
-
-    if (options.date)
-      description = description.replace(/\[DATE\]/g, options.date);
-
-    if (options.mention)
-      description = description.replace(/\[MENTION\]/g, options.mention);
-
-    if (options.message)
-      description = description.replace(/\[MESSAGE\]/g, options.message);
-
-    if (options.prefix)
-      description = description.replace(/\[PREFIX\]/g, options.prefix);
-
-    if (options.reminder)
-      description = description.replace(/\[REMINDER\]/g, options.reminder);
-
-    if (options.role)
-      description = description.replace(/\[ROLE\]/g, options.role);
-
-    if (options.roleType)
-      description = description.replace(/\[ROLETYPE\]/g, options.roleType);
-
-    if (options.song)
-      description = description.replace(/\[SONG\]/g, options.song);
-
-    if (options.songs)
-      description = description.replace(/\[SONGS\]/g, options.songs);
-
-    if (options.volume)
-      description = description.replace(/\[VOLUME\]/g, String(options.volume));
-
-    if (options.language)
-      description = description.replace(/\[LANGUAGE\]/g, options.language);
-
+    Object.keys(options).forEach((prop: placeHolderProp) => {
+      description = description.replace(
+        new RegExp(`\\[${prop.toUpperCase()}\\]`, 'g'),
+        String(options[prop])
+      );
+    });
     return description;
   }
 }
