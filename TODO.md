@@ -6,7 +6,7 @@
 - [x] Index databases
   - ServerInfo database with serverID
   - Reminders database for serverID and title
-- [ ] change prefix for something that is not "already taken"
+- [x] change prefix for something that is not "already taken"
 - [x] If the bot is already playing music in a channel, and you aren't with the bot, you shouldn't have access to the play command
   - play command little refactor
 - [x] Always perfrom database opertaions first, and only after the cache opertaions when its succeeds.
