@@ -21,7 +21,11 @@ export class LanguageCommand extends Command {
     }
 
     if (!args[0]) {
-      message.channel.send(language.get(serverID, 'notEnoughArguments'));
+      message.channel.send(
+        language.get(serverID, 'availableLanguages', {
+          language: language.getAvailableLocales().join(', '),
+        })
+      );
       return;
     }
 

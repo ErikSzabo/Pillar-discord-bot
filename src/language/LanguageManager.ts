@@ -22,6 +22,7 @@ interface PlaceholderOptions {
   song?: string;
   volume?: number;
   songs?: string;
+  language?: string;
 }
 
 class LanguageManager {
@@ -60,6 +61,10 @@ class LanguageManager {
 
   public reload(): void {
     this.loadLangFiles();
+  }
+
+  public getAvailableLocales(): string[] {
+    return Array.from(this.languages.keys());
   }
 
   private loadLangFiles(): void {
@@ -126,6 +131,9 @@ class LanguageManager {
 
     if (options.volume)
       description = description.replace(/\[VOLUME\]/g, String(options.volume));
+
+    if (options.language)
+      description = description.replace(/\[LANGUAGE\]/g, options.language);
 
     return description;
   }

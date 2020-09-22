@@ -248,11 +248,16 @@
       "title": "Nyelv",
       "description": "Nyelv sikeresen frissítve!",
       "error": false
+    },
+    "availableLanguages": {
+      "title": "Nyelvek",
+      "description": "Jelenleg elérhető nyelvek: **[LANGUAGE]**",
+      "error": false
     }
   },
   "commands": {
     "help": "megmutatja ezt az oldalt",
-    "language": "beállítja az új nyelvet a szerveren",
+    "language": "beállítja az új nyelvet a szerveren vagy megmutatja az elérhetőeket ha csak üresen írjuk be a parancsot",
     "set-role": "beállítja a szükséges rangokat bizonyos parancsokhoz\nSegítségért: **set-role help**",
     "leave-message": "beállítja a kilépő üzenetet a szerveren, [USER] helyettesítő szöveg használható, állítsd \"off\"-ra a kikapcsoláshoz",
     "welcome-message": "beállítja az üdvözlő üzenetet a szerveren, [USER] helyettesítő szöveg használható, állítsd \"off\"-ra a kikapcsoláshoz",

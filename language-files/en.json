@@ -248,11 +248,16 @@
       "title": "Language",
       "description": "The language updated successfully!",
       "error": false
+    },
+    "availableLanguages": {
+      "title": "Languages",
+      "description": "Currently available locales: **[LANGUAGE]**",
+      "error": false
     }
   },
   "commands": {
     "help": "displays this help page",
-    "language": "sets the new language for your server",
+    "language": "sets the new language for your server or displays the available locales if no argument provided",
     "set-role": "sets the required roles for specific commands\nFor help: **set-role help**",
     "leave-message": "sets the leave message for the server, [USER] placeholder can be used, set to \"off\" to disable",
     "welcome-message": "sets the welcome message for the server, [USER] placeholder can be used, set to \"off\" to disable",
