@@ -75,6 +75,11 @@
       "description": "Welcome channel set to <#[CHANNEL]>",
       "error": false
     },
+    "maxRemindersReached": {
+      "title": "Maxed out",
+      "description": "This server reached the maximum amount of reminders. If you want to add more, delete some, or wait for them to resolve.",
+      "error": true
+    },
     "reminderAlreadyExists": {
       "title": "Already exists",
       "description": "A reminder with this name is already exists!",

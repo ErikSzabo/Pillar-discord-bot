@@ -14,6 +14,10 @@ export class AddCommand extends Command {
 
   public execute(args: Array<string>, message: Message): void {
     const serverID = message.guild.id;
+    if (!reminderCache.canHaveMore(serverID)) {
+      message.channel.send(language.get(serverID, 'maxRemindersReached'));
+      return;
+    }
     try {
       const reminder = this.parseReminder(message);
       const [duplicate] = reminderCache.findReminder(

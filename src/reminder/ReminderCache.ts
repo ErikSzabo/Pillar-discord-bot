@@ -11,6 +11,7 @@ class ReminderCache implements ICache<Reminder> {
   private static oneWeekTime = 7 * 24 * 60 * 60 * 1000;
   private static threeDaysTime = 3 * 24 * 60 * 60 * 1000;
   private static threeHoursTime = 3 * 60 * 60 * 1000;
+  private static maxReminderPerServer = 50;
 
   private cache: Map<string, Reminder[]>;
   private jobs: Map<string, Map<string, Job[]>>;
@@ -145,6 +146,10 @@ class ReminderCache implements ICache<Reminder> {
     timedSchedule(0, 'The event is happening right now!');
 
     return jobs;
+  }
+
+  public canHaveMore(serverID: string): boolean {
+    return this.cache.get(serverID).length < ReminderCache.maxReminderPerServer;
   }
 }
 

@@ -75,6 +75,11 @@
       "description": "Üdvözlő csatorna beállítva erre: <#[CHANNEL]>",
       "error": false
     },
+    "maxRemindersReached": {
+      "title": "Jóbol is megárt a sok",
+      "description": "A szerver elérte a maximálásan engedélyezett emlékeztetők számát. Ha több emlékeztőt szeretnél hozzáadni, akkor törölj párat, vagy várd meg amíg a mostaniak lejárnak.",
+      "error": true
+    },
     "reminderAlreadyExists": {
       "title": "Már létezik",
       "description": "Egy emlékeztető ezzel a névvel már létezik!",
