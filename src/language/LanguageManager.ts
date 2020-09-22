@@ -35,7 +35,9 @@ class LanguageManager {
   private commands: Map<string, Map<string, string>>;
 
   constructor() {
-    this.reload();
+    const { languages, commands } = this.loadLangFilesSync();
+    this.languages = languages;
+    this.commands = commands;
   }
 
   public get(
@@ -72,35 +74,39 @@ class LanguageManager {
     return Array.from(this.languages.keys());
   }
 
+  private loadLangFilesSync(): loadedLanguages {
+    const languages = new Map<string, Map<string, LanguageProp>>();
+    const commands = new Map<string, Map<string, string>>();
+
+    const fileNames = fs.readdirSync(
+      path.resolve(__dirname + '/../../language-files')
+    );
+    for (let fileName of fileNames) {
+      const language = JSON.parse(
+        fs
+          .readFileSync(
+            path.resolve(__dirname + `/../../language-files/${fileName}`)
+          )
+          .toString()
+      );
+      const langMap = new Map<string, LanguageProp>();
+      const commandMap = new Map<string, string>();
+      for (let prop in language.messages) {
+        langMap.set(prop, language.messages[prop]);
+      }
+      for (let prop in language.commands) {
+        commandMap.set(prop, language.commands[prop]);
+      }
+      const langLocale = fileName.substring(0, 2);
+      languages.set(langLocale, langMap);
+      commands.set(langLocale, commandMap);
+    }
+    return { languages, commands };
+  }
+
   private loadLangFiles(): Promise<loadedLanguages> {
     return new Promise((resolve, reject) => {
-      const languages = new Map<string, Map<string, LanguageProp>>();
-      const commands = new Map<string, Map<string, string>>();
-
-      const fileNames = fs.readdirSync(
-        path.resolve(__dirname + '/../../language-files')
-      );
-      for (let fileName of fileNames) {
-        const language = JSON.parse(
-          fs
-            .readFileSync(
-              path.resolve(__dirname + `/../../language-files/${fileName}`)
-            )
-            .toString()
-        );
-        const langMap = new Map<string, LanguageProp>();
-        const commandMap = new Map<string, string>();
-        for (let prop in language.messages) {
-          langMap.set(prop, language.messages[prop]);
-        }
-        for (let prop in language.commands) {
-          commandMap.set(prop, language.commands[prop]);
-        }
-        const langLocale = fileName.substring(0, 2);
-        languages.set(langLocale, langMap);
-        commands.set(langLocale, commandMap);
-      }
-      resolve({ languages, commands });
+      resolve(this.loadLangFilesSync());
     });
   }
 
