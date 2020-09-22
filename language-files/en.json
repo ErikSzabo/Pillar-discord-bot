@@ -145,6 +145,11 @@
       "description": "There isn't any music to pause!",
       "error": true
     },
+    "nowPlaying": {
+      "title": "▶ Now playing",
+      "description": "**[SONG]** is playing now!",
+      "error": false
+    },
     "musicPaused": {
       "title": "⏸ Paused",
       "description": "**[SONG]** paused!",

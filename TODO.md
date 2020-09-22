@@ -13,6 +13,6 @@
 - [ ] info commands
   - for server information (!info - general command)
   - for reminder list (!reminders - reminder command)
-- [ ] should send messages what is playing now
+- [x] should send messages what is playing now
 - [ ] enchance language command
   - if it is just !language without params, then display the available locales.

@@ -1,10 +1,16 @@
-import { VoiceChannel, VoiceConnection } from 'discord.js';
-import { IDataStore } from '../database/IDataStore';
+import {
+  DMChannel,
+  NewsChannel,
+  TextChannel,
+  VoiceChannel,
+  VoiceConnection,
+} from 'discord.js';
 import { ICache } from '../generic/ICache';
 
 export interface SongData {
   title: string;
   url: string;
+  channel: TextChannel | NewsChannel | DMChannel;
 }
 
 export interface ServerMusicData {

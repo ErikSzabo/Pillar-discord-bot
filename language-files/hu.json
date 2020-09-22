@@ -145,6 +145,11 @@
       "description": "Nincs semmilyen zene amit meg tudnák állítani neked!",
       "error": true
     },
+    "nowPlaying": {
+      "title": "▶ Jelenleg játszott",
+      "description": "**[SONG]** zene megy éppen!",
+      "error": false
+    },
     "musicPaused": {
       "title": "⏸ Megállítva",
       "description": "**[SONG]** megállítva!",

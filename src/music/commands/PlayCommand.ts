@@ -27,7 +27,7 @@ export class PlayCommand extends Command {
     }
 
     if (musicCache.isCached(serverID)) {
-      const song = await this.getSong(args.join(' '));
+      const song = await this.getSong(args.join(' '), message);
       if (!song) {
         await message.channel.send(
           language.get(serverID, 'songNotFound', { song: args.join(' ') })
@@ -51,7 +51,7 @@ export class PlayCommand extends Command {
     const serverData = musicCache.get(serverID);
 
     try {
-      const song = await this.getSong(args.join(' '));
+      const song = await this.getSong(args.join(' '), message);
       if (!song) {
         message.channel.send(
           language.get(serverID, 'songNotFound', { song: args.join(' ') })
@@ -65,9 +65,6 @@ export class PlayCommand extends Command {
         musicCache.remove(serverID);
       });
       this.play(serverData);
-      message.channel.send(
-        language.get(serverID, 'songQueued', { song: song.title })
-      );
     } catch (error) {
       console.error(`I could not join the voice channel: ${error}`);
       musicCache.remove(serverID);
@@ -77,16 +74,18 @@ export class PlayCommand extends Command {
   }
 
   private async play(serverData: ServerMusicData): Promise<void> {
+    const serverID = serverData.voiceChannel.guild.id;
     if (serverData.songs.length === 0) {
       serverData.isPlaying = false;
       serverData.voiceChannel.leave();
-      musicCache.remove(serverData.voiceChannel.guild.id);
+      musicCache.remove(serverID);
       return;
     }
 
     try {
+      const song = serverData.songs[0];
       let dispatcher = serverData.connection
-        .play(ytdl(serverData.songs[0].url))
+        .play(ytdl(song.url))
         .on('finish', () => {
           serverData.songs.shift();
           this.play(serverData);
@@ -97,6 +96,11 @@ export class PlayCommand extends Command {
           this.play(serverData);
         });
 
+      song.channel.send(
+        language.get(serverID, 'nowPlaying', {
+          song: song.title,
+        })
+      );
       serverData.isPlaying = true;
       dispatcher.setVolumeLogarithmic(serverData.volume / 5);
     } catch (err) {
@@ -122,12 +126,13 @@ export class PlayCommand extends Command {
     }
   }
 
-  private async getSong(query: string): Promise<SongData> {
+  private async getSong(query: string, message: Message): Promise<SongData> {
     if (ytdl.validateURL(query)) {
       const info = await ytdl.getInfo(query);
       return {
         title: Util.escapeMarkdown(info.videoDetails.title),
         url: info.videoDetails.video_url,
+        channel: message.channel,
       };
     }
 
@@ -138,6 +143,7 @@ export class PlayCommand extends Command {
       title: matches.items[0].title,
       // @ts-ignore
       url: matches.items[0].link,
+      channel: message.channel,
     };
   }
 }
