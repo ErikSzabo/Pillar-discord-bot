@@ -5,6 +5,7 @@ import { ReminderManager } from './reminder/ReminderManager';
 import { GeneralManager } from './generic/GeneralManager';
 import { serverCache } from './generic/ServerCache';
 import { WelcomeManager } from './welcome/WelcomeManager';
+import { PollManager } from './poll/PollManager';
 import { reminderCache } from './reminder/ReminderCache';
 import { client } from './client';
 import { serverRepository } from './database/ServerRepository';
@@ -16,10 +17,12 @@ import { logger } from './logger';
 const musicManager = new MusicManager('Music');
 const reminderManager = new ReminderManager('Reminder');
 const welcomeManager = new WelcomeManager('Welcome-Leave');
+const pollManager = new PollManager('Poll');
 const generalManager = new GeneralManager(
   'General',
   musicManager,
   reminderManager,
+  pollManager,
   welcomeManager
 );
 
