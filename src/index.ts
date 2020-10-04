@@ -30,7 +30,7 @@ client.once('ready', async () => {
   console.log("I'm ready!");
   client.user.setActivity({
     type: config.beta ? 'PLAYING' : 'LISTENING',
-    name: config.beta ? 'Open Beta' : `${config.prefix}help`,
+    name: config.beta ? `${config.prefix}Open Beta` : `${config.prefix}help`,
   });
   try {
     await serverCache.loadFromDatastore(serverRepository);
