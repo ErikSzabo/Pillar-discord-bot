@@ -258,6 +258,16 @@
       "title": "🆘 Sikertelen",
       "description": "A bot problémákba ütközött a parancs feldolgozása közben. Ez valószínűleg nem felhasználói hiba!",
       "error": true
+    },
+    "pollQuestionRequired": {
+      "title": "Mi a kérdés? Na és a válasz?",
+      "description": "A parancs után meg kell adnod egy kérdést, és pár válasz lehetőséget, mindegyiket idézőjelek között!",
+      "error": true
+    },
+    "pollOptionLimit": {
+      "title": "Kicsit sok lesz",
+      "description": "Csak 20 db választ adhatsz meg egy kérdéshez!",
+      "error": true
     }
   },
   "commands": {
@@ -277,6 +287,7 @@
     "resume": "folytatja a leállított zenét",
     "skip": "átugorja az épp hallgatott zenét",
     "stop": "megállítja a zenét és törli a lejátszási listát",
-    "volume": "beállítja vagy megmutatja a jelenlegi hangerőt"
+    "volume": "beállítja vagy megmutatja a jelenlegi hangerőt",
+    "poll": "létrehoz egy kérdőívet"
   }
 }

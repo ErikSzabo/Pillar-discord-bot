@@ -258,6 +258,16 @@
       "title": "🆘 Failed",
       "description": "The bot failed to handle your command.",
       "error": true
+    },
+    "pollQuestionRequired": {
+      "title": "What's the question? And the answer?",
+      "description": "You must provide a question and some answers right after the command inside quotes!",
+      "error": true
+    },
+    "pollOptionLimit": {
+      "title": "Seems a little much",
+      "description": "You can only specify 20 options for a question!",
+      "error": true
     }
   },
   "commands": {
@@ -277,6 +287,7 @@
     "resume": "resumes the paused music",
     "skip": "skips the current music",
     "stop": "stops the music and clears the queue",
-    "volume": "sets or displays the volume"
+    "volume": "sets or displays the volume",
+    "poll": "creates a poll"
   }
 }
