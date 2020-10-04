@@ -48,8 +48,6 @@ If you want, you can host it for your servers locally.
 
 # Commands
 
-**Commands are prefixed with the & symbol on the beta client!**
-
 Music
 
 - !pause -- paueses the current music
@@ -66,6 +64,9 @@ Reminder
 - !r-add <mention> <2020.12.24-20:30> "name" "description" -- adds a new reminder
 - !r-delete "name" -- deletes a reminder
 - !r-info -- displays the currently scheduled reminders
+  
+Poll
+- !poll "question" "answer1" "answer2" "answerX" -- létrehoz egy kérdőívet
 
 Welcome-Leave
 
