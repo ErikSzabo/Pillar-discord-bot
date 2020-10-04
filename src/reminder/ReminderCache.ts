@@ -65,7 +65,10 @@ class ReminderCache implements ICache<Reminder> {
   }
 
   public get(serverID: string): Reminder[] {
-    return this.cache.get(serverID);
+    if (this.cache.has(serverID)) {
+      return this.cache.get(serverID);
+    }
+    return [];
   }
 
   public set(serverID: string, data: Partial<Reminder>): Reminder {
