@@ -12,7 +12,9 @@ export class InfoCommand extends Command {
     const serverID = message.guild.id;
     const reminders = reminderCache.get(serverID);
     const remindersAsString = reminders
-      .map((reminder) => `**${reminder.title}** -- ${reminder.date}`)
+      .map(
+        (reminder) => `**${reminder.title}** -- ${reminder.date.toUTCString()}`
+      )
       .join('\n');
     message.channel.send(createEmbed('🕑🕑🕑', remindersAsString, false));
   }

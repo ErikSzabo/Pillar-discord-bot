@@ -156,6 +156,8 @@ class ReminderCache implements ICache<Reminder> {
   }
 
   public canHaveMore(serverID: string): boolean {
+    const serverReminders = this.cache.get(serverID);
+    if (!serverReminders) return true;
     return this.cache.get(serverID).length < ReminderCache.maxReminderPerServer;
   }
 }
