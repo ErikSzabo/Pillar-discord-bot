@@ -1,6 +1,6 @@
-import * as ytsr from 'ytsr';
 import * as ytdl from 'ytdl-core';
 import * as ffmpeg from 'ffmpeg-static';
+import { ytsr } from '../../ytsr';
 import { Message, Permissions, VoiceChannel, Util } from 'discord.js';
 import { Command } from '../../generic/Command';
 import { musicCache, ServerMusicData, SongData } from '../MusicCache';
@@ -134,23 +134,21 @@ export class PlayCommand extends Command {
   }
 
   private async getSong(query: string, message: Message): Promise<SongData> {
+    const channel = message.channel;
     if (ytdl.validateURL(query)) {
       const info = await ytdl.getInfo(query);
       return {
         title: Util.escapeMarkdown(info.videoDetails.title),
         url: info.videoDetails.video_url,
-        channel: message.channel,
+        channel,
       };
     }
 
-    const matches = await ytsr(query);
-    if (matches.items.length < 1) return;
-    return {
-      // @ts-ignore
-      title: matches.items[0].title,
-      // @ts-ignore
-      url: matches.items[0].link,
-      channel: message.channel,
-    };
+    try {
+      const { title, url } = await ytsr(query);
+      return { title, url, channel };
+    } catch (err) {
+      return null;
+    }
   }
 }
