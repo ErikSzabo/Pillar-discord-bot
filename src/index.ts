@@ -27,14 +27,18 @@ const generalManager = new GeneralManager(
 );
 
 client.once('ready', async () => {
-  console.log("I'm ready!");
   client.user.setActivity({
     type: config.beta ? 'PLAYING' : 'LISTENING',
     name: config.beta ? `${config.prefix}Open Beta` : `${config.prefix}help`,
   });
+
   try {
     await serverCache.loadFromDatastore(serverRepository);
     await reminderCache.loadFromDatastore(reminderRepository);
+
+    checkAndLoadDowntimeInvites();
+
+    console.log("I'm ready!");
     logger.info('Bot started successfully!');
   } catch (error) {
     logger.error(error.message);
@@ -79,7 +83,7 @@ client.on('guildCreate', async (guild) => {
   }
   const { id } = guild;
   try {
-    serverRepository.add(id, createServerConstruct(id));
+    await serverRepository.add(id, createServerConstruct(id));
     serverCache.add(id, createServerConstruct(id));
     logger.info(`Joined to ${guild.name} id: ${guild.id}`);
   } catch (error) {
@@ -87,9 +91,9 @@ client.on('guildCreate', async (guild) => {
   }
 });
 
-client.on('guildDelete', (guild) => {
+client.on('guildDelete', async (guild) => {
   try {
-    serverRepository.delete(guild.id);
+    await serverRepository.delete(guild.id);
     serverCache.remove(guild.id);
     logger.info(`Leaved from ${guild.name} id: ${guild.id}`);
   } catch (error) {
@@ -106,3 +110,22 @@ client.on('guildMemberRemove', (member) => {
 });
 
 client.login(process.env.TOKEN);
+
+function checkAndLoadDowntimeInvites() {
+  client.guilds.cache.forEach(async (guild) => {
+    const id = guild.id;
+    try {
+      if (!serverCache.isCached(id)) {
+        if (serverCache.canJoin()) {
+          await serverRepository.add(id, createServerConstruct(id));
+          serverCache.add(id, createServerConstruct(id));
+        } else {
+          await guild.leave();
+          logger.warn(`Leaved from ${guild.name}, because of guild limit`);
+        }
+      }
+    } catch (error) {
+      logger.error(error.message);
+    }
+  });
+}
