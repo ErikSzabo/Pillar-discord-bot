@@ -27,7 +27,9 @@ type placeHolderProp =
   | 'song'
   | 'volume'
   | 'songs'
-  | 'language';
+  | 'language'
+  | 'description'
+  | 'timezone';
 
 interface PlaceholderOptions {
   prefix?: string;
@@ -42,6 +44,8 @@ interface PlaceholderOptions {
   volume?: number;
   songs?: string;
   language?: string;
+  description?: string;
+  timezone?: string;
 }
 
 class LanguageManager {
@@ -63,7 +67,8 @@ class LanguageManager {
     let message = this.languages.get(locale).get(prop);
     if (!message) message = this.languages.get('en').get(prop);
     const description = this.handlePlaceholders(message.description, options);
-    return createEmbed(message.title, description, message.error);
+    const title = this.handlePlaceholders(message.title, options);
+    return createEmbed(title, description, message.error);
   }
 
   public getCommandDescription(serverID: string, commandName: string): string {
@@ -125,17 +130,17 @@ class LanguageManager {
   }
 
   private handlePlaceholders(
-    description: string,
+    text: string,
     options: PlaceholderOptions
   ): string {
-    if (!options) return description;
+    if (!options) return text;
     Object.keys(options).forEach((prop: placeHolderProp) => {
-      description = description.replace(
+      text = text.replace(
         new RegExp(`\\[${prop.toUpperCase()}\\]`, 'g'),
         String(options[prop])
       );
     });
-    return description;
+    return text;
   }
 }
 

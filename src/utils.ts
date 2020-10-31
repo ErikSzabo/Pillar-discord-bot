@@ -71,6 +71,7 @@ export function createServerConstruct(serverID: string): ServerInfo {
     welcomeMessage: '[USER] joined the server!',
     leaveMessage: '[USER] leaved the server!',
     language: 'en',
+    timezone: 'UTC',
   };
 }
 

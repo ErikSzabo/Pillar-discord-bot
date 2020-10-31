@@ -3,6 +3,7 @@ import { HelpCommand } from './HelpCommand';
 import { SetRoleCommand } from './SetRoleCommand';
 import { Message } from 'discord.js';
 import { LanguageCommand } from './LanguageCommand';
+import { TimezoneCommand } from './TimezoneCommand';
 
 /**
  * General command manager which controls the rest of the command managers
@@ -16,6 +17,7 @@ export class GeneralManager extends CommandManager {
     this.commandManagers = commandManagers;
     this.addCommand(new SetRoleCommand());
     this.addCommand(new LanguageCommand());
+    this.addCommand(new TimezoneCommand());
     this.addCommand(new HelpCommand([...commandManagers, this]));
   }
 

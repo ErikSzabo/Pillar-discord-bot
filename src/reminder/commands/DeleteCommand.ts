@@ -35,6 +35,7 @@ export class DeleteCommand extends Command {
           language.get(serverID, 'reminderDeleted', { reminder: reminderName })
         );
       } catch (error) {
+        console.log(error);
         message.channel.send(language.get(serverID, 'botError'));
         logger.error(error.message);
       }

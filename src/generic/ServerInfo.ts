@@ -10,4 +10,20 @@ export interface ServerInfo {
   welcomeMessage: string;
   leaveMessage: string;
   language: string;
+  timezone: timeZone;
 }
+
+type timeZone =
+  | 'CET'
+  | 'CEST'
+  | 'UTC'
+  | 'EET'
+  | 'MSK'
+  | 'PST'
+  | 'PDT'
+  | 'MST'
+  | 'MDT'
+  | 'CST'
+  | 'CDT'
+  | 'EST'
+  | 'EDT';

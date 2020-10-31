@@ -92,7 +92,7 @@
     },
     "reminderAdded": {
       "title": "🧐 Emlékeztető létrehozva!",
-      "description": "Emlékeztető: [REMINDER] beállítva neki: [MENTION], ekkor: [DATE]",
+      "description": "Emlékeztető: **[REMINDER]** beállítva neki: [MENTION], ekkor: [DATE]",
       "error": false
     },
     "tooManyArguments": {
@@ -114,6 +114,26 @@
       "title": "🔎 Nincs találat",
       "description": "Emlékeztető: **[REMINDER]** nem található!",
       "error": true
+    },
+    "reminderNotifyOneWeek": {
+      "title": "Emlékeztető: [REMINDER]",
+      "description": "[MENTION] -- **1 hét az eseményig** -- [DESCRIPTION]",
+      "error": false
+    },
+    "reminderNotifyThreeDays": {
+      "title": "🕑 Emlékeztető: [REMINDER]",
+      "description": "[MENTION] -- **3 nap az eseményig** -- [DESCRIPTION]",
+      "error": false
+    },
+    "reminderNotifyThreeHour": {
+      "title": "🕑 Emlékeztető: [REMINDER]",
+      "description": "[MENTION] -- **3 óra az eseményig** -- [DESCRIPTION]",
+      "error": false
+    },
+    "reminderNotifyZero": {
+      "title": "🕑 Emlékeztető: [REMINDER]",
+      "description": "[MENTION] -- **Itt az idő!** -- [DESCRIPTION]",
+      "error": false
     },
     "notEnoughArguments": {
       "title": "‼ Hibás",
@@ -268,6 +288,16 @@
       "title": "Kicsit sok lesz",
       "description": "Csak 20 db választ adhatsz meg egy kérdéshez!",
       "error": true
+    },
+    "availableTimezones": {
+      "title": "🕑 Időzónák",
+      "description": "Jelenleg támogatott időzónák: [TIMEZONE]",
+      "error": false
+    },
+    "timezoneSet": {
+      "title": "🕑 Időzóna beállítva",
+      "description": "A szerver új időzónája: **[TIMEZONE]**",
+      "error": false
     }
   },
   "commands": {
@@ -288,6 +318,7 @@
     "skip": "átugorja az épp hallgatott zenét",
     "stop": "megállítja a zenét és törli a lejátszási listát",
     "volume": "beállítja vagy megmutatja a jelenlegi hangerőt",
-    "poll": "létrehoz egy kérdőívet"
+    "poll": "létrehoz egy kérdőívet",
+    "timezone": "Beállítja a szerver időzónáját. (alapból UTC) Ez elég hasznos, ha a saját idődet szeretnéd használni az emlékeztetők létrehozásakor."
   }
 }

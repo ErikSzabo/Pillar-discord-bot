@@ -7,6 +7,8 @@ import { language } from '../../language/LanguageManager';
 import { reminderRepository } from '../../database/ReminderRepository';
 import { Reminder } from '../Reminder';
 import { logger } from '../../logger';
+import { serverCache } from '../../generic/ServerCache';
+import { Timezone, Timezones } from '../../apis/timezoneAPI';
 
 export class AddCommand extends Command {
   constructor() {
@@ -87,11 +89,13 @@ export class AddCommand extends Command {
     title: string,
     date: Date
   ): void {
+    const serverID = message.guild.id;
+    const zone = serverCache.get(serverID).timezone;
     message.channel.send(
       language.get(message.guild.id, 'reminderAdded', {
         reminder: title,
         mention: mention,
-        date: date.toLocaleDateString(),
+        date: `**${Timezones[zone].toDateString(date)}**`,
       })
     );
   }

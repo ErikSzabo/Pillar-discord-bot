@@ -1,16 +1,15 @@
 import { Job, scheduleJob } from 'node-schedule';
-import { Channel } from 'discord.js';
-import { createEmbed } from '../utils';
+import { Channel, MessageEmbed, TextChannel } from 'discord.js';
 import { Reminder } from './Reminder';
 import { ICache } from '../generic/ICache';
 import { IDataStore } from '../database/IDataStore';
 import { client } from '../client';
 import { reminderRepository } from '../database/ReminderRepository';
+import { serverCache } from '../generic/ServerCache';
+import { Timezones } from '../apis/timezoneAPI';
+import { language } from '../language/LanguageManager';
 
 class ReminderCache implements ICache<Reminder> {
-  private static oneWeekTime = 7 * 24 * 60 * 60 * 1000;
-  private static threeDaysTime = 3 * 24 * 60 * 60 * 1000;
-  private static threeHoursTime = 3 * 60 * 60 * 1000;
   private static maxReminderPerServer = 50;
 
   private cache: Map<string, Reminder[]>;
@@ -72,7 +71,7 @@ class ReminderCache implements ICache<Reminder> {
   }
 
   public set(serverID: string, data: Partial<Reminder>): Reminder {
-    return;
+    throw new Error('Not implemented method!');
   }
 
   public async loadFromDatastore(dataStore: IDataStore<Reminder>) {
@@ -112,47 +111,82 @@ class ReminderCache implements ICache<Reminder> {
 
   private schedule(reminder: Reminder, channel: Channel): Job[] {
     const jobs: Job[] = [];
-    let mentionText: string;
-    if (reminder.type === 'everyone') {
-      mentionText = '@everyone';
-    } else if (reminder.type === 'role') {
-      mentionText = `<@&${reminder.mentionID}>`;
-    } else if (reminder.type === 'user') {
-      mentionText = `<@${reminder.mentionID}>`;
-    }
 
-    function timedSchedule(timeOffset: number, timeTitle: string) {
-      if (reminder.date.getTime() - Date.now() - timeOffset > 0) {
-        const date = new Date(reminder.date.getTime() - timeOffset);
-        const taskName = `${reminder.title}$${timeTitle}`;
-        const task = scheduleJob(taskName, date, () => {
-          // @ts-ignore
-          channel.send(
-            createEmbed(
-              `‼ Reminder: ${reminder.title}`,
-              `**${timeTitle}** -- ${mentionText} -- ${reminder.description}`,
-              false
-            )
-          );
-          if (timeOffset === 0) {
-            reminderRepository
-              .delete(reminder.serverID, {
-                title: reminder.title,
-              })
-              .catch((err) => console.error(err));
-            reminderCache.remove(reminder.serverID, { title: reminder.title });
-          }
-        });
-        jobs.push(task);
-      }
+    for (let time of this.createEventResponseArray(reminder)) {
+      const job = this.timedSchedule(
+        time[0],
+        time[1],
+        reminder,
+        channel as TextChannel
+      );
+      if (job) jobs.push(job);
     }
-
-    timedSchedule(ReminderCache.oneWeekTime, '1 week till the event');
-    timedSchedule(ReminderCache.threeDaysTime, '3 days till the event');
-    timedSchedule(ReminderCache.threeHoursTime, '3 hours till the event');
-    timedSchedule(0, 'The event is happening right now!');
 
     return jobs;
+  }
+
+  private createMentionText(reminder: Reminder): string {
+    if (reminder.type === 'everyone') {
+      return '@everyone';
+    } else if (reminder.type === 'role') {
+      return `<@&${reminder.mentionID}>`;
+    } else if (reminder.type === 'user') {
+      return `<@${reminder.mentionID}>`;
+    }
+  }
+
+  private timedSchedule(
+    timeOffset: number,
+    embed: MessageEmbed,
+    reminder: Reminder,
+    channel: TextChannel
+  ) {
+    const zone = serverCache.get(reminder.serverID).timezone;
+    const utcDate = Timezones.UTC.convert(reminder.date, Timezones[zone]);
+    if (utcDate.getTime() < Date.now() + timeOffset) return;
+
+    const date = new Date(utcDate.getTime() - timeOffset);
+    const taskName = `${reminder.title}$${embed.title}`;
+
+    const task = scheduleJob(taskName, date, async () => {
+      channel.send(embed);
+
+      if (timeOffset !== 0) return;
+
+      try {
+        await reminderRepository.delete(reminder.serverID, {
+          title: reminder.title,
+        });
+        reminderCache.remove(reminder.serverID, { title: reminder.title });
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    return task;
+  }
+
+  private createEventResponseArray(reminder: Reminder) {
+    const oneWeek = 7 * 24 * 60 * 60 * 1000;
+    const threeDays = 3 * 24 * 60 * 60 * 1000;
+    const threeHour = 3 * 60 * 60 * 1000;
+    const times: Array<[number, MessageEmbed]> = [
+      [oneWeek, this.getNotifyMessage(reminder, 'reminderNotifyOneWeek')],
+      [threeDays, this.getNotifyMessage(reminder, 'reminderNotifyThreeDays')],
+      [threeHour, this.getNotifyMessage(reminder, 'reminderNotifyThreeHour')],
+      [0, this.getNotifyMessage(reminder, 'reminderNotifyZero')],
+    ];
+    return times;
+  }
+
+  private getNotifyMessage(reminder: Reminder, id: string) {
+    const { title, description, serverID } = reminder;
+    const mention = this.createMentionText(reminder);
+    return language.get(serverID, id, {
+      reminder: title,
+      mention,
+      description,
+    });
   }
 
   public canHaveMore(serverID: string): boolean {
