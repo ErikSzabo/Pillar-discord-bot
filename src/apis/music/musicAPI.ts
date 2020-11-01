@@ -187,7 +187,10 @@ class MusicAPI extends EventEmitter {
 
   private continousPlay(serverID: string) {
     const musicData = this.cache.get(serverID);
-    if (musicData.songs.length == 0) return musicData.voiceChannel.leave();
+    if (musicData.songs.length == 0)
+      return musicData.voiceChannel.client.voice.connections
+        .get(serverID)
+        .channel.leave();
 
     try {
       const handler = () => {
