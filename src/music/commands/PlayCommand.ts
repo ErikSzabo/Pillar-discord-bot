@@ -1,6 +1,6 @@
 import * as ytdl from 'ytdl-core';
 import * as ffmpeg from 'ffmpeg-static';
-import { ytsr } from '../../ytsr';
+import { ytsr } from '../../apis/searchAPI';
 import { Message, Permissions, VoiceChannel, Util } from 'discord.js';
 import { Command } from '../../generic/Command';
 import { musicCache, ServerMusicData, SongData } from '../MusicCache';
