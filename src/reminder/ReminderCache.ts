@@ -1,8 +1,8 @@
 import { Job, scheduleJob } from 'node-schedule';
 import { Channel, MessageEmbed, TextChannel } from 'discord.js';
 import { Reminder } from './Reminder';
-import { ICache } from '../generic/ICache';
-import { IDataStore } from '../database/IDataStore';
+import { ICache } from '../apis/interfaces/ICache';
+import { IDataStore } from '../apis/interfaces/IDataStore';
 import { client } from '../client';
 import { reminderRepository } from '../database/ReminderRepository';
 import { serverCache } from '../generic/ServerCache';
@@ -63,7 +63,12 @@ class ReminderCache implements ICache<Reminder> {
     }
   }
 
-  public get(serverID: string): Reminder[] {
+  public get(serverID: string): Reminder {
+    const reminders = this.getAll(serverID);
+    return reminders.length > 0 ? reminders[0] : null;
+  }
+
+  public getAll(serverID: string): Reminder[] {
     if (this.cache.has(serverID)) {
       return this.cache.get(serverID);
     }

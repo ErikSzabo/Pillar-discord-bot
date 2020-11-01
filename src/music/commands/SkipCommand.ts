@@ -1,8 +1,8 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { musicCache } from '../MusicCache';
 import { checkVoiceChannelMatch } from '../../utils';
 import { language } from '../../language/LanguageManager';
+import { musicAPI } from '../../apis/music/musicAPI';
 
 export class SkipCommand extends Command {
   constructor() {
@@ -13,26 +13,14 @@ export class SkipCommand extends Command {
     const serverID = message.guild.id;
     const voiceChannel = message.member.voice.channel;
 
-    const musicData = musicCache.get(message.guild.id);
-
     try {
       checkVoiceChannelMatch(message, voiceChannel, serverID);
+      const song = musicAPI.skip(serverID);
+      message.channel.send(language.get(serverID, 'musicSkipped', { song }));
     } catch (err) {
-      message.channel.send(err.embed);
-      return;
+      if (err.embed) message.channel.send(err.embed);
+      if (err.message === 'noMusicToSkip')
+        message.channel.send(language.get(serverID, err.message));
     }
-
-    if (!musicData) {
-      message.channel.send(language.get(serverID, 'noMusicToSkip'));
-      return;
-    }
-
-    message.channel.send(
-      language.get(serverID, 'musicSkipped', {
-        song: musicData.songs[0].title,
-      })
-    );
-
-    musicData.connection.dispatcher.end();
   }
 }

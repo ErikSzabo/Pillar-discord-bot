@@ -1,8 +1,8 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { musicCache } from '../MusicCache';
 import { checkVoiceChannelMatch } from '../../utils';
 import { language } from '../../language/LanguageManager';
+import { musicAPI } from '../../apis/music/musicAPI';
 
 export class ResumeCommand extends Command {
   constructor() {
@@ -13,26 +13,13 @@ export class ResumeCommand extends Command {
     const serverID = message.guild.id;
     const voiceChannel = message.member.voice.channel;
 
-    const musicData = musicCache.get(serverID);
-
-    if (musicData && musicData.isPlaying) {
-      message.delete();
-      return;
-    }
-
     try {
       checkVoiceChannelMatch(message, voiceChannel, serverID);
+      const song = musicAPI.resume(serverID);
+      message.channel.send(language.get(serverID, 'musicResumed', { song }));
     } catch (err) {
-      message.channel.send(err.embed);
-      return;
+      if (err.message === 'alreadyPlaying') message.delete();
+      if (err.embed) message.channel.send(err.embed);
     }
-
-    musicData.isPlaying = true;
-    musicData.connection.dispatcher.resume();
-    message.channel.send(
-      language.get(serverID, 'musicResumed', {
-        song: musicData.songs[0].title,
-      })
-    );
   }
 }

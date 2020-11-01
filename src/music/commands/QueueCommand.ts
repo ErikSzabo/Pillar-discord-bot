@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { musicCache } from '../MusicCache';
 import { language } from '../../language/LanguageManager';
+import { musicAPI } from '../../apis/music/musicAPI';
 
 export class QueueCommand extends Command {
   constructor() {
@@ -10,17 +10,18 @@ export class QueueCommand extends Command {
 
   public execute(args: Array<string>, message: Message): void {
     const serverID = message.guild.id;
-    const musicData = musicCache.get(serverID);
 
-    if (!musicData) {
+    if (!musicAPI.hasQueue(serverID)) {
       message.channel.send(language.get(serverID, 'songQueueEmpty'));
       return;
     }
 
+    const queue = musicAPI.getQueue(serverID);
+
     message.channel.send(
       language.get(serverID, 'songQueue', {
-        songs: musicData.songs.map((song) => `**-** ${song.title}`).join('\n'),
-        song: musicData.songs[0].title,
+        songs: queue.map((song) => `**-** ${song.title}`).join('\n'),
+        song: queue[0].title,
       })
     );
   }

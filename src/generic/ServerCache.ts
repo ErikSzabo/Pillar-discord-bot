@@ -1,5 +1,5 @@
-import { IDataStore } from '../database/IDataStore';
-import { ICache } from './ICache';
+import { IDataStore } from '../apis/interfaces/IDataStore';
+import { ICache } from '../apis/interfaces/ICache';
 import { ServerInfo } from './ServerInfo';
 
 /**

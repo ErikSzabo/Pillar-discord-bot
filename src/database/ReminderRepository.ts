@@ -1,7 +1,7 @@
 import { ICollection } from 'monk';
 import { Reminder } from '../reminder/Reminder';
 import { db } from './database';
-import { IDataStore } from './IDataStore';
+import { IDataStore } from '../apis/interfaces/IDataStore';
 
 class ReminderRepository implements IDataStore<Reminder> {
   protected collection: ICollection<Reminder>;

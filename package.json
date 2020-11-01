@@ -7,7 +7,7 @@
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
     "build": "tsc -p .",
-    "fix": "concurrently \"cpx package-hotfixes/index.js node_modules/miniget/dist\" \"cpx package-hotfixes/info.js node_modules/ytdl-core/lib\"",
+    "fix": "cpx package-hotfixes/index.js node_modules/miniget/dist",
     "postinstall": "npm run fix"
   },
   "keywords": [
@@ -27,7 +27,7 @@
     "node-schedule": "^1.3.2",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.0",
-    "ytdl-core": "^4.0.1"
+    "ytdl-core": "^4.0.2"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",

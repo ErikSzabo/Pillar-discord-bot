@@ -5,7 +5,7 @@ import {
   VoiceChannel,
   VoiceConnection,
 } from 'discord.js';
-import { ICache } from '../generic/ICache';
+import { ICache } from '../interfaces/ICache';
 
 export interface SongData {
   title: string;
@@ -24,7 +24,7 @@ export interface ServerMusicData {
 /**
  * Caches music information about the servers.
  */
-class MusicCache implements ICache<ServerMusicData> {
+export class MusicCache implements ICache<ServerMusicData> {
   /**
    * Map to hold the information about the servers.
    */
@@ -63,5 +63,3 @@ class MusicCache implements ICache<ServerMusicData> {
     this.cache.delete(serverID);
   }
 }
-
-export const musicCache = new MusicCache();

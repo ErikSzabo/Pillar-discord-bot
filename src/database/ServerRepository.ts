@@ -1,7 +1,7 @@
 import { ICollection } from 'monk';
 import { ServerInfo } from '../generic/ServerInfo';
 import { db } from './database';
-import { IDataStore } from './IDataStore';
+import { IDataStore } from '../apis/interfaces/IDataStore';
 
 class ServerRepository implements IDataStore<ServerInfo> {
   protected collection: ICollection<ServerInfo>;
