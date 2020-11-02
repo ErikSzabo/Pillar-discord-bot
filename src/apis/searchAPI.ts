@@ -47,7 +47,7 @@ function parseData(raw: string, start: number, end: number): YoutubeApiData {
     []
   );
 
-  if (result.length < 1) throw new Error('No matches found for the query!');
+  if (result.length < 1) return null;
   return result[0];
 }
 
@@ -59,6 +59,7 @@ export async function ytsr(searchQuery: string) {
   const [startIndex, endIndex] = getIndexes(rawData);
 
   const data = parseData(rawData, startIndex, endIndex);
+  if (!data) return null;
 
   return {
     title: data.title.runs[0].text,

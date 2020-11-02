@@ -1,8 +1,6 @@
-import * as ytdl from 'ytdl-core';
 import { ytsr } from '../../apis/searchAPI';
-import { Message, Permissions, VoiceChannel, Util } from 'discord.js';
+import { Message, Permissions, VoiceChannel } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { CustomError } from '../../generic/CustomError';
 import { language } from '../../language/LanguageManager';
 import { checkVoiceChannelMatch } from '../../utils';
 import { musicAPI } from '../../apis/music/musicAPI';
@@ -22,38 +20,48 @@ export class PlayCommand extends Command {
       ? voiceChannel.permissionsFor(message.client.user)
       : null;
 
-    try {
-      this.checkErrors(voiceChannel, permissions, serverID, args);
-    } catch (error) {
-      message.channel.send(error.embed);
+    const error = this.checkErrors(voiceChannel, permissions, args);
+    if (error) {
+      message.channel.send(language.get(serverID, error));
       return;
     }
 
     if (musicAPI.hasQueue(serverID)) {
-      try {
-        checkVoiceChannelMatch(message, voiceChannel, serverID);
-      } catch (err) {
-        message.channel.send(err.embed);
-        return;
-      }
-      const music = await this.getSong(song, message);
-      if (!music) {
-        message.channel.send(language.get(serverID, 'songNotFound', { song }));
-        return;
-      }
-      musicAPI.queue(serverID, music);
-      message.channel.send(
-        language.get(serverID, 'songQueued', { song: music.title })
-      );
+      this.handleExisting(message, voiceChannel, serverID, song);
+    } else {
+      this.handleNew(message, voiceChannel, serverID, song);
+    }
+  }
+
+  private async handleExisting(
+    message: Message,
+    voiceChannel: VoiceChannel,
+    serverID: string,
+    song: string
+  ) {
+    try {
+      checkVoiceChannelMatch(message, voiceChannel, serverID);
+    } catch (err) {
+      message.channel.send(err.embed);
       return;
     }
+    const music = await this.handleMusicRetrieving(song, message);
+    if (!music) return;
+    musicAPI.queue(serverID, music);
+    message.channel.send(
+      language.get(serverID, 'songQueued', { song: music.title })
+    );
+  }
 
+  private async handleNew(
+    message: Message,
+    voiceChannel: VoiceChannel,
+    serverID: string,
+    song: string
+  ) {
     try {
-      const music = await this.getSong(song, message);
-      if (!music) {
-        message.channel.send(language.get(serverID, 'songNotFound', { song }));
-        return;
-      }
+      const music = await this.handleMusicRetrieving(song, message);
+      if (!music) return;
       if (!musicAPI.isConnected(serverID))
         await musicAPI.connect(serverID, voiceChannel);
       musicAPI.queue(serverID, music);
@@ -66,37 +74,34 @@ export class PlayCommand extends Command {
   private checkErrors(
     voiceChannel: VoiceChannel,
     permissions: Readonly<Permissions>,
-    serverID: string,
     args: Array<string>
-  ): void {
-    if (!args || args.length < 1) {
-      throw new CustomError(language.get(serverID, 'notEnoughArguments'));
-    } else if (!voiceChannel) {
-      throw new CustomError(language.get(serverID, 'notInVoiceChannel'));
-    } else if (!permissions.has('CONNECT')) {
-      throw new CustomError(language.get(serverID, 'noBotPermToJoinVoice'));
-    } else if (!permissions.has('SPEAK')) {
-      throw new CustomError(language.get(serverID, 'noBotPermToSpeak'));
-    }
+  ): string {
+    if (!args || args.length < 1) return 'notEnoughArguments';
+    else if (!voiceChannel) return 'notInVoiceChannel';
+    else if (!permissions.has('CONNECT')) return 'noBotPermToJoinVoice';
+    else if (!permissions.has('SPEAK')) return 'noBotPermToSpeak';
   }
 
-  private async getSong(query: string, message: Message) {
+  private async getMusicData(query: string, message: Message) {
     const channel = message.channel;
-    if (ytdl.validateURL(query)) {
-      const info = await ytdl.getInfo(query);
-      return {
-        title: Util.escapeMarkdown(info.videoDetails.title),
-        url: info.videoDetails.video_url,
-        channel,
-      };
+    if (musicAPI.validateYoutubeUrl(query)) {
+      const info = await musicAPI.getVideoDetails(query);
+      return { ...info, channel };
     }
+    const info = await ytsr(query);
+    if (!info) return null;
+    return { ...info, channel };
+  }
 
-    try {
-      const { title, url } = await ytsr(query);
-      return { title, url, channel };
-    } catch (err) {
+  private async handleMusicRetrieving(song: string, message: Message) {
+    const music = await this.getMusicData(song, message);
+    if (!music) {
+      message.channel.send(
+        language.get(message.guild.id, 'songNotFound', { song })
+      );
       return null;
     }
+    return music;
   }
 
   private nowPlayingHandler(serverID: string, music: SongData) {

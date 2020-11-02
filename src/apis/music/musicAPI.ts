@@ -1,4 +1,4 @@
-import { VoiceChannel } from 'discord.js';
+import { Util, VoiceChannel } from 'discord.js';
 import { EventEmitter } from 'events';
 import * as ytdl from 'ytdl-core';
 import * as ffmpeg from 'ffmpeg-static';
@@ -40,6 +40,12 @@ class MusicAPI extends EventEmitter {
     return data && data.songs.length > 0;
   }
 
+  /**
+   * Returns whether the server is connected to a voice
+   * channel or not.
+   *
+   * @param serverID id of the server which will be checked
+   */
   public isConnected(serverID: string): boolean {
     return (
       this.cache.isCached(serverID) &&
@@ -178,11 +184,40 @@ class MusicAPI extends EventEmitter {
     this.cache.get(serverID).songs.push(song);
   }
 
+  /**
+   * Starts playing the music. Caching and voice channel
+   * connection required, otherwise an error will be thrown.
+   *
+   * @param serverID id of the server which will be checked
+   */
   public startPlaying(serverID: string) {
     if (!this.cache.isCached(serverID)) throw new Error('CantPlayMissingCache');
     const musicData = this.cache.get(serverID);
     if (!musicData.connection) throw new Error('CantPlayNoConnection');
     this.continousPlay(serverID);
+  }
+
+  /**
+   * Returns true if the provided url is a valid
+   * youtube url.
+   *
+   * @param url youtube url to be checked
+   */
+  public validateYoutubeUrl(url: string) {
+    return ytdl.validateURL(url);
+  }
+
+  /**
+   * Returns the title and the url of the provided video.
+   *
+   * @param url youtube url to get the info from
+   */
+  public async getVideoDetails(url: string) {
+    const info = await ytdl.getInfo(url);
+    return {
+      title: Util.escapeMarkdown(info.videoDetails.title),
+      url: info.videoDetails.video_url,
+    };
   }
 
   private continousPlay(serverID: string) {
