@@ -234,7 +234,7 @@ class MusicAPI extends EventEmitter {
       };
       const song = musicData.songs[0];
       let dispatcher = musicData.connection
-        .play(ytdl(song.url))
+        .play(ytdl(song.url, { filter: 'audioonly', quality: 'highestaudio' }))
         .on('finish', handler)
         .on('error', handler);
 
