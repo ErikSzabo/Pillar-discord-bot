@@ -66,7 +66,7 @@ Reminder
 
 Poll
 
-- !poll "question" "answer1" "answer2" "answerX" -- létrehoz egy kérdőívet
+- !poll "question" "answer1" "answer2" "answerX" -- creates a poll
 
 Welcome-Leave
 
