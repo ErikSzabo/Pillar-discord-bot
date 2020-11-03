@@ -296,6 +296,7 @@ class MusicAPI extends EventEmitter {
       musicData.isPlaying = true;
       dispatcher.setVolumeLogarithmic(musicData.volume / 5);
     } catch (err) {
+      console.log(err);
       musicData.songs.shift();
       this.continousPlay(serverID);
     }
