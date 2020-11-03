@@ -5,25 +5,25 @@ import { musicAPI } from '../../apis/musicAPI';
 import { IApplication } from '../../application';
 
 export class StopCommand extends Command {
-  constructor() {
-    super('stop', 'stop');
+  constructor(app: IApplication) {
+    super('stop', 'stop', app);
   }
 
-  public execute(app: IApplication, args: string[], message: Message) {
+  public execute(args: string[], message: Message) {
     const serverID = message.guild.id;
     const voiceChannel = message.member.voice.channel;
 
     if (checkVoiceChannelMisMatch(message, voiceChannel)) {
-      message.channel.send(app.message(serverID, 'noVoiceChannelMatch'));
+      message.channel.send(this.app.message(serverID, 'noVoiceChannelMatch'));
       return;
     }
 
     try {
       musicAPI.stop(serverID);
-      message.channel.send(app.message(serverID, 'musicStoppedCleared'));
+      message.channel.send(this.app.message(serverID, 'musicStoppedCleared'));
     } catch (err) {
       if (err.message === 'noMusicToStop')
-        message.channel.send(app.message(serverID, err.message));
+        message.channel.send(this.app.message(serverID, err.message));
     }
   }
 }

@@ -4,22 +4,20 @@ import { logger } from '../../logger';
 import { IApplication } from '../../application';
 
 export class WelcomeMessageCommand extends Command {
-  constructor() {
-    super('welcome-message', 'welcome-message <message>');
+  constructor(app: IApplication) {
+    super('welcome-message', 'welcome-message <message>', app);
   }
 
-  public async execute(
-    app: IApplication,
-    args: Array<string>,
-    message: Message
-  ) {
+  public async execute(args: string[], message: Message) {
     const serverID = message.guild.id;
     if (args[0].toLowerCase() === 'off') {
       try {
-        await app.getServerStore().update(serverID, { welcomeMessage: 'off' });
-        message.channel.send(app.message(serverID, 'welcomeMessageOff'));
+        await this.app
+          .getServerStore()
+          .update(serverID, { welcomeMessage: 'off' });
+        message.channel.send(this.app.message(serverID, 'welcomeMessageOff'));
       } catch (error) {
-        message.channel.send(app.message(serverID, 'botError'));
+        message.channel.send(this.app.message(serverID, 'botError'));
         logger.error(error.message);
       } finally {
         return;
@@ -27,21 +25,23 @@ export class WelcomeMessageCommand extends Command {
     }
 
     const welcomeMessage = message.content
-      .slice(app.getConfig().prefix.length + this.getName().length)
+      .slice(this.app.getConfig().prefix.length + this.getName().length)
       .trim();
 
     if (!welcomeMessage) {
-      message.channel.send(app.message(serverID, 'welcomeMessageEmpty'));
+      message.channel.send(this.app.message(serverID, 'welcomeMessageEmpty'));
       return;
     }
 
     try {
-      await app.getServerStore().update(serverID, { welcomeMessage });
+      await this.app.getServerStore().update(serverID, { welcomeMessage });
       message.channel.send(
-        app.message(serverID, 'welcomeMessageSet', { message: welcomeMessage })
+        this.app.message(serverID, 'welcomeMessageSet', {
+          message: welcomeMessage,
+        })
       );
     } catch (error) {
-      message.channel.send(app.message(serverID, 'botError'));
+      message.channel.send(this.app.message(serverID, 'botError'));
       logger.error(error.message);
     }
   }

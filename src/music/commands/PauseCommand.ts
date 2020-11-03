@@ -5,25 +5,25 @@ import { musicAPI } from '../../apis/musicAPI';
 import { IApplication } from '../../application';
 
 export class PauseCommand extends Command {
-  constructor() {
-    super('pause', 'pause');
+  constructor(app: IApplication) {
+    super('pause', 'pause', app);
   }
 
-  public execute(app: IApplication, args: string[], message: Message) {
+  public execute(args: string[], message: Message) {
     const voiceChannel = message.member.voice.channel;
     const serverID = message.guild.id;
 
     if (checkVoiceChannelMisMatch(message, voiceChannel)) {
-      message.channel.send(app.message(serverID, 'noVoiceChannelMatch'));
+      message.channel.send(this.app.message(serverID, 'noVoiceChannelMatch'));
       return;
     }
 
     try {
       const song = musicAPI.pause(serverID);
-      message.channel.send(app.message(serverID, 'musicPaused', { song }));
+      message.channel.send(this.app.message(serverID, 'musicPaused', { song }));
     } catch (err) {
       if (err.message === 'nothingToPause')
-        message.channel.send(app.message(serverID, 'nothingToPause'));
+        message.channel.send(this.app.message(serverID, 'nothingToPause'));
     }
   }
 }

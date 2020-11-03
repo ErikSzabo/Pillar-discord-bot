@@ -16,10 +16,14 @@ export class GeneralManager extends CommandManager {
   constructor(name: string, ...commandManagers: Array<CommandManager>) {
     super(name);
     this.commandManagers = commandManagers;
-    this.addCommand(new SetRoleCommand());
-    this.addCommand(new LanguageCommand());
-    this.addCommand(new TimezoneCommand());
-    this.addCommand(new HelpCommand([...commandManagers, this]));
+  }
+
+  public initialize(app: IApplication) {
+    this.commandManagers.forEach((manager) => manager.initialize(app));
+    this.addCommand(new SetRoleCommand(app));
+    this.addCommand(new LanguageCommand(app));
+    this.addCommand(new TimezoneCommand(app));
+    this.addCommand(new HelpCommand(app, [...this.commandManagers, this]));
   }
 
   public handle(
@@ -29,7 +33,7 @@ export class GeneralManager extends CommandManager {
     message: Message
   ): void {
     if (this.commands.has(command)) {
-      this.commands.get(command).execute(app, args, message);
+      this.commands.get(command).execute(args, message);
       return;
     }
 

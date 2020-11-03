@@ -14,14 +14,17 @@ import { IApplication } from '../application';
 export class MusicManager extends CommandManager {
   constructor(name: string) {
     super(name);
-    this.addCommand(new PauseCommand());
-    this.addCommand(new PlayCommand());
-    this.addCommand(new QueueCommand());
-    this.addCommand(new ResumeCommand());
-    this.addCommand(new SkipCommand());
-    this.addCommand(new StopCommand());
-    this.addCommand(new VolumeCommand());
-    this.addCommand(new MusicChannelCommand());
+  }
+
+  public initialize(app: IApplication) {
+    this.addCommand(new PauseCommand(app));
+    this.addCommand(new PlayCommand(app));
+    this.addCommand(new QueueCommand(app));
+    this.addCommand(new ResumeCommand(app));
+    this.addCommand(new SkipCommand(app));
+    this.addCommand(new StopCommand(app));
+    this.addCommand(new VolumeCommand(app));
+    this.addCommand(new MusicChannelCommand(app));
   }
 
   public handle(
@@ -41,7 +44,7 @@ export class MusicManager extends CommandManager {
       return;
     }
     if (this.commands.has(command)) {
-      this.commands.get(command).execute(app, args, message);
+      this.commands.get(command).execute(args, message);
     }
   }
 }

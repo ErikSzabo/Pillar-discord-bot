@@ -5,18 +5,14 @@ import { Timezones } from '../../apis/timezoneAPI';
 import { IApplication } from '../../application';
 
 export class InfoCommand extends Command {
-  constructor() {
-    super('r-info', 'r-info');
+  constructor(app: IApplication) {
+    super('r-info', 'r-info', app);
   }
 
-  public async execute(
-    app: IApplication,
-    args: Array<string>,
-    message: Message
-  ) {
+  public async execute(args: string[], message: Message) {
     const serverID = message.guild.id;
-    const zone = app.getServerStore().get(serverID).timezone;
-    const reminders = app.getReminderStore().getAll({ serverID });
+    const zone = this.app.getServerStore().get(serverID).timezone;
+    const reminders = this.app.getReminderStore().getAll({ serverID });
     const remindersAsString = reminders
       .map(
         (reminder) =>

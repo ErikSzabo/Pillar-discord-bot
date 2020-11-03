@@ -6,74 +6,36 @@ import { IApplication } from '../application';
  * Interface for command managers.
  */
 export interface ICommandManager {
-  addCommand(command: Command): void;
-  removeCommand(commandName: string): void;
-  handle(
-    app: IApplication,
-    command: string,
-    args: string[],
-    message: Message
-  ): void;
-  getCommands(): Array<Command>;
-  getCommandNames(): Array<string>;
-}
-
-/**
- * Abstract CommandManager class, implements the default functionality.
- */
-export abstract class CommandManager implements ICommandManager {
-  protected commands: Map<string, Command>;
-  protected name: string;
-
-  /**
-   * Constructor to setup the commandManager name and its commands.
-   *
-   * @param name name of the CommandManager, will be displayed in the help page
-   */
-  constructor(name: string) {
-    this.name = name;
-    this.commands = new Map<string, Command>();
-  }
-
   /**
    * Adds a command to the manager.
    *
    * @param command command to add to the manager
    */
-  public addCommand(command: Command): void {
-    this.commands.set(command.getName(), command);
-  }
-
+  addCommand(command: Command): void;
   /**
    * Removes a command from a manager.
    *
    * @param commandName name of the command which will be removed from the manager
    */
-  public removeCommand(commandName: string): void {
-    this.commands.delete(commandName);
-  }
-
+  removeCommand(commandName: string): void;
   /**
    * @returns All of the commands in the manager.
    */
-  public getCommands(): Array<Command> {
-    return Array.from(this.commands.values());
-  }
-
+  getCommands(): Command[];
   /**
    * @returns the names of the commands in the command manager
    */
-  public getCommandNames(): Array<string> {
-    return Array.from(this.commands.keys());
-  }
-
+  getCommandNames(): string[];
+  /**
+   * Creates and initializes the commands in the manager.
+   *
+   * @param app main application
+   */
+  initialize(app: IApplication): void;
   /**
    * @returns the name of the command manager
    */
-  public getName(): string {
-    return this.name;
-  }
-
+  getName(): string;
   /**
    * Forwards the information to the right command if possible.
    *
@@ -81,6 +43,45 @@ export abstract class CommandManager implements ICommandManager {
    * @param args    command arguments
    * @param message discord message
    */
+  handle(
+    app: IApplication,
+    command: string,
+    args: string[],
+    message: Message
+  ): void;
+}
+
+export abstract class CommandManager implements ICommandManager {
+  protected commands: Map<string, Command>;
+  protected name: string;
+
+  constructor(name: string) {
+    this.name = name;
+    this.commands = new Map<string, Command>();
+  }
+
+  public abstract initialize(app: IApplication): void;
+
+  public addCommand(command: Command): void {
+    this.commands.set(command.getName(), command);
+  }
+
+  public removeCommand(commandName: string): void {
+    this.commands.delete(commandName);
+  }
+
+  public getCommands(): Array<Command> {
+    return Array.from(this.commands.values());
+  }
+
+  public getCommandNames(): Array<string> {
+    return Array.from(this.commands.keys());
+  }
+
+  public getName(): string {
+    return this.name;
+  }
+
   abstract handle(
     app: IApplication,
     command: string,

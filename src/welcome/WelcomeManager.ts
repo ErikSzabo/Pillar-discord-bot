@@ -8,9 +8,12 @@ import { IApplication } from '../application';
 export class WelcomeManager extends CommandManager {
   constructor(name: string) {
     super(name);
-    this.addCommand(new WelcomeMessageCommand());
-    this.addCommand(new LeaveMessageCommand());
-    this.addCommand(new WelcomeChannelCommand());
+  }
+
+  public initialize(app: IApplication) {
+    this.addCommand(new WelcomeMessageCommand(app));
+    this.addCommand(new LeaveMessageCommand(app));
+    this.addCommand(new WelcomeChannelCommand(app));
   }
 
   public handle(
@@ -21,11 +24,9 @@ export class WelcomeManager extends CommandManager {
   ): void {
     if (!this.commands.has(command)) return;
     const serverID = message.guild.id;
-    const modRole = app.getServerStore().get(serverID).moderationRole;
-    try {
-      app.checkPermission(modRole, message.member, serverID);
-    } catch (error) {
-      message.channel.send(error.embed);
+
+    if (!app.isModerator(serverID, message.member)) {
+      message.channel.send(app.message(serverID, 'noUserPerm'));
       return;
     }
 
@@ -34,6 +35,6 @@ export class WelcomeManager extends CommandManager {
       return;
     }
 
-    this.commands.get(command).execute(app, args, message);
+    this.commands.get(command).execute(args, message);
   }
 }

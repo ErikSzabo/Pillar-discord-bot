@@ -14,13 +14,19 @@ export abstract class Command {
   private usage: string;
 
   /**
+   * Main application, that controls the command.
+   */
+  protected app: IApplication;
+
+  /**
    * Constructor to initialize the name.
    *
    * @param name name/prefix for the command.
    */
-  constructor(name: string, usage: string) {
+  constructor(name: string, usage: string, app: IApplication) {
     this.name = name;
     this.usage = usage;
+    this.app = app;
   }
 
   /**
@@ -29,11 +35,7 @@ export abstract class Command {
    * @param args     command arguments
    * @param message  command message
    */
-  abstract execute(
-    app: IApplication,
-    args: Array<string>,
-    message: Message
-  ): void;
+  abstract execute(args: Array<string>, message: Message): void;
 
   /**
    * @returns the name of the command

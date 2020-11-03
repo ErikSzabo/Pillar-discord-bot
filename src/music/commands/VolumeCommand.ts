@@ -5,17 +5,17 @@ import { musicAPI } from '../../apis/musicAPI';
 import { IApplication } from '../../application';
 
 export class VolumeCommand extends Command {
-  constructor() {
-    super('volume', 'volume <number>');
+  constructor(app: IApplication) {
+    super('volume', 'volume <number>', app);
   }
 
-  public execute(app: IApplication, args: string[], message: Message) {
+  public execute(args: string[], message: Message) {
     const voiceChannel = message.member.voice.channel;
     const serverID = message.guild.id;
     const errors = ['cantChangeVolume', 'notNumberVolume'];
 
     if (checkVoiceChannelMisMatch(message, voiceChannel)) {
-      message.channel.send(app.message(serverID, 'noVoiceChannelMatch'));
+      message.channel.send(this.app.message(serverID, 'noVoiceChannelMatch'));
       return;
     }
 
@@ -23,20 +23,20 @@ export class VolumeCommand extends Command {
       const volume = musicAPI.getVolume(serverID);
       if (volume) {
         message.channel.send(
-          app.message(serverID, 'currentVolume', { volume })
+          this.app.message(serverID, 'currentVolume', { volume })
         );
       } else {
-        message.channel.send(app.message(serverID, 'cantChangeVolume'));
+        message.channel.send(this.app.message(serverID, 'cantChangeVolume'));
       }
       return;
     }
 
     try {
       const volume = musicAPI.volume(serverID, args[0]);
-      message.channel.send(app.message(serverID, 'volumeSet', { volume }));
+      message.channel.send(this.app.message(serverID, 'volumeSet', { volume }));
     } catch (err) {
       if (errors.includes(err.message))
-        message.channel.send(app.message(serverID, err.message));
+        message.channel.send(this.app.message(serverID, err.message));
     }
   }
 }

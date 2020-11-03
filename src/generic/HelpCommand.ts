@@ -10,18 +10,15 @@ import { IApplication } from '../application';
 export class HelpCommand extends Command {
   private commandManagers: Array<CommandManager>;
 
-  constructor(commandManagers: Array<CommandManager>) {
-    super('help', 'help');
+  constructor(app: IApplication, commandManagers: CommandManager[]) {
+    super('help', 'help', app);
     this.commandManagers = commandManagers;
   }
 
-  /**
-   * @see Command
-   */
-  public execute(app: IApplication, args: string[], message: Message) {
+  public execute(args: string[], message: Message) {
     const serverID = message.guild.id;
     message.channel.send(
-      createEmbed('⁉ Help', this.createHelpPage(serverID, app), false)
+      createEmbed('⁉ Help', this.createHelpPage(serverID), false)
     );
   }
 
@@ -32,12 +29,12 @@ export class HelpCommand extends Command {
    * @param cmd      command
    * @param serverID the id of a server
    */
-  private create(cmd: Command, serverID: string, app: IApplication): string {
+  private create(cmd: Command, serverID: string): string {
     return `- **${
-      app.getConfig().prefix
+      this.app.getConfig().prefix
     }${cmd.getUsage()}** -- ${cmd.getDescription(
-      app,
-      app.getServerStore().get(serverID).language
+      this.app,
+      this.app.getServerStore().get(serverID).language
     )}\n`;
   }
 
@@ -46,14 +43,14 @@ export class HelpCommand extends Command {
    *
    * @param serverID the id of a server
    */
-  private createHelpPage(serverID: string, app: IApplication): string {
+  private createHelpPage(serverID: string): string {
     return this.commandManagers
       .map((manager) => {
         let managerString = `✅ __**${manager.getName()}**__\n`;
         manager
           .getCommands()
           .forEach(
-            (command) => (managerString += this.create(command, serverID, app))
+            (command) => (managerString += this.create(command, serverID))
           );
         return managerString;
       })

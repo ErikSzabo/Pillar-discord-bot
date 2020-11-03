@@ -4,19 +4,19 @@ import { Command } from '../../generic/Command';
 import { parseQuotedArgs } from '../../utils';
 
 export class PollCommand extends Command {
-  constructor() {
-    super('poll', 'poll "question" "answer1" "answer2" "answerX"');
+  constructor(app: IApplication) {
+    super('poll', 'poll "question" "answer1" "answer2" "answerX"', app);
   }
 
-  public execute(app: IApplication, args: string[], message: Message): void {
+  public execute(args: string[], message: Message): void {
     args = parseQuotedArgs(message, this.getName());
     const serverID = message.guild.id;
     if (args.length <= 1) {
-      message.channel.send(app.message(serverID, 'pollQuestionRequired'));
+      message.channel.send(this.app.message(serverID, 'pollQuestionRequired'));
       return;
     }
     if (args.length > 20) {
-      message.channel.send(app.message(serverID, 'pollOptionLimit'));
+      message.channel.send(this.app.message(serverID, 'pollOptionLimit'));
       return;
     }
 

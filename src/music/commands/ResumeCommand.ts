@@ -5,22 +5,24 @@ import { musicAPI } from '../../apis/musicAPI';
 import { IApplication } from '../../application';
 
 export class ResumeCommand extends Command {
-  constructor() {
-    super('resume', 'resume');
+  constructor(app: IApplication) {
+    super('resume', 'resume', app);
   }
 
-  public execute(app: IApplication, args: string[], message: Message) {
+  public execute(args: string[], message: Message) {
     const serverID = message.guild.id;
     const voiceChannel = message.member.voice.channel;
 
     if (checkVoiceChannelMisMatch(message, voiceChannel)) {
-      message.channel.send(app.message(serverID, 'noVoiceChannelMatch'));
+      message.channel.send(this.app.message(serverID, 'noVoiceChannelMatch'));
       return;
     }
 
     try {
       const song = musicAPI.resume(serverID);
-      message.channel.send(app.message(serverID, 'musicResumed', { song }));
+      message.channel.send(
+        this.app.message(serverID, 'musicResumed', { song })
+      );
     } catch (err) {
       if (err.message === 'alreadyPlaying') message.delete();
     }

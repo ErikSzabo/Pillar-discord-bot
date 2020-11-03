@@ -15,13 +15,13 @@ export class ServerScheduler {
     serverID: string,
     jobName: string,
     date: Date,
-    timezone: Timezone,
-    callback: () => void
+    callback: () => void,
+    timezone?: Timezone
   ) {
-    const utcDate = Timezones.UTC.convert(date, timezone);
-    if (utcDate.getTime() < Date.now()) return;
+    if (timezone) date = Timezones.UTC.convert(date, timezone);
+    if (date.getTime() < Date.now()) return;
 
-    date = new Date(utcDate.getTime());
+    date = new Date(date.getTime());
     if (this.jobs.has(serverID)) {
       this.jobs.get(serverID).push(scheduleJob(jobName, date, callback));
     } else {
@@ -70,15 +70,21 @@ export class ServerScheduler {
     const timezone = Timezones[zone];
     const date = new Date(reminder.date.getTime() - timeOffset);
     const taskName = `${reminder.serverID}${reminder.date}${reminder.title}`;
-    scheduler.schedule(reminder.serverID, taskName, date, timezone, () => {
-      channel.send(embed);
-      if (timeOffset !== 0) return;
-      app
-        .getReminderStore()
-        .delete(reminder.serverID, { title: reminder.title })
-        .catch((err) => console.log);
-      this.terminate(reminder.serverID, taskName);
-    });
+    scheduler.schedule(
+      reminder.serverID,
+      taskName,
+      date,
+      () => {
+        channel.send(embed);
+        if (timeOffset !== 0) return;
+        app
+          .getReminderStore()
+          .delete(reminder.serverID, { title: reminder.title })
+          .catch((err) => console.log);
+        this.terminate(reminder.serverID, taskName);
+      },
+      timezone
+    );
   }
 
   private createEventResponseArray(app: IApplication, reminder: Reminder) {

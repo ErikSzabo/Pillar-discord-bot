@@ -5,23 +5,21 @@ import { logger } from '../logger';
 import { Command } from './Command';
 
 export class TimezoneCommand extends Command {
-  constructor() {
-    super('timezone', 'timezone [new timezone]');
+  constructor(app: IApplication) {
+    super('timezone', 'timezone [new timezone]', app);
   }
 
-  async execute(app: IApplication, args: string[], message: Message) {
+  async execute(args: string[], message: Message) {
     const serverID = message.guild.id;
-    const serverData = app.getServerStore().get(serverID);
-    try {
-      app.checkPermission(serverData.moderationRole, message.member, serverID);
-    } catch (err) {
-      message.channel.send(app.message(serverID, 'noUserPerm'));
+
+    if (!this.app.isModerator(serverID, message.member)) {
+      message.channel.send(this.app.message(serverID, 'noUserPerm'));
       return;
     }
 
     if (!args[0]) {
       message.channel.send(
-        app.message(serverID, 'availableTimezones', {
+        this.app.message(serverID, 'availableTimezones', {
           timezone: Object.keys(Timezones).join(', '),
         })
       );
@@ -32,7 +30,7 @@ export class TimezoneCommand extends Command {
 
     if (!Object.keys(Timezones).includes(timezone)) {
       message.channel.send(
-        app.message(serverID, 'availableTimezones', {
+        this.app.message(serverID, 'availableTimezones', {
           timezone: Object.keys(Timezones).join(', '),
         })
       );
@@ -41,10 +39,12 @@ export class TimezoneCommand extends Command {
 
     try {
       // @ts-ignore
-      await app.getServerStore().update(serverID, { timezone });
-      message.channel.send(app.message(serverID, 'timezoneSet', { timezone }));
+      await this.app.getServerStore().update(serverID, { timezone });
+      message.channel.send(
+        this.app.message(serverID, 'timezoneSet', { timezone })
+      );
     } catch (error) {
-      message.channel.send(app.message(serverID, 'botError'));
+      message.channel.send(this.app.message(serverID, 'botError'));
       logger.error(error.message);
     }
   }

@@ -1,57 +1,49 @@
 import { Message } from 'discord.js';
 import { parseQuotedArgs } from '../../utils';
-import { CustomError } from '../../generic/CustomError';
 import { Command } from '../../generic/Command';
 import { logger } from '../../logger';
 import { IApplication } from '../../application';
 
 export class DeleteCommand extends Command {
-  constructor() {
-    super('r-delete', 'r-delete "name"');
+  constructor(app: IApplication) {
+    super('r-delete', 'r-delete "name"', app);
   }
 
-  public async execute(
-    app: IApplication,
-    args: Array<string>,
-    message: Message
-  ) {
+  public async execute(args: string[], message: Message) {
     const serverID = message.guild.id;
     let title: string;
 
     try {
-      title = this.parseReminderName(app, message);
+      title = this.parseReminderName(message);
     } catch (err) {
-      message.channel.send(err.embed);
+      message.channel.send(this.app.message(serverID, err.message));
       return;
     }
 
-    const [reminder] = app.getReminderStore().getAll({ title, serverID });
+    const [reminder] = this.app.getReminderStore().getAll({ title, serverID });
     if (reminder) {
       try {
-        await app.getReminderStore().delete(serverID, { title });
+        await this.app.getReminderStore().delete(serverID, { title });
         message.channel.send(
-          app.message(serverID, 'reminderDeleted', { reminder: title })
+          this.app.message(serverID, 'reminderDeleted', { reminder: title })
         );
       } catch (error) {
         console.log(error);
-        message.channel.send(app.message(serverID, 'botError'));
+        message.channel.send(this.app.message(serverID, 'botError'));
         logger.error(error.message);
       }
     } else {
       message.channel.send(
-        app.message(serverID, 'reminderNotFound', { reminder: title })
+        this.app.message(serverID, 'reminderNotFound', { reminder: title })
       );
       return;
     }
   }
 
-  private parseReminderName(app: IApplication, message: Message): string {
+  private parseReminderName(message: Message): string {
     const msg = parseQuotedArgs(message, this.getName());
 
-    if (msg.length < 1)
-      throw new CustomError(
-        app.message(message.guild.id, 'notEnoughArguments')
-      );
+    if (msg.length < 1) throw new Error('notEnoughArguments');
 
     return msg[0];
   }

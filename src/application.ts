@@ -1,15 +1,7 @@
-import {
-  Client,
-  Guild,
-  GuildMember,
-  Intents,
-  Message,
-  MessageEmbed,
-} from 'discord.js';
-import { Timezone, Timezones } from './apis/timezoneAPI';
+import { Client, Guild, GuildMember, Message, MessageEmbed } from 'discord.js';
+import { Timezones } from './apis/timezoneAPI';
 import { config, Config } from './config';
 import { DataStore } from './database/DataStore';
-import { CustomError } from './generic/CustomError';
 import { ICommandManager } from './generic/ICommandManager';
 import { ServerInfo } from './generic/ServerInfo';
 import { LanguageManager, Placeholder } from './language/LanguageManager';
@@ -67,13 +59,20 @@ export interface IApplication {
    */
   message(serverID: string, prop: string, options?: Placeholder): MessageEmbed;
   /**
-   * Checks if the member has the role or not. Throws error if not.
+   * Checks if the member has the role or not.
    *
    * @param role      role to check
    * @param member    guild member
-   * @param serverID  server to check te role on
    */
-  checkPermission(role: string, member: GuildMember, serverID: string): void;
+  hasPermissionRole(role: string, member: GuildMember): boolean;
+  /**
+   * Checks if a guild member is able to perform special actions
+   * that requires moderation role or not.
+   *
+   * @param serverID server to check the member on
+   * @param member   member to check
+   */
+  isModerator(serverID: string, member: GuildMember): boolean;
 }
 
 export class Application implements IApplication {
@@ -141,18 +140,25 @@ export class Application implements IApplication {
     return this.languageManager.get(locale, prop, options);
   }
 
-  public checkPermission(
-    roleToCheck: string,
-    member: GuildMember,
-    serverID: string
-  ): void {
-    if (member.permissions.has('ADMINISTRATOR')) return;
-    if (roleToCheck !== 'off' && !member.roles.cache.has(roleToCheck)) {
-      throw new CustomError(this.languageManager.get(serverID, 'noUserPerm'));
-    }
+  public isModerator(serverID: string, member: GuildMember) {
+    const { moderationRole } = this.serverStore.get(serverID);
+    return (
+      moderationRole === 'off' ||
+      member.permissions.has('ADMINISTRATOR') ||
+      member.roles.cache.has(moderationRole)
+    );
+  }
+
+  public hasPermissionRole(roleToCheck: string, member: GuildMember): boolean {
+    return (
+      member.permissions.has('ADMINISTRATOR') ||
+      roleToCheck === 'off' ||
+      member.roles.cache.has(roleToCheck)
+    );
   }
 
   public start(token: string) {
+    this.commandManager.initialize(this);
     this.subscribeToEvents();
     this.client.login(token);
   }

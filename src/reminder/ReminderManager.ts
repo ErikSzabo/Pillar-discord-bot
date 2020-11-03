@@ -8,9 +8,12 @@ import { IApplication } from '../application';
 export class ReminderManager extends CommandManager {
   constructor(name: string) {
     super(name);
-    this.addCommand(new AddCommand());
-    this.addCommand(new DeleteCommand());
-    this.addCommand(new InfoCommand());
+  }
+
+  public initialize(app: IApplication) {
+    this.addCommand(new AddCommand(app));
+    this.addCommand(new DeleteCommand(app));
+    this.addCommand(new InfoCommand(app));
   }
 
   public handle(
@@ -20,15 +23,14 @@ export class ReminderManager extends CommandManager {
     message: Message
   ) {
     if (!this.commands.has(command)) return;
+
     const serverID = message.guild.id;
-    const modRole = app.getServerStore().get(serverID).moderationRole;
-    try {
-      app.checkPermission(modRole, message.member, serverID);
-    } catch (error) {
-      message.channel.send(error.embed);
+
+    if (!app.isModerator(serverID, message.member)) {
+      message.channel.send(app.message(serverID, 'noUserPerm'));
       return;
     }
 
-    this.commands.get(command).execute(app, args, message);
+    this.commands.get(command).execute(args, message);
   }
 }
