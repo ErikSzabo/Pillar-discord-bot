@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import { language } from '../language/LanguageManager';
+import { IApplication } from '../application';
 
 export abstract class Command {
   /**
@@ -29,7 +29,11 @@ export abstract class Command {
    * @param args     command arguments
    * @param message  command message
    */
-  abstract execute(args: Array<string>, message: Message): void;
+  abstract execute(
+    app: IApplication,
+    args: Array<string>,
+    message: Message
+  ): void;
 
   /**
    * @returns the name of the command
@@ -41,8 +45,8 @@ export abstract class Command {
   /**
    * @returns the description of the command
    */
-  public getDescription(serverID: string): string {
-    return language.getCommandDescription(serverID, this.name);
+  public getDescription(app: IApplication, locale: string): string {
+    return app.getCommandDescription(locale, this.name);
   }
 
   /**

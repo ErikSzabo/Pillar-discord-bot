@@ -1,58 +1,56 @@
 import { Message } from 'discord.js';
 import { parseQuotedArgs } from '../../utils';
-import { reminderCache } from '../ReminderCache';
 import { CustomError } from '../../generic/CustomError';
 import { Command } from '../../generic/Command';
-import { language } from '../../language/LanguageManager';
-import { reminderRepository } from '../../database/ReminderRepository';
 import { logger } from '../../logger';
+import { IApplication } from '../../application';
 
 export class DeleteCommand extends Command {
   constructor() {
     super('r-delete', 'r-delete "name"');
   }
 
-  public async execute(args: Array<string>, message: Message) {
+  public async execute(
+    app: IApplication,
+    args: Array<string>,
+    message: Message
+  ) {
     const serverID = message.guild.id;
-    let reminderName: string;
+    let title: string;
 
     try {
-      reminderName = this.parseReminderName(message);
+      title = this.parseReminderName(app, message);
     } catch (err) {
       message.channel.send(err.embed);
       return;
     }
 
-    const [reminder] = reminderCache.findReminder(reminderName, serverID);
+    const [reminder] = app.getReminderStore().getAll({ title, serverID });
     if (reminder) {
       try {
-        await reminderRepository.delete(message.guild.id, {
-          title: reminderName,
-        });
-        reminderCache.remove(message.guild.id, { title: reminderName });
-
+        await app.getReminderStore().delete(serverID, { title });
         message.channel.send(
-          language.get(serverID, 'reminderDeleted', { reminder: reminderName })
+          app.message(serverID, 'reminderDeleted', { reminder: title })
         );
       } catch (error) {
         console.log(error);
-        message.channel.send(language.get(serverID, 'botError'));
+        message.channel.send(app.message(serverID, 'botError'));
         logger.error(error.message);
       }
     } else {
       message.channel.send(
-        language.get(serverID, 'reminderNotFound', { reminder: reminderName })
+        app.message(serverID, 'reminderNotFound', { reminder: title })
       );
       return;
     }
   }
 
-  private parseReminderName(message: Message): string {
+  private parseReminderName(app: IApplication, message: Message): string {
     const msg = parseQuotedArgs(message, this.getName());
 
     if (msg.length < 1)
       throw new CustomError(
-        language.get(message.guild.id, 'notEnoughArguments')
+        app.message(message.guild.id, 'notEnoughArguments')
       );
 
     return msg[0];

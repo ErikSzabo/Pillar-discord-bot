@@ -1,26 +1,29 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { checkVoiceChannelMatch } from '../../utils';
-import { language } from '../../language/LanguageManager';
-import { musicAPI } from '../../apis/music/musicAPI';
+import { checkVoiceChannelMisMatch } from '../../utils';
+import { musicAPI } from '../../apis/musicAPI';
+import { IApplication } from '../../application';
 
 export class PauseCommand extends Command {
   constructor() {
     super('pause', 'pause');
   }
 
-  public execute(args: Array<string>, message: Message): void {
+  public execute(app: IApplication, args: string[], message: Message) {
     const voiceChannel = message.member.voice.channel;
     const serverID = message.guild.id;
 
+    if (checkVoiceChannelMisMatch(message, voiceChannel)) {
+      message.channel.send(app.message(serverID, 'noVoiceChannelMatch'));
+      return;
+    }
+
     try {
-      checkVoiceChannelMatch(message, voiceChannel, serverID);
       const song = musicAPI.pause(serverID);
-      message.channel.send(language.get(serverID, 'musicPaused', { song }));
+      message.channel.send(app.message(serverID, 'musicPaused', { song }));
     } catch (err) {
       if (err.message === 'nothingToPause')
-        message.channel.send(language.get(serverID, 'nothingToPause'));
-      if (err.embed) message.channel.send(err.embed);
+        message.channel.send(app.message(serverID, 'nothingToPause'));
     }
   }
 }

@@ -1,9 +1,9 @@
 import { ICollection } from 'monk';
 import { ServerInfo } from '../generic/ServerInfo';
 import { db } from './database';
-import { IDataStore } from '../apis/interfaces/IDataStore';
+import { IDataStore } from './IDataStore';
 
-class ServerRepository implements IDataStore<ServerInfo> {
+export class ServerRepository implements IDataStore<ServerInfo> {
   protected collection: ICollection<ServerInfo>;
 
   constructor() {
@@ -35,5 +35,3 @@ class ServerRepository implements IDataStore<ServerInfo> {
     return parsed;
   }
 }
-
-export const serverRepository = new ServerRepository();

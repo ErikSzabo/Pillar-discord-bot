@@ -1,18 +1,24 @@
 import { ytsr } from '../../apis/searchAPI';
 import { Message, Permissions, VoiceChannel } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { language } from '../../language/LanguageManager';
-import { checkVoiceChannelMatch } from '../../utils';
-import { musicAPI } from '../../apis/music/musicAPI';
-import { SongData } from '../../apis/music/MusicCache';
+import { checkVoiceChannelMisMatch } from '../../utils';
+import { musicAPI, SongData } from '../../apis/musicAPI';
+import { IApplication } from '../../application';
 
 export class PlayCommand extends Command {
+  private isSubscribed: boolean;
+
   constructor() {
     super('play', 'play <youtube link or name>');
-    musicAPI.on('new-song-playing', this.nowPlayingHandler);
+    this.isSubscribed = false;
   }
 
-  public async execute(args: Array<string>, message: Message): Promise<void> {
+  public async execute(app: IApplication, args: string[], message: Message) {
+    if (!this.isSubscribed) {
+      musicAPI.on('new-song-playing', this.nowPlayingHandler(app));
+      this.isSubscribed = true;
+    }
+
     const serverID = message.guild.id;
     const voiceChannel = message.member.voice.channel;
     const song = args.join(' ');
@@ -22,52 +28,52 @@ export class PlayCommand extends Command {
 
     const error = this.checkErrors(voiceChannel, permissions, args);
     if (error) {
-      message.channel.send(language.get(serverID, error));
+      message.channel.send(app.message(serverID, error));
       return;
     }
 
     if (musicAPI.hasQueue(serverID)) {
-      this.handleExisting(message, voiceChannel, serverID, song);
+      this.handleExisting(app, message, voiceChannel, serverID, song);
     } else {
-      this.handleNew(message, voiceChannel, serverID, song);
+      this.handleNew(app, message, voiceChannel, serverID, song);
     }
   }
 
   private async handleExisting(
+    app: IApplication,
     message: Message,
     voiceChannel: VoiceChannel,
     serverID: string,
     song: string
   ) {
-    try {
-      checkVoiceChannelMatch(message, voiceChannel, serverID);
-    } catch (err) {
-      message.channel.send(err.embed);
+    if (checkVoiceChannelMisMatch(message, voiceChannel)) {
+      message.channel.send(app.message(serverID, 'noVoiceChannelMatch'));
       return;
     }
-    const music = await this.handleMusicRetrieving(song, message);
+    const music = await this.handleMusicRetrieving(app, song, message);
     if (!music) return;
     musicAPI.queue(serverID, music);
     message.channel.send(
-      language.get(serverID, 'songQueued', { song: music.title })
+      app.message(serverID, 'songQueued', { song: music.title })
     );
   }
 
   private async handleNew(
+    app: IApplication,
     message: Message,
     voiceChannel: VoiceChannel,
     serverID: string,
     song: string
   ) {
     try {
-      const music = await this.handleMusicRetrieving(song, message);
+      const music = await this.handleMusicRetrieving(app, song, message);
       if (!music) return;
       if (!musicAPI.isConnected(serverID))
         await musicAPI.connect(serverID, voiceChannel);
       musicAPI.queue(serverID, music);
       musicAPI.startPlaying(serverID);
     } catch (error) {
-      message.channel.send(language.get(serverID, 'cantJoinVoice'));
+      message.channel.send(app.message(serverID, 'cantJoinVoice'));
     }
   }
 
@@ -93,19 +99,25 @@ export class PlayCommand extends Command {
     return { ...info, channel };
   }
 
-  private async handleMusicRetrieving(song: string, message: Message) {
+  private async handleMusicRetrieving(
+    app: IApplication,
+    song: string,
+    message: Message
+  ) {
     const music = await this.getMusicData(song, message);
     if (!music) {
       message.channel.send(
-        language.get(message.guild.id, 'songNotFound', { song })
+        app.message(message.guild.id, 'songNotFound', { song })
       );
       return null;
     }
     return music;
   }
 
-  private nowPlayingHandler(serverID: string, music: SongData) {
-    const { channel, title: song } = music;
-    channel.send(language.get(serverID, 'nowPlaying', { song }));
+  private nowPlayingHandler(app: IApplication) {
+    return (serverID: string, music: SongData) => {
+      const { channel, title: song } = music;
+      channel.send(app.message(serverID, 'nowPlaying', { song }));
+    };
   }
 }

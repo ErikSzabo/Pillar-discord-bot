@@ -1,24 +1,24 @@
 import { Command } from './Command';
 import { Message, MessageEmbed } from 'discord.js';
-import { checkPermission } from '../utils';
-import { serverCache } from './ServerCache';
-import config from '../config';
 import { CustomError } from './CustomError';
-import { language } from '../language/LanguageManager';
-import { serverRepository } from '../database/ServerRepository';
 import { logger } from '../logger';
+import { IApplication } from '../application';
 
 export class SetRoleCommand extends Command {
   constructor() {
     super('set-role', 'set-role <role type> <role>');
   }
 
-  public async execute(args: Array<string>, message: Message): Promise<void> {
+  public async execute(
+    app: IApplication,
+    args: Array<string>,
+    message: Message
+  ) {
     const serverID = message.guild.id;
-    const serverData = serverCache.get(serverID);
+    const serverData = app.getServerStore().get(serverID);
     try {
-      checkPermission(serverData.moderationRole, message.member, serverID);
-      this.checkErrors(args, message);
+      app.checkPermission(serverData.moderationRole, message.member, serverID);
+      this.checkErrors(app, args, message);
     } catch (error) {
       message.channel.send(error.embed);
       return;
@@ -29,7 +29,7 @@ export class SetRoleCommand extends Command {
 
     if (type === 'help') {
       message.channel.send(
-        language.get(serverID, 'roleHelp', { prefix: config.prefix })
+        app.message(serverID, 'roleHelp', { prefix: app.getConfig().prefix })
       );
       return;
     }
@@ -39,43 +39,44 @@ export class SetRoleCommand extends Command {
 
     if (type === 'mod') {
       try {
-        await serverRepository.update(serverID, { moderationRole: newValue });
-        serverCache.set(serverID, { moderationRole: newValue });
+        await app
+          .getServerStore()
+          .update(serverID, { moderationRole: newValue });
         message.channel.send(
-          this.createRoleEmbed('Moderation', newValue, serverID, isOff)
+          this.createRoleEmbed(app, 'Moderation', newValue, serverID, isOff)
         );
       } catch (error) {
-        message.channel.send(language.get(serverID, 'botError'));
+        message.channel.send(app.message(serverID, 'botError'));
         logger.error(error.message);
       }
     } else if (type === 'poll') {
       try {
-        await serverRepository.update(serverID, { pollRole: newValue });
-        serverCache.set(serverID, { pollRole: newValue });
+        await app.getServerStore().update(serverID, { pollRole: newValue });
         message.channel.send(
-          this.createRoleEmbed('Poll', newValue, serverID, isOff)
+          this.createRoleEmbed(app, 'Poll', newValue, serverID, isOff)
         );
       } catch (error) {
-        message.channel.send(language.get(serverID, 'botError'));
+        message.channel.send(app.message(serverID, 'botError'));
         logger.error(error.message);
       }
     }
   }
 
   private checkErrors(
+    app: IApplication,
     args: Array<string>,
     { guild: { id }, mentions }: Message
   ): void {
     if (args.length < 2 && args[0].toLowerCase() !== 'help') {
-      throw new CustomError(this.invalidEmbed(id));
+      throw new CustomError(this.invalidEmbed(id, app));
     }
 
     if (args.length < 1 && args[0].toLowerCase() !== 'help') {
-      throw new CustomError(this.invalidEmbed(id));
+      throw new CustomError(this.invalidEmbed(id, app));
     }
 
     if (!['help', 'mod', 'poll', 'watch'].includes(args[0].toLowerCase())) {
-      throw new CustomError(this.invalidEmbed(id));
+      throw new CustomError(this.invalidEmbed(id, app));
     }
 
     const roles = mentions.roles;
@@ -84,24 +85,25 @@ export class SetRoleCommand extends Command {
       args[0].toLowerCase() !== 'help' &&
       args[1].toLowerCase() !== 'off'
     ) {
-      throw new CustomError(this.invalidEmbed(id));
+      throw new CustomError(this.invalidEmbed(id, app));
     }
   }
 
   private createRoleEmbed(
+    app: IApplication,
     start: string,
     role: string,
     serverID: string,
     isOff: boolean = false
   ): MessageEmbed {
     if (isOff) {
-      return language.get(serverID, 'roleSetOff', { roleType: start });
+      return app.message(serverID, 'roleSetOff', { roleType: start });
     } else {
-      return language.get(serverID, 'roleSet', { roleType: start, role: role });
+      return app.message(serverID, 'roleSet', { roleType: start, role: role });
     }
   }
 
-  private invalidEmbed(serverID: string): MessageEmbed {
-    return language.get(serverID, 'invalid');
+  private invalidEmbed(serverID: string, app: IApplication): MessageEmbed {
+    return app.message(serverID, 'invalid');
   }
 }

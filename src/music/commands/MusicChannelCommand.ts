@@ -1,57 +1,56 @@
 import { Command } from '../../generic/Command';
 import { Message } from 'discord.js';
-import { checkPermission } from '../../utils';
-import { serverCache } from '../../generic/ServerCache';
-import { language } from '../../language/LanguageManager';
-import { serverRepository } from '../../database/ServerRepository';
+import { IApplication } from '../../application';
 
 export class MusicChannelCommand extends Command {
   constructor() {
     super('music-channel', 'music-channel <text channel>');
   }
 
-  public async execute(args: Array<string>, message: Message): Promise<void> {
+  public async execute(app: IApplication, args: string[], message: Message) {
     const serverID = message.guild.id;
-    const serverData = serverCache.get(serverID);
+    const serverData = app.getServerStore().get(serverID);
     try {
-      checkPermission(serverData.moderationRole, message.member, serverID);
+      app.checkPermission(serverData.moderationRole, message.member, serverID);
     } catch (error) {
       message.channel.send(error.embed);
       return;
     }
 
     if (args[0].toLowerCase() === 'off') {
-      serverCache.set(serverID, { musicChannel: 'off' });
-      serverRepository.update(serverID, { musicChannel: 'off' });
-      message.channel.send(language.get(serverID, 'musicChannelOff'));
+      try {
+        app.getServerStore().update(serverID, { musicChannel: 'off' });
+        message.channel.send(app.message(serverID, 'musicChannelOff'));
+      } catch {
+        message.channel.send(app.message(serverID, 'botError'));
+      }
       return;
     }
 
     const channels = message.mentions.channels;
 
     if (!channels.first()) {
-      message.channel.send(language.get(serverID, 'noChannelMention'));
+      message.channel.send(app.message(serverID, 'noChannelMention'));
       return;
     }
 
     const channel = channels.first();
 
     if (channel.type !== 'text') {
-      message.channel.send(language.get(serverID, 'notTextChannel'));
+      message.channel.send(app.message(serverID, 'notTextChannel'));
       return;
     }
 
     const perms = channel.permissionsFor(message.client.user);
 
     if (!perms.has('SEND_MESSAGES') || !perms.has('READ_MESSAGE_HISTORY')) {
-      message.channel.send(language.get(serverID, 'noReadSendPerm'));
+      message.channel.send(app.message(serverID, 'noReadSendPerm'));
       return;
     }
 
-    serverCache.set(serverID, { musicChannel: channel.id });
-    serverRepository.update(serverID, { musicChannel: channel.id });
+    app.getServerStore().update(serverID, { musicChannel: channel.id });
     message.channel.send(
-      language.get(serverID, 'musicChannelSet', { channel: channel.id })
+      app.message(serverID, 'musicChannelSet', { channel: channel.id })
     );
   }
 }

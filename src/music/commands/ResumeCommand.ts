@@ -1,25 +1,28 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { checkVoiceChannelMatch } from '../../utils';
-import { language } from '../../language/LanguageManager';
-import { musicAPI } from '../../apis/music/musicAPI';
+import { checkVoiceChannelMisMatch } from '../../utils';
+import { musicAPI } from '../../apis/musicAPI';
+import { IApplication } from '../../application';
 
 export class ResumeCommand extends Command {
   constructor() {
     super('resume', 'resume');
   }
 
-  public execute(args: Array<string>, message: Message): void {
+  public execute(app: IApplication, args: string[], message: Message) {
     const serverID = message.guild.id;
     const voiceChannel = message.member.voice.channel;
 
+    if (checkVoiceChannelMisMatch(message, voiceChannel)) {
+      message.channel.send(app.message(serverID, 'noVoiceChannelMatch'));
+      return;
+    }
+
     try {
-      checkVoiceChannelMatch(message, voiceChannel, serverID);
       const song = musicAPI.resume(serverID);
-      message.channel.send(language.get(serverID, 'musicResumed', { song }));
+      message.channel.send(app.message(serverID, 'musicResumed', { song }));
     } catch (err) {
       if (err.message === 'alreadyPlaying') message.delete();
-      if (err.embed) message.channel.send(err.embed);
     }
   }
 }

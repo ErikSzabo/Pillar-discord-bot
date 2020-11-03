@@ -1,9 +1,62 @@
-import { Util, VoiceChannel } from 'discord.js';
-import { EventEmitter } from 'events';
 import * as ytdl from 'ytdl-core';
 import * as ffmpeg from 'ffmpeg-static';
-import { ICache } from '../interfaces/ICache';
-import { MusicCache, ServerMusicData, SongData } from './MusicCache';
+import { EventEmitter } from 'events';
+import {
+  DMChannel,
+  NewsChannel,
+  TextChannel,
+  Util,
+  VoiceChannel,
+  VoiceConnection,
+} from 'discord.js';
+
+export interface SongData {
+  title: string;
+  url: string;
+  channel: TextChannel | NewsChannel | DMChannel;
+}
+
+export interface ServerMusicData {
+  voiceChannel: VoiceChannel;
+  songs: Array<SongData>;
+  volume: number;
+  connection: null | VoiceConnection;
+  isPlaying: boolean;
+}
+
+class MusicCache {
+  private cache: Map<string, ServerMusicData>;
+
+  constructor() {
+    this.cache = new Map<string, ServerMusicData>();
+  }
+
+  public isCached(guildID: string): boolean {
+    return this.cache.has(guildID);
+  }
+
+  public add(serverID: string, data: ServerMusicData): void {
+    if (this.isCached(serverID)) return;
+    this.cache.set(serverID, data);
+  }
+
+  public get(serverID: string): ServerMusicData {
+    return this.cache.get(serverID);
+  }
+
+  public set(
+    serverID: string,
+    data: Partial<ServerMusicData>
+  ): ServerMusicData {
+    const newData = { ...this.cache.get(serverID), ...data };
+    this.cache.set(serverID, newData);
+    return newData;
+  }
+
+  public remove(serverID: string, data?: Partial<ServerMusicData>): void {
+    this.cache.delete(serverID);
+  }
+}
 
 /**
  * Api to handle every music type interaction on
@@ -13,9 +66,9 @@ class MusicAPI extends EventEmitter {
   /**
    * Cache for the servers and musics
    */
-  private cache: ICache<ServerMusicData>;
+  private cache: MusicCache;
 
-  constructor(cache: ICache<ServerMusicData>) {
+  constructor(cache: MusicCache) {
     super();
     this.cache = cache;
   }

@@ -1,5 +1,6 @@
 import { Command } from './Command';
 import { Message } from 'discord.js';
+import { IApplication } from '../application';
 
 /**
  * Interface for command managers.
@@ -7,7 +8,12 @@ import { Message } from 'discord.js';
 export interface ICommandManager {
   addCommand(command: Command): void;
   removeCommand(commandName: string): void;
-  handle(command: string, args: string[], message: Message): void;
+  handle(
+    app: IApplication,
+    command: string,
+    args: string[],
+    message: Message
+  ): void;
   getCommands(): Array<Command>;
   getCommandNames(): Array<string>;
 }
@@ -75,5 +81,10 @@ export abstract class CommandManager implements ICommandManager {
    * @param args    command arguments
    * @param message discord message
    */
-  abstract handle(command: string, args: string[], message: Message): void;
+  abstract handle(
+    app: IApplication,
+    command: string,
+    args: string[],
+    message: Message
+  ): void;
 }

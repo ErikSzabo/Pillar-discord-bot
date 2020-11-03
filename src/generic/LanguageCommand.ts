@@ -1,30 +1,27 @@
 import { Message } from 'discord.js';
-import { serverRepository } from '../database/ServerRepository';
-import { language } from '../language/LanguageManager';
+import { IApplication } from '../application';
 import { logger } from '../logger';
-import { checkPermission } from '../utils';
 import { Command } from './Command';
-import { serverCache } from './ServerCache';
 
 export class LanguageCommand extends Command {
   constructor() {
     super('language', 'language [new language]');
   }
 
-  async execute(args: string[], message: Message) {
+  async execute(app: IApplication, args: string[], message: Message) {
     const serverID = message.guild.id;
-    const serverData = serverCache.get(serverID);
+    const serverData = app.getServerStore().get(serverID);
     try {
-      checkPermission(serverData.moderationRole, message.member, serverID);
+      app.checkPermission(serverData.moderationRole, message.member, serverID);
     } catch (err) {
-      message.channel.send(language.get(serverID, 'noUserPerm'));
+      message.channel.send(app.message(serverID, 'noUserPerm'));
       return;
     }
 
     if (!args[0]) {
       message.channel.send(
-        language.get(serverID, 'availableLanguages', {
-          language: language.getAvailableLocales().join(', '),
+        app.message(serverID, 'availableLanguages', {
+          language: app.getAvailableLocales().join(', '),
         })
       );
       return;
@@ -32,17 +29,16 @@ export class LanguageCommand extends Command {
 
     const newLang = args[0].toLowerCase();
 
-    if (!language.has(newLang)) {
-      message.channel.send(language.get(serverID, 'invalidLanguage'));
+    if (!app.hasLocale(newLang)) {
+      message.channel.send(app.message(serverID, 'invalidLanguage'));
       return;
     }
 
     try {
-      await serverRepository.update(serverID, { language: newLang });
-      serverCache.set(serverID, { language: newLang });
-      message.channel.send(language.get(serverID, 'languageSet'));
+      await app.getServerStore().update(serverID, { language: newLang });
+      message.channel.send(app.message(serverID, 'languageSet'));
     } catch (error) {
-      message.channel.send(language.get(serverID, 'botError'));
+      message.channel.send(app.message(serverID, 'botError'));
       logger.error(error.message);
     }
   }

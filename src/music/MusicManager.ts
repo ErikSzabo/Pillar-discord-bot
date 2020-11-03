@@ -8,8 +8,8 @@ import { SkipCommand } from './commands/SkipCommand';
 import { StopCommand } from './commands/StopCommand';
 import { VolumeCommand } from './commands/VolumeCommand';
 import { CommandManager } from '../generic/ICommandManager';
-import { serverCache } from '../generic/ServerCache';
 import { MusicChannelCommand } from './commands/MusicChannelCommand';
+import { IApplication } from '../application';
 
 export class MusicManager extends CommandManager {
   constructor(name: string) {
@@ -24,8 +24,14 @@ export class MusicManager extends CommandManager {
     this.addCommand(new MusicChannelCommand());
   }
 
-  public handle(command: string, args: Array<string>, message: Message) {
-    const musicChannel = serverCache.get(message.guild.id).musicChannel;
+  public handle(
+    app: IApplication,
+    command: string,
+    args: Array<string>,
+    message: Message
+  ) {
+    const { musicChannel } = app.getServerStore().get(message.guild.id);
+
     if (
       musicChannel !== 'off' &&
       musicChannel !== message.channel.id &&
@@ -35,7 +41,7 @@ export class MusicManager extends CommandManager {
       return;
     }
     if (this.commands.has(command)) {
-      this.commands.get(command).execute(args, message);
+      this.commands.get(command).execute(app, args, message);
     }
   }
 }

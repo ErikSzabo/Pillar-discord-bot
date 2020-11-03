@@ -4,6 +4,7 @@ import { SetRoleCommand } from './SetRoleCommand';
 import { Message } from 'discord.js';
 import { LanguageCommand } from './LanguageCommand';
 import { TimezoneCommand } from './TimezoneCommand';
+import { IApplication } from '../application';
 
 /**
  * General command manager which controls the rest of the command managers
@@ -21,15 +22,20 @@ export class GeneralManager extends CommandManager {
     this.addCommand(new HelpCommand([...commandManagers, this]));
   }
 
-  public handle(command: string, args: Array<string>, message: Message): void {
+  public handle(
+    app: IApplication,
+    command: string,
+    args: Array<string>,
+    message: Message
+  ): void {
     if (this.commands.has(command)) {
-      this.commands.get(command).execute(args, message);
+      this.commands.get(command).execute(app, args, message);
       return;
     }
 
     for (let manager of this.commandManagers) {
       if (manager.getCommandNames().includes(command)) {
-        manager.handle(command, args, message);
+        manager.handle(app, command, args, message);
         return;
       }
     }

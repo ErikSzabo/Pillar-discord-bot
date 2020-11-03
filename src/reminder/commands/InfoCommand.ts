@@ -1,19 +1,22 @@
 import { Message } from 'discord.js';
 import { createEmbed } from '../../utils';
-import { reminderCache } from '../ReminderCache';
 import { Command } from '../../generic/Command';
 import { Timezones } from '../../apis/timezoneAPI';
-import { serverCache } from '../../generic/ServerCache';
+import { IApplication } from '../../application';
 
 export class InfoCommand extends Command {
   constructor() {
     super('r-info', 'r-info');
   }
 
-  public async execute(args: Array<string>, message: Message) {
+  public async execute(
+    app: IApplication,
+    args: Array<string>,
+    message: Message
+  ) {
     const serverID = message.guild.id;
-    const zone = serverCache.get(serverID).timezone;
-    const reminders = reminderCache.getAll(serverID);
+    const zone = app.getServerStore().get(serverID).timezone;
+    const reminders = app.getReminderStore().getAll({ serverID });
     const remindersAsString = reminders
       .map(
         (reminder) =>

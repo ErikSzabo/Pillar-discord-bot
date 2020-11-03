@@ -1,6 +1,6 @@
 import { Message, MessageEmbed } from 'discord.js';
+import { IApplication } from '../../application';
 import { Command } from '../../generic/Command';
-import { language } from '../../language/LanguageManager';
 import { parseQuotedArgs } from '../../utils';
 
 export class PollCommand extends Command {
@@ -8,15 +8,15 @@ export class PollCommand extends Command {
     super('poll', 'poll "question" "answer1" "answer2" "answerX"');
   }
 
-  public execute(args: string[], message: Message): void {
+  public execute(app: IApplication, args: string[], message: Message): void {
     args = parseQuotedArgs(message, this.getName());
     const serverID = message.guild.id;
     if (args.length <= 1) {
-      message.channel.send(language.get(serverID, 'pollQuestionRequired'));
+      message.channel.send(app.message(serverID, 'pollQuestionRequired'));
       return;
     }
     if (args.length > 20) {
-      message.channel.send(language.get(serverID, 'pollOptionLimit'));
+      message.channel.send(app.message(serverID, 'pollOptionLimit'));
       return;
     }
 
@@ -37,7 +37,7 @@ export class PollCommand extends Command {
     const embed = new MessageEmbed();
     embed.setTitle(question + '\n' + '____');
     embed.setColor('#0099ff');
-    embed.setAuthor(message.member.nickname, message.author.avatarURL());
+    embed.setAuthor(message.member.displayName, message.author.avatarURL());
     embed.setDescription(
       answers.map((answer, i) => `${options[i]} - ${answer}\n`)
     );

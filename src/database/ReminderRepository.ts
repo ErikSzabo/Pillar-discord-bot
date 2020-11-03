@@ -1,9 +1,9 @@
 import { ICollection } from 'monk';
 import { Reminder } from '../reminder/Reminder';
 import { db } from './database';
-import { IDataStore } from '../apis/interfaces/IDataStore';
+import { IDataStore } from './IDataStore';
 
-class ReminderRepository implements IDataStore<Reminder> {
+export class ReminderRepository implements IDataStore<Reminder> {
   protected collection: ICollection<Reminder>;
 
   constructor() {
@@ -35,5 +35,3 @@ class ReminderRepository implements IDataStore<Reminder> {
     return parsed;
   }
 }
-
-export const reminderRepository = new ReminderRepository();

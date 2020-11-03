@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { MessageEmbed } from 'discord.js';
 import { createEmbed } from '../utils';
-import { serverCache } from '../generic/ServerCache';
 
 interface loadedLanguages {
   languages: Map<string, Map<string, LanguageProp>>;
@@ -31,7 +30,7 @@ type placeHolderProp =
   | 'description'
   | 'timezone';
 
-interface PlaceholderOptions {
+export interface Placeholder {
   prefix?: string;
   roleType?: string;
   role?: string;
@@ -48,7 +47,7 @@ interface PlaceholderOptions {
   timezone?: string;
 }
 
-class LanguageManager {
+export class LanguageManager {
   private languages: Map<string, Map<string, LanguageProp>>;
   private commands: Map<string, Map<string, string>>;
 
@@ -59,11 +58,10 @@ class LanguageManager {
   }
 
   public get(
-    serverID: string,
+    locale: string,
     prop: string,
-    options?: PlaceholderOptions
+    options?: Placeholder
   ): MessageEmbed {
-    const locale = serverCache.get(serverID).language;
     let message = this.languages.get(locale).get(prop);
     if (!message) message = this.languages.get('en').get(prop);
     const description = this.handlePlaceholders(message.description, options);
@@ -71,8 +69,7 @@ class LanguageManager {
     return createEmbed(title, description, message.error);
   }
 
-  public getCommandDescription(serverID: string, commandName: string): string {
-    const locale = serverCache.get(serverID).language;
+  public getCommandDescription(locale: string, commandName: string): string {
     let cmdDescription = this.commands.get(locale).get(commandName);
     if (!cmdDescription)
       cmdDescription = this.commands.get('en').get(commandName);
@@ -129,10 +126,7 @@ class LanguageManager {
     });
   }
 
-  private handlePlaceholders(
-    text: string,
-    options: PlaceholderOptions
-  ): string {
+  private handlePlaceholders(text: string, options: Placeholder): string {
     if (!options) return text;
     Object.keys(options).forEach((prop: placeHolderProp) => {
       text = text.replace(
@@ -143,5 +137,3 @@ class LanguageManager {
     return text;
   }
 }
-
-export const language = new LanguageManager();

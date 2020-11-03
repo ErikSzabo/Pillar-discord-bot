@@ -1,53 +1,46 @@
-import { Message } from 'discord.js';
+import { Channel, Message, MessageEmbed, TextChannel } from 'discord.js';
 import { parseQuotedArgs } from '../../utils';
-import { reminderCache } from '../ReminderCache';
 import { Command } from '../../generic/Command';
 import { CustomError } from '../../generic/CustomError';
-import { language } from '../../language/LanguageManager';
-import { reminderRepository } from '../../database/ReminderRepository';
 import { Reminder } from '../Reminder';
 import { logger } from '../../logger';
-import { serverCache } from '../../generic/ServerCache';
 import { Timezone, Timezones } from '../../apis/timezoneAPI';
+import { IApplication } from '../../application';
+import { ServerScheduler } from '../../scheduler';
 
 export class AddCommand extends Command {
   constructor() {
     super('r-add', 'r-add <mention> <2020.12.24-20:30> "name" "description"');
   }
 
-  public async execute(args: Array<string>, message: Message) {
+  public async execute(
+    app: IApplication,
+    args: Array<string>,
+    message: Message
+  ) {
     const serverID = message.guild.id;
-    if (!reminderCache.canHaveMore(serverID)) {
-      message.channel.send(language.get(serverID, 'maxRemindersReached'));
-      return;
-    }
     try {
-      const reminder = this.parseReminder(message);
-      const [duplicate] = reminderCache.findReminder(
-        reminder.title,
-        reminder.serverID
-      );
-      if (duplicate)
-        throw new CustomError(language.get(serverID, 'reminderAlreadyExists'));
+      const reminder = this.parseReminder(app, message);
+      const duplicate = app
+        .getReminderStore()
+        .getAll({ title: reminder.title, serverID: reminder.serverID });
+
+      if (duplicate.length > 0)
+        throw new CustomError(app.message(serverID, 'reminderAlreadyExists'));
 
       try {
-        await reminderRepository.add(serverID, reminder);
-        reminderCache.add(serverID, reminder);
+        await app.getReminderStore().add(serverID, reminder);
+        app.getScheduler().scheduleReminder(app, reminder, message.channel);
       } catch (error) {
-        message.channel.send(language.get(serverID, 'botError'));
+        message.channel.send(app.message(serverID, 'botError'));
         logger.error(error.message);
         return;
       }
 
       this.sendResponse(
+        app,
         message,
-        `${
-          reminder.type === 'role'
-            ? `<@&${reminder.mentionID}>`
-            : reminder.type === 'user'
-            ? `<@${reminder.mentionID}>`
-            : '@everyone'
-        }`,
+        this.getMentionText(reminder),
         reminder.title,
         reminder.date
       );
@@ -56,7 +49,17 @@ export class AddCommand extends Command {
     }
   }
 
-  private parseDate(date: string, serverID: string): Date {
+  private getMentionText(reminder: Reminder) {
+    if (reminder.type === 'everyone') {
+      return '@everyone';
+    } else if (reminder.type === 'role') {
+      return `<@&${reminder.mentionID}>`;
+    } else if (reminder.type === 'user') {
+      return `<@${reminder.mentionID}>`;
+    }
+  }
+
+  private parseDate(app: IApplication, date: string, serverID: string): Date {
     try {
       const [year, month, day] = date
         .split('-')[0]
@@ -75,24 +78,29 @@ export class AddCommand extends Command {
       if (isBad) throw new Error();
 
       const parsedDate = new Date(year, month, day, hour, minute, 0);
-      if (parsedDate.getTime() - Date.now() <= 0) throw new Error();
+      const utcDate = Timezones.UTC.convert(
+        parsedDate,
+        Timezones[app.getServerStore().get(serverID).timezone]
+      );
+      if (utcDate.getTime() - Date.now() <= 0) throw new Error();
 
       return parsedDate;
     } catch (err) {
-      throw new CustomError(language.get(serverID, 'invalidDate'));
+      throw new CustomError(app.message(serverID, 'invalidDate'));
     }
   }
 
   private sendResponse(
+    app: IApplication,
     message: Message,
     mention: string,
     title: string,
     date: Date
   ): void {
     const serverID = message.guild.id;
-    const zone = serverCache.get(serverID).timezone;
+    const zone = app.getServerStore().get(serverID).timezone;
     message.channel.send(
-      language.get(message.guild.id, 'reminderAdded', {
+      app.message(message.guild.id, 'reminderAdded', {
         reminder: title,
         mention: mention,
         date: `**${Timezones[zone].toDateString(date)}**`,
@@ -100,15 +108,15 @@ export class AddCommand extends Command {
     );
   }
 
-  private parseReminder(message: Message): Reminder {
+  private parseReminder(app: IApplication, message: Message): Reminder {
     // !r-add @tester 2020.9.10-12:30 "hosszu szar nev" "hosszu szar leiras"
     const msg = parseQuotedArgs(message, this.getName());
     const serverID = message.guild.id;
 
     if (msg.length > 4)
-      throw new CustomError(language.get(serverID, 'tooManyArguments'));
+      throw new CustomError(app.message(serverID, 'tooManyArguments'));
 
-    const date = this.parseDate(msg[1], serverID);
+    const date = this.parseDate(app, msg[1], serverID);
     const title = msg[2];
     const description = msg.length >= 3 ? msg[3] : '';
 
@@ -117,7 +125,7 @@ export class AddCommand extends Command {
     const userMention = message.mentions.users.first();
 
     if (!isEveryone && !roleMention && !userMention)
-      throw new CustomError(language.get(serverID, 'missingReminderMention'));
+      throw new CustomError(app.message(serverID, 'missingReminderMention'));
 
     return this.createReminderConstruct(
       message,

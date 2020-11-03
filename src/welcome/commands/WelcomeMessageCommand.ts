@@ -1,25 +1,25 @@
 import { Command } from '../../generic/Command';
 import { Message } from 'discord.js';
-import { serverCache } from '../../generic/ServerCache';
-import config from '../../config';
-import { language } from '../../language/LanguageManager';
-import { serverRepository } from '../../database/ServerRepository';
 import { logger } from '../../logger';
+import { IApplication } from '../../application';
 
 export class WelcomeMessageCommand extends Command {
   constructor() {
     super('welcome-message', 'welcome-message <message>');
   }
 
-  public async execute(args: Array<string>, message: Message) {
+  public async execute(
+    app: IApplication,
+    args: Array<string>,
+    message: Message
+  ) {
     const serverID = message.guild.id;
     if (args[0].toLowerCase() === 'off') {
       try {
-        await serverRepository.update(serverID, { welcomeMessage: 'off' });
-        serverCache.set(serverID, { welcomeMessage: 'off' });
-        message.channel.send(language.get(serverID, 'welcomeMessageOff'));
+        await app.getServerStore().update(serverID, { welcomeMessage: 'off' });
+        message.channel.send(app.message(serverID, 'welcomeMessageOff'));
       } catch (error) {
-        message.channel.send(language.get(serverID, 'botError'));
+        message.channel.send(app.message(serverID, 'botError'));
         logger.error(error.message);
       } finally {
         return;
@@ -27,22 +27,21 @@ export class WelcomeMessageCommand extends Command {
     }
 
     const welcomeMessage = message.content
-      .slice(config.prefix.length + this.getName().length)
+      .slice(app.getConfig().prefix.length + this.getName().length)
       .trim();
 
     if (!welcomeMessage) {
-      message.channel.send(language.get(serverID, 'welcomeMessageEmpty'));
+      message.channel.send(app.message(serverID, 'welcomeMessageEmpty'));
       return;
     }
 
     try {
-      await serverRepository.update(serverID, { welcomeMessage });
-      serverCache.set(serverID, { welcomeMessage });
+      await app.getServerStore().update(serverID, { welcomeMessage });
       message.channel.send(
-        language.get(serverID, 'welcomeMessageSet', { message: welcomeMessage })
+        app.message(serverID, 'welcomeMessageSet', { message: welcomeMessage })
       );
     } catch (error) {
-      message.channel.send(language.get(serverID, 'botError'));
+      message.channel.send(app.message(serverID, 'botError'));
       logger.error(error.message);
     }
   }

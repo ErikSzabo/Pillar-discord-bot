@@ -1,25 +1,25 @@
 import { Message } from 'discord.js';
 import { Command } from '../../generic/Command';
-import { language } from '../../language/LanguageManager';
-import { musicAPI } from '../../apis/music/musicAPI';
+import { musicAPI } from '../../apis/musicAPI';
+import { IApplication } from '../../application';
 
 export class QueueCommand extends Command {
   constructor() {
     super('queue', 'queue');
   }
 
-  public execute(args: Array<string>, message: Message): void {
+  public execute(app: IApplication, args: string[], message: Message) {
     const serverID = message.guild.id;
 
     if (!musicAPI.hasQueue(serverID)) {
-      message.channel.send(language.get(serverID, 'songQueueEmpty'));
+      message.channel.send(app.message(serverID, 'songQueueEmpty'));
       return;
     }
 
     const queue = musicAPI.getQueue(serverID);
 
     message.channel.send(
-      language.get(serverID, 'songQueue', {
+      app.message(serverID, 'songQueue', {
         songs: queue.map((song) => `**-** ${song.title}`).join('\n'),
         song: queue[0].title,
       })

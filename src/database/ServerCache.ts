@@ -1,12 +1,12 @@
-import { IDataStore } from '../apis/interfaces/IDataStore';
-import { ICache } from '../apis/interfaces/ICache';
-import { ServerInfo } from './ServerInfo';
+import { IDataStore } from './IDataStore';
+import { ICache } from './ICache';
+import { ServerInfo } from '../generic/ServerInfo';
 
 /**
  * Class to cache the server information from the database.
  * It's also saves data into the database.
  */
-class ServerCache implements ICache<ServerInfo> {
+export class ServerCache implements ICache<ServerInfo> {
   private static maxServers = 99;
 
   /**
@@ -35,6 +35,10 @@ class ServerCache implements ICache<ServerInfo> {
     return this.cache.get(serverID);
   }
 
+  public getAll() {
+    return Array.from(this.cache.values());
+  }
+
   public set(serverID: string, data: Partial<ServerInfo>): ServerInfo {
     const newServerInfo = { ...this.cache.get(serverID), ...data };
     this.cache.set(serverID, newServerInfo);
@@ -52,5 +56,3 @@ class ServerCache implements ICache<ServerInfo> {
     return Array.from(this.cache.keys()).length < ServerCache.maxServers;
   }
 }
-
-export const serverCache = new ServerCache();

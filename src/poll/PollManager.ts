@@ -1,7 +1,6 @@
 import { Message } from 'discord.js';
+import { IApplication } from '../application';
 import { CommandManager } from '../generic/ICommandManager';
-import { serverCache } from '../generic/ServerCache';
-import { checkPermission } from '../utils';
 import { PollCommand } from './commands/PollCommand';
 
 export class PollManager extends CommandManager {
@@ -10,17 +9,22 @@ export class PollManager extends CommandManager {
     this.addCommand(new PollCommand());
   }
 
-  public handle(command: string, args: string[], message: Message): void {
+  public handle(
+    app: IApplication,
+    command: string,
+    args: string[],
+    message: Message
+  ): void {
     if (!this.commands.has(command)) return;
     const serverID = message.guild.id;
-    const pollRole = serverCache.get(serverID).pollRole;
+    const pollRole = app.getServerStore().get(serverID).pollRole;
     try {
-      checkPermission(pollRole, message.member, serverID);
+      app.checkPermission(pollRole, message.member, serverID);
     } catch (error) {
       message.channel.send(error.embed);
       return;
     }
 
-    this.commands.get(command).execute(args, message);
+    this.commands.get(command).execute(app, args, message);
   }
 }
