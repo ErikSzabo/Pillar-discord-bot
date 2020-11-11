@@ -194,8 +194,8 @@ export class Application implements IApplication {
 
   private onReady = async () => {
     this.client.user.setActivity({
-      type: 'PLAYING',
-      name: 'with guilds',
+      type: 'LISTENING',
+      name: 'to your commands',
     });
 
     try {
