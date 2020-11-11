@@ -7,7 +7,7 @@ import { IApplication } from '../application';
 
 export class WelcomeManager extends CommandManager {
   constructor(name: string) {
-    super(name);
+    super(name, '🙋‍♂️');
   }
 
   public initialize(app: IApplication) {

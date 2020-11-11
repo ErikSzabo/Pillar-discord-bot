@@ -7,7 +7,7 @@ import { IApplication } from '../application';
 
 export class ReminderManager extends CommandManager {
   constructor(name: string) {
-    super(name);
+    super(name, '🕙');
   }
 
   public initialize(app: IApplication) {

@@ -37,6 +37,10 @@ export interface ICommandManager {
    */
   getName(): string;
   /**
+   * @returns the icon for the command manager
+   */
+  getIcon(): string;
+  /**
    * Forwards the information to the right command if possible.
    *
    * @param command command name
@@ -54,9 +58,11 @@ export interface ICommandManager {
 export abstract class CommandManager implements ICommandManager {
   protected commands: Map<string, Command>;
   protected name: string;
+  private icon: string;
 
-  constructor(name: string) {
+  constructor(name: string, icon: string) {
     this.name = name;
+    this.icon = icon;
     this.commands = new Map<string, Command>();
   }
 
@@ -80,6 +86,10 @@ export abstract class CommandManager implements ICommandManager {
 
   public getName(): string {
     return this.name;
+  }
+
+  public getIcon(): string {
+    return this.icon;
   }
 
   abstract handle(

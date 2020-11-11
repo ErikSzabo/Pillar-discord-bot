@@ -15,7 +15,7 @@ export class GeneralManager extends CommandManager {
   private commandManagers: Array<CommandManager>;
 
   constructor(name: string, ...commandManagers: Array<CommandManager>) {
-    super(name);
+    super(name, '🌎');
     this.commandManagers = commandManagers;
   }
 

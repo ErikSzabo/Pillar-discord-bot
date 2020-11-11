@@ -4,9 +4,6 @@ import { createEmbed } from '../utils';
 import { CommandManager } from './ICommandManager';
 import { IApplication } from '../application';
 
-/**
- * Help command which will create a help page from all of the commands.
- */
 export class HelpCommand extends Command {
   private commandManagers: Array<CommandManager>;
 
@@ -17,18 +14,30 @@ export class HelpCommand extends Command {
 
   public execute(args: string[], message: Message) {
     const serverID = message.guild.id;
-    message.channel.send(
-      createEmbed('⁉ Help', this.createHelpPage(serverID), false)
-    );
+
+    if (!args[0]) {
+      message.channel.send(
+        createEmbed('Help', this.managerHelpPage(serverID), false)
+      );
+      return;
+    }
+
+    for (let manager of this.commandManagers) {
+      if (manager.getName().toLowerCase() == args[0]) {
+        message.channel.send(
+          createEmbed(
+            `${manager.getIcon()}  ${manager.getName()}`,
+            this.specificHelpPage(manager, serverID),
+            false
+          )
+        );
+        return;
+      }
+    }
+
+    message.channel.send(this.app.message(serverID, 'invalid'));
   }
 
-  /**
-   * Helper function for createHelpPage.
-   * Creates a formatted string for a command.
-   *
-   * @param cmd      command
-   * @param serverID the id of a server
-   */
   private create(cmd: Command, serverID: string): string {
     return `- **${
       this.app.getServerStore().get(serverID).prefix
@@ -38,11 +47,6 @@ export class HelpCommand extends Command {
     )}\n`;
   }
 
-  /**
-   * Creates a long, formatted string from the command managers' commands.
-   *
-   * @param serverID the id of a server
-   */
   private createHelpPage(serverID: string): string {
     return this.commandManagers
       .map((manager) => {
@@ -53,6 +57,31 @@ export class HelpCommand extends Command {
             (command) => (managerString += this.create(command, serverID))
           );
         return managerString;
+      })
+      .join('\n');
+  }
+
+  private managerHelpPage(serverID: string) {
+    return this.commandManagers
+      .map(
+        (manager) =>
+          `${manager.getIcon()}  ${
+            this.app.getServerStore().get(serverID).prefix
+          }help **${manager.getName().toLowerCase()}**`
+      )
+      .join('\n\n');
+  }
+
+  private specificHelpPage(manager: CommandManager, serverID: string): string {
+    return manager
+      .getCommands()
+      .map((cmd) => {
+        return `- **${
+          this.app.getServerStore().get(serverID).prefix
+        }${cmd.getUsage()}** -- ${cmd.getDescription(
+          this.app,
+          this.app.getServerStore().get(serverID).language
+        )}`;
       })
       .join('\n');
   }

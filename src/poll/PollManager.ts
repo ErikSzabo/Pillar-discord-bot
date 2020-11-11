@@ -5,7 +5,7 @@ import { PollCommand } from './commands/PollCommand';
 
 export class PollManager extends CommandManager {
   constructor(name: string) {
-    super(name);
+    super(name, '💭');
   }
 
   public initialize(app: IApplication) {

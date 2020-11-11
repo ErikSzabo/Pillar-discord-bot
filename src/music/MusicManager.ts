@@ -13,7 +13,7 @@ import { IApplication } from '../application';
 
 export class MusicManager extends CommandManager {
   constructor(name: string) {
-    super(name);
+    super(name, '🎶');
   }
 
   public initialize(app: IApplication) {
