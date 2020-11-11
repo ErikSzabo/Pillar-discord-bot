@@ -31,7 +31,7 @@ export class HelpCommand extends Command {
    */
   private create(cmd: Command, serverID: string): string {
     return `- **${
-      this.app.getConfig().prefix
+      this.app.getServerStore().get(serverID).prefix
     }${cmd.getUsage()}** -- ${cmd.getDescription(
       this.app,
       this.app.getServerStore().get(serverID).language

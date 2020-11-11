@@ -5,6 +5,7 @@ import { Message } from 'discord.js';
 import { LanguageCommand } from './LanguageCommand';
 import { TimezoneCommand } from './TimezoneCommand';
 import { IApplication } from '../application';
+import { PrefixCommand } from './PrefixCommand';
 
 /**
  * General command manager which controls the rest of the command managers
@@ -23,6 +24,7 @@ export class GeneralManager extends CommandManager {
     this.addCommand(new SetRoleCommand(app));
     this.addCommand(new LanguageCommand(app));
     this.addCommand(new TimezoneCommand(app));
+    this.addCommand(new PrefixCommand(app));
     this.addCommand(new HelpCommand(app, [...this.commandManagers, this]));
   }
 

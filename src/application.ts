@@ -165,10 +165,11 @@ export class Application implements IApplication {
 
   private onMessage = (message: Message) => {
     if (message.author.bot) return;
-    if (message.content.startsWith(this.config.prefix)) {
+    const prefix = this.serverStore.get(message.guild.id).prefix;
+    if (message.content.startsWith(prefix)) {
       const [command, ...args] = message.content
         .trim()
-        .substring(this.config.prefix.length)
+        .substring(prefix.length)
         .split(/\s+/);
 
       if (message.author.id === this.config.operator) {
@@ -193,10 +194,8 @@ export class Application implements IApplication {
 
   private onReady = async () => {
     this.client.user.setActivity({
-      type: this.config.beta ? 'PLAYING' : 'LISTENING',
-      name: this.config.beta
-        ? `${this.config.prefix}Open Beta`
-        : `${this.config.prefix}help`,
+      type: 'PLAYING',
+      name: 'with guilds',
     });
 
     try {
@@ -298,6 +297,7 @@ export class Application implements IApplication {
       leaveMessage: '[USER] leaved the server!',
       language: 'en',
       timezone: 'UTC',
+      prefix: '!',
     };
   }
 }

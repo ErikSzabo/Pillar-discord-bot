@@ -2,7 +2,7 @@
   "messages": {
     "invalid": {
       "title": "‼ Hibás",
-      "description": "Hibás parancs használat!, Próbáld: **[PREFIX]help**",
+      "description": "Hibás parancs használat!",
       "error": true
     },
     "roleSet": {
@@ -313,6 +313,11 @@
       "title": "🕑 Időzóna beállítva",
       "description": "A szerver új időzónája: **[TIMEZONE]**",
       "error": false
+    },
+    "prefixChanged": {
+      "title": "✌ Új prefix!",
+      "description": "Az új parancs prefix a szerveren: **[PREFIX]**",
+      "error": false
     }
   },
   "commands": {
@@ -334,6 +339,7 @@
     "stop": "megállítja a zenét és törli a lejátszási listát",
     "volume": "beállítja vagy megmutatja a jelenlegi hangerőt",
     "poll": "létrehoz egy kérdőívet",
-    "timezone": "Beállítja a szerver időzónáját. (alapból UTC) Ez elég hasznos, ha a saját idődet szeretnéd használni az emlékeztetők létrehozásakor."
+    "timezone": "Beállítja a szerver időzónáját. (alapból UTC) Ez elég hasznos, ha a saját idődet szeretnéd használni az emlékeztetők létrehozásakor.",
+    "prefix": "Beállítja a parancsok kiadásához szükséges prefix-et."
   }
 }

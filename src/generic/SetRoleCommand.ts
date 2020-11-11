@@ -28,7 +28,7 @@ export class SetRoleCommand extends Command {
     if (type === 'help') {
       message.channel.send(
         this.app.message(serverID, 'roleHelp', {
-          prefix: this.app.getConfig().prefix,
+          prefix: this.app.getServerStore().get(serverID).prefix,
         })
       );
       return;

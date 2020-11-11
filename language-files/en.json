@@ -2,7 +2,7 @@
   "messages": {
     "invalid": {
       "title": "‼ Invalid",
-      "description": "Invalid command parameters, Try **[PREFIX]help**",
+      "description": "Invalid command parameters!",
       "error": true
     },
     "roleSet": {
@@ -313,6 +313,11 @@
       "title": "🕑 Timezone set",
       "description": "New timezone for the server: **[TIMEZONE]**",
       "error": false
+    },
+    "prefixChanged": {
+      "title": "✌ New prefix!",
+      "description": "The prefix on this server is set to: **[PREFIX]**",
+      "error": false
     }
   },
   "commands": {
@@ -334,6 +339,7 @@
     "stop": "stops the music and clears the queue",
     "volume": "sets or displays the volume",
     "poll": "creates a poll",
-    "timezone": "Set the timezone for the server (default is UTC). It's useful if you want to use your own times when you set up a reminder."
+    "timezone": "Set the timezone for the server (default is UTC). It's useful if you want to use your own times when you set up a reminder.",
+    "prefix": "Sets the command prefix for the server."
   }
 }

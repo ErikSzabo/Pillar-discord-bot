@@ -11,6 +11,7 @@ export interface ServerInfo {
   leaveMessage: string;
   language: string;
   timezone: timeZone;
+  prefix: string;
 }
 
 type timeZone =
