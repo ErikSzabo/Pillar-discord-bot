@@ -21,11 +21,17 @@ export class ServerScheduler {
     if (timezone) date = Timezones.UTC.convert(date, timezone);
     if (date.getTime() < Date.now()) return;
 
+    const run = () => {
+      callback();
+      this.terminate(serverID, jobName);
+      console.log(this.jobs.get(serverID));
+    };
+
     date = new Date(date.getTime());
     if (this.jobs.has(serverID)) {
-      this.jobs.get(serverID).push(scheduleJob(jobName, date, callback));
+      this.jobs.get(serverID).push(scheduleJob(jobName, date, run));
     } else {
-      this.jobs.set(serverID, [scheduleJob(jobName, date, callback)]);
+      this.jobs.set(serverID, [scheduleJob(jobName, date, run)]);
     }
   }
 
@@ -48,7 +54,7 @@ export class ServerScheduler {
     channel: Channel
   ) {
     for (let time of this.createEventResponseArray(app, reminder)) {
-      const job = this.timedReminderSchedule(
+      this.timedReminderSchedule(
         app,
         time[0],
         time[1],
@@ -69,7 +75,7 @@ export class ServerScheduler {
     const zone = app.getServerStore().get(reminder.serverID).timezone;
     const timezone = Timezones[zone];
     const date = new Date(reminder.date.getTime() - timeOffset);
-    const taskName = `${reminder.serverID}${reminder.date}${reminder.title}`;
+    const taskName = `${reminder.serverID}${reminder.date}${reminder.title}${timeOffset}`;
     scheduler.schedule(
       reminder.serverID,
       taskName,
@@ -81,7 +87,6 @@ export class ServerScheduler {
           .getReminderStore()
           .delete(reminder.serverID, { title: reminder.title })
           .catch((err) => console.log);
-        this.terminate(reminder.serverID, taskName);
       },
       timezone
     );

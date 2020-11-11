@@ -289,6 +289,21 @@
       "description": "You can only specify 20 options for a question!",
       "error": true
     },
+    "invalidPollDuration": {
+      "title": "‼ Invalid",
+      "description": "You have to specify a valid duration for the poll! For example: 1 minute is **1m** or 30 seconds is **30s**",
+      "error": true
+    },
+    "poll10MinLimit": {
+      "title": "Tooo much time!",
+      "description": "Poll duration can't exceed 10 minutes.",
+      "error": true
+    },
+    "pollWinner": {
+      "title": "Poll ended!",
+      "description": "The most liked answer is: **[MESSAGE]**",
+      "error": false
+    },
     "availableTimezones": {
       "title": "🕑 Timezones",
       "description": "Currently supported timezones: [TIMEZONE]",

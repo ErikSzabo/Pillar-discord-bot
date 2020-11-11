@@ -289,6 +289,21 @@
       "description": "Csak 20 db választ adhatsz meg egy kérdéshez!",
       "error": true
     },
+    "invalidPollDuration": {
+      "title": "‼ Hibás",
+      "description": "Meg kell adnod egy érvényes időtartamot a kérdőívnek! Például: 1 perc **1m** vagy 30 másodperc **30s**",
+      "error": true
+    },
+    "poll10MinLimit": {
+      "title": "Túúúl sok idő!",
+      "description": "Egy kérdőív időtartama nem lépheti túl a 10 percet.",
+      "error": true
+    },
+    "pollWinner": {
+      "title": "Kérdőív véget ért!",
+      "description": "A legtöbb szavazatot kapó válasz: **[MESSAGE]**",
+      "error": false
+    },
     "availableTimezones": {
       "title": "🕑 Időzónák",
       "description": "Jelenleg támogatott időzónák: [TIMEZONE]",
