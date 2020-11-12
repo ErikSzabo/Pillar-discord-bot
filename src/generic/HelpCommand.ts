@@ -38,29 +38,6 @@ export class HelpCommand extends Command {
     message.channel.send(this.app.message(serverID, 'invalid'));
   }
 
-  private create(cmd: Command, serverID: string): string {
-    return `- **${
-      this.app.getServerStore().get(serverID).prefix
-    }${cmd.getUsage()}** -- ${cmd.getDescription(
-      this.app,
-      this.app.getServerStore().get(serverID).language
-    )}\n`;
-  }
-
-  private createHelpPage(serverID: string): string {
-    return this.commandManagers
-      .map((manager) => {
-        let managerString = `✅ __**${manager.getName()}**__\n`;
-        manager
-          .getCommands()
-          .forEach(
-            (command) => (managerString += this.create(command, serverID))
-          );
-        return managerString;
-      })
-      .join('\n');
-  }
-
   private managerHelpPage(serverID: string) {
     return this.commandManagers
       .map(

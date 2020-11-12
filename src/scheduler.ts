@@ -24,7 +24,6 @@ export class ServerScheduler {
     const run = () => {
       callback();
       this.terminate(serverID, jobName);
-      console.log(this.jobs.get(serverID));
     };
 
     date = new Date(date.getTime());
