@@ -174,17 +174,9 @@ export class Application implements IApplication {
 
       if (message.author.id === this.config.operator) {
         if (command === 'reload') {
-          return this.languageManager
-            .reload()
-            .then(() => {
-              message.channel.send('Language files reloaded');
-              logger.info(
-                `Language files reloaded by: ${message.author.username} with the id of: ${message.author.id}`
-              );
-            })
-            .catch(() =>
-              message.channel.send('Error while reloading language files.')
-            );
+          return this.reloadLanguageFiles(message);
+        } else if (command === 'activity') {
+          return this.changeActivity(message, args);
         }
       }
 
@@ -201,18 +193,7 @@ export class Application implements IApplication {
     try {
       await this.serverStore.loadToCache();
       await this.reminderStore.loadToCache();
-      for (let reminder of this.reminderStore.getAll()) {
-        const channel = await this.client.channels.fetch(reminder.channel);
-        const zone = this.serverStore.get(reminder.serverID).timezone;
-        const date = Timezones.UTC.convert(reminder.date, Timezones[zone]);
-        if (date.getTime() < Date.now()) {
-          this.reminderStore.delete(reminder.serverID, {
-            title: reminder.title,
-          });
-          continue;
-        }
-        this.scheduler.scheduleReminder(this, reminder, channel);
-      }
+      await this.initalizeReminders();
 
       this.checkAndLoadDowntimeInvites();
 
@@ -299,5 +280,47 @@ export class Application implements IApplication {
       timezone: 'UTC',
       prefix: '!',
     };
+  }
+
+  private reloadLanguageFiles(message: Message) {
+    this.languageManager
+      .reload()
+      .then(() => {
+        message.channel.send('Language files reloaded');
+        logger.info(
+          `Language files reloaded by: ${message.author.username} with the id of: ${message.author.id}`
+        );
+      })
+      .catch(() =>
+        message.channel.send('Error while reloading language files.')
+      );
+  }
+
+  private changeActivity(message: Message, args: string[]) {
+    if (args.length < 2) return;
+    const types = ['PLAYING', 'STREAMING', 'LISTENING', 'WATCHING'];
+    const type = args[0].toUpperCase();
+    const name = args.slice(1).join(' ');
+
+    if (!types.includes(type))
+      return message.channel.send('Invalid activity type!');
+    // @ts-ignore
+    this.client.user.setActivity({ type, name });
+    message.channel.send('Activity changed!');
+  }
+
+  private async initalizeReminders() {
+    for (let reminder of this.reminderStore.getAll()) {
+      const channel = await this.client.channels.fetch(reminder.channel);
+      const zone = this.serverStore.get(reminder.serverID).timezone;
+      const date = Timezones.UTC.convert(reminder.date, Timezones[zone]);
+      if (date.getTime() < Date.now()) {
+        this.reminderStore.delete(reminder.serverID, {
+          title: reminder.title,
+        });
+        continue;
+      }
+      this.scheduler.scheduleReminder(this, reminder, channel);
+    }
   }
 }
