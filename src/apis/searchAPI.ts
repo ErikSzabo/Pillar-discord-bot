@@ -69,9 +69,7 @@ function parseData(raw: string, start: number, end: number): YoutubeApiData {
 
 export async function ytsr(searchQuery: string) {
   searchQuery = normalizeQuery(searchQuery);
-
   let rawData = await getData(`${SEARCH_BASE_URL}${searchQuery}`);
-
   const [startIndex, endIndex] = getIndexes(rawData);
 
   const data = parseData(rawData, startIndex, endIndex);
