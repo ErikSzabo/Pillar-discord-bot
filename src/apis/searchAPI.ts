@@ -25,14 +25,30 @@ async function getData(searchURL: string) {
   return result.data;
 }
 
-function getIndexes(data: string) {
-  const scraperDataBegin = '// scraper_data_begin';
-  const scraperDataEnd = '// scraper_data_end';
-  const startIndex = data.indexOf(scraperDataBegin);
-  const endIndex = data.indexOf(scraperDataEnd) - 3;
+function getIndex(data: string, start: number) {
+  let startIndex, endIndex;
+  let count = 0;
+  for (let i = start; i < data.length; i++) {
+    if (data[i] == '{') {
+      startIndex = i;
+      break;
+    }
+  }
+  for (let i = startIndex; i < data.length; i++) {
+    if (data[i] == '{') count++;
+    else if (data[i] == '}') count--;
+    if (count == 0) {
+      endIndex = i;
+      return [startIndex, endIndex + 1];
+    }
+  }
+}
 
-  for (let i = startIndex; i < endIndex; i++)
-    if (data[i] == '{') return [i, endIndex];
+function getIndexes(data: string) {
+  const dataBegin = /(var ytInitialData)|(window\["ytInitialData"\])/;
+  const match = dataBegin.exec(data);
+  const start = data.indexOf(match[0]);
+  return getIndex(data, start);
 }
 
 function parseData(raw: string, start: number, end: number): YoutubeApiData {
