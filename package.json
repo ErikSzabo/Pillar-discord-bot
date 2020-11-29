@@ -6,9 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
-    "build": "tsc -p .",
-    "fix": "cpx package-hotfixes/index.js node_modules/miniget/dist",
-    "postinstall": "npm run fix"
+    "build": "tsc -p ."
   },
   "keywords": [
     "discord",
