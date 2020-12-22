@@ -37,7 +37,7 @@ export class MusicManager extends CommandManager {
 
     if (
       musicChannel !== 'off' &&
-      musicChannel !== message.channel.id &&
+      musicChannel === message.channel.id &&
       !message.member.permissions.has('ADMINISTRATOR')
     ) {
       message.delete();
