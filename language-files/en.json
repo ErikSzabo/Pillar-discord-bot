@@ -7,7 +7,7 @@
     },
     "roleSet": {
       "title": "💙 Role",
-      "description": "[ROLETYPE] role set to <@&${[ROLE]}>",
+      "description": "[ROLETYPE] role set to <@&[ROLE]>",
       "error": false
     },
     "roleSetOff": {
