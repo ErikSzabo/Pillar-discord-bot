@@ -12,7 +12,7 @@ export class InfoCommand extends Command {
   public async execute(args: string[], message: Message) {
     const serverID = message.guild.id;
     const zone = this.app.getServerStore().get(serverID).timezone;
-    const reminders = this.app.getReminderStore().getAll({ serverID });
+    const reminders = this.app.getReminderStore().getAll(serverID) || [];
     const remindersAsString = reminders
       .map(
         (reminder) =>

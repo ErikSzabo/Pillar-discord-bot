@@ -1,4 +1,4 @@
-import { IDataStore } from './IDataStore';
+import { IRepository } from './IRepository';
 import { ICache } from './ICache';
 import { ServerInfo } from '../generic/ServerInfo';
 
@@ -7,7 +7,7 @@ import { ServerInfo } from '../generic/ServerInfo';
  * It's also saves data into the database.
  */
 export class ServerCache implements ICache<ServerInfo> {
-  private static maxServers = 99;
+  public static maxServers: number = 20;
 
   /**
    * Cache Map which will hold all of the servers' information.
@@ -35,7 +35,7 @@ export class ServerCache implements ICache<ServerInfo> {
     return this.cache.get(serverID);
   }
 
-  public getAll() {
+  public getAll(): ServerInfo[] {
     return Array.from(this.cache.values());
   }
 
@@ -45,7 +45,7 @@ export class ServerCache implements ICache<ServerInfo> {
     return newServerInfo;
   }
 
-  public async loadFromDatastore(dataStore: IDataStore<ServerInfo>) {
+  public async loadFromRepository(dataStore: IRepository<ServerInfo>) {
     const servers = await dataStore.findAll();
     servers.forEach((server) => {
       this.cache.set(server.serverID, server);

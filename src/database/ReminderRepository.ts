@@ -1,19 +1,17 @@
 import { ICollection } from 'monk';
 import { Reminder } from '../reminder/Reminder';
 import { db } from './database';
-import { IDataStore } from './IDataStore';
+import { IRepository } from './IRepository';
 
-export class ReminderRepository implements IDataStore<Reminder> {
+export class ReminderRepository implements IRepository<Reminder> {
   protected collection: ICollection<Reminder>;
 
   constructor() {
     this.collection = db.get('reminders');
-    this.collection.createIndex('serverID title');
+    this.collection.createIndex('serverID uid');
   }
 
   public async add(serverID: string, data: Reminder) {
-    const duplicate = await this.collection.findOne({ serverID });
-    if (duplicate) return;
     return this.collection.insert(data);
   }
 
@@ -22,10 +20,10 @@ export class ReminderRepository implements IDataStore<Reminder> {
   }
 
   public update(serverID: string, data: Partial<Reminder>) {
-    return this.collection.findOneAndUpdate(
-      { serverID },
-      { $set: { ...data } }
-    );
+    const searchParam = data.uid
+      ? { serverID, uid: data.uid }
+      : { serverID, title: data.title };
+    return this.collection.findOneAndUpdate(searchParam, { $set: { ...data } });
   }
 
   async findAll(): Promise<Reminder[]> {

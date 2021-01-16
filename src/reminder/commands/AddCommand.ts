@@ -1,4 +1,5 @@
 import { Message } from 'discord.js';
+import { v4 as uuidv4 } from 'uuid';
 import { parseQuotedArgs } from '../../utils';
 import { Command } from '../../generic/Command';
 import { Reminder } from '../Reminder';
@@ -21,9 +22,9 @@ export class AddCommand extends Command {
       const reminder = this.parseReminder(message);
       const duplicate = this.app
         .getReminderStore()
-        .getAll({ title: reminder.title, serverID: reminder.serverID });
+        .get(serverID, { title: reminder.title });
 
-      if (duplicate.length > 0) throw new Error('reminderAlreadyExists');
+      if (duplicate) throw new Error('reminderAlreadyExists');
 
       try {
         await this.app.getReminderStore().add(serverID, reminder);
@@ -143,6 +144,7 @@ export class AddCommand extends Command {
   ): Reminder {
     return {
       serverID: message.guild.id,
+      uid: uuidv4(),
       mentionID: mentionID ? mentionID : '',
       type: mentionType,
       title: title,

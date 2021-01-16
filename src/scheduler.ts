@@ -4,6 +4,10 @@ import { Timezone, Timezones } from './apis/timezoneAPI';
 import { IApplication } from './application';
 import { Reminder } from './reminder/Reminder';
 
+const oneWeek = 7 * 24 * 60 * 60 * 1000;
+const threeDays = 3 * 24 * 60 * 60 * 1000;
+const threeHour = 3 * 60 * 60 * 1000;
+
 export class ServerScheduler {
   private jobs: Map<string, Job[]>;
 
@@ -63,6 +67,25 @@ export class ServerScheduler {
     }
   }
 
+  public terminateReminder(reminder: Reminder) {
+    this.terminate(
+      reminder.serverID,
+      `${reminder.serverID}${reminder.date}${reminder.uid}${oneWeek}`
+    );
+    this.terminate(
+      reminder.serverID,
+      `${reminder.serverID}${reminder.date}${reminder.uid}${threeDays}`
+    );
+    this.terminate(
+      reminder.serverID,
+      `${reminder.serverID}${reminder.date}${reminder.uid}${threeHour}`
+    );
+    this.terminate(
+      reminder.serverID,
+      `${reminder.serverID}${reminder.date}${reminder.uid}${0}`
+    );
+  }
+
   private timedReminderSchedule(
     app: IApplication,
     timeOffset: number,
@@ -74,7 +97,7 @@ export class ServerScheduler {
     const zone = app.getServerStore().get(reminder.serverID).timezone;
     const timezone = Timezones[zone];
     const date = new Date(reminder.date.getTime() - timeOffset);
-    const taskName = `${reminder.serverID}${reminder.date}${reminder.title}${timeOffset}`;
+    const taskName = `${reminder.serverID}${reminder.date}${reminder.uid}${timeOffset}`;
     scheduler.schedule(
       reminder.serverID,
       taskName,
@@ -84,7 +107,7 @@ export class ServerScheduler {
         if (timeOffset !== 0) return;
         app
           .getReminderStore()
-          .delete(reminder.serverID, { title: reminder.title })
+          .delete(reminder.serverID, { uid: reminder.uid })
           .catch((err) => console.log);
       },
       timezone
@@ -92,9 +115,6 @@ export class ServerScheduler {
   }
 
   private createEventResponseArray(app: IApplication, reminder: Reminder) {
-    const oneWeek = 7 * 24 * 60 * 60 * 1000;
-    const threeDays = 3 * 24 * 60 * 60 * 1000;
-    const threeHour = 3 * 60 * 60 * 1000;
     const times: Array<[number, MessageEmbed]> = [
       [oneWeek, this.getEventMsg(app, reminder, 'reminderNotifyOneWeek')],
       [threeDays, this.getEventMsg(app, reminder, 'reminderNotifyThreeDays')],

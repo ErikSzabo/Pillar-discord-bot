@@ -1,9 +1,9 @@
 import { ICollection } from 'monk';
 import { ServerInfo } from '../generic/ServerInfo';
 import { db } from './database';
-import { IDataStore } from './IDataStore';
+import { IRepository } from './IRepository';
 
-export class ServerRepository implements IDataStore<ServerInfo> {
+export class ServerRepository implements IRepository<ServerInfo> {
   protected collection: ICollection<ServerInfo>;
 
   constructor() {

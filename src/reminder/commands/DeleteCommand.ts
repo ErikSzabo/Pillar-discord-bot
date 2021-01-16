@@ -20,10 +20,11 @@ export class DeleteCommand extends Command {
       return;
     }
 
-    const [reminder] = this.app.getReminderStore().getAll({ title, serverID });
+    const reminder = this.app.getReminderStore().get(serverID, { title });
     if (reminder) {
       try {
         await this.app.getReminderStore().delete(serverID, { title });
+        this.app.getScheduler().terminateReminder(reminder);
         message.channel.send(
           this.app.message(serverID, 'reminderDeleted', { reminder: title })
         );

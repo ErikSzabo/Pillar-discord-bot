@@ -1,11 +1,11 @@
 import { ICache } from './ICache';
-import { IDataStore } from './IDataStore';
+import { IRepository } from './IRepository';
 
 export class DataStore<T> {
   protected cache: ICache<T>;
-  protected store: IDataStore<T>;
+  protected store: IRepository<T>;
 
-  constructor(cache: ICache<T>, store: IDataStore<T>) {
+  constructor(cache: ICache<T>, store: IRepository<T>) {
     this.cache = cache;
     this.store = store;
   }
@@ -14,12 +14,12 @@ export class DataStore<T> {
     return this.cache.isCached(serverID);
   }
 
-  public get(serverID: string): T {
-    return this.cache.get(serverID);
+  public get(serverID: string, filter?: Partial<T>): T {
+    return this.cache.get(serverID, filter);
   }
 
-  public getAll(filter?: Partial<T>) {
-    return this.cache.getAll(filter);
+  public getAll(serverID?: string, filter?: Partial<T>): T[] {
+    return this.cache.getAll(serverID, filter);
   }
 
   public async add(serverID: string, data: T) {
@@ -50,6 +50,6 @@ export class DataStore<T> {
   }
 
   public async loadToCache() {
-    await this.cache.loadFromDatastore(this.store);
+    await this.cache.loadFromRepository(this.store);
   }
 }
