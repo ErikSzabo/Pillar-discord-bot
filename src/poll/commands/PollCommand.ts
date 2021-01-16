@@ -84,7 +84,7 @@ export class PollCommand extends Command {
 
   private parseDuration(duration: string): number {
     const multipler: any = { h: 60 * 60 * 1000, m: 60 * 1000, s: 1000 };
-    const format = /^([1-9]+)(s|m)$/g;
+    const format = /^([1-9]+[0-9]*)(s|m)$/g;
     const matches = format.exec(duration);
     return matches ? parseInt(matches[1]) * multipler[matches[2]] : null;
   }
