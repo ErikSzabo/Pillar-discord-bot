@@ -3,6 +3,17 @@ import axios from 'axios';
 interface YoutubeApiData {
   videoId: string;
   title: Title;
+  thumbnail: Thumbnail;
+}
+
+interface Thumbnail {
+  thumbnails: ThumbnailList[];
+}
+
+interface ThumbnailList {
+  url: string;
+  width: number;
+  height: number;
 }
 
 interface Title {
@@ -78,5 +89,9 @@ export async function ytsr(searchQuery: string) {
   return {
     title: data.title.runs[0].text,
     url: `${WATCH_BASE_URL}${data.videoId}`,
+    thumbnail:
+      data.thumbnail.thumbnails.length > 0
+        ? data.thumbnail.thumbnails[0].url
+        : '',
   };
 }

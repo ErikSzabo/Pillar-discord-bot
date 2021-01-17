@@ -255,8 +255,8 @@
       "error": false
     },
     "songQueue": {
-      "title": "Lejátszási lista:",
-      "description": "[SONGS]\n **Jelenleg játszott**: [SONG]",
+      "title": "Lejátszási lista",
+      "description": "**Jelenleg játszott**:\n [SONG]\n\n [SONGS]\nÚj zene hozzáadásához: `[PREFIX]play <zene címe>` vagy `[PREFIX]play <youtube link>`",
       "error": false
     },
     "invalidLanguage": {
@@ -301,7 +301,7 @@
     },
     "pollWinner": {
       "title": "Kérdőív véget ért!",
-      "description": "A legtöbb szavazatot kapó válasz: **[MESSAGE]**",
+      "description": "**[POLL]**\n A legtöbb szavazatot kapó válasz: **[MESSAGE]**",
       "error": false
     },
     "availableTimezones": {

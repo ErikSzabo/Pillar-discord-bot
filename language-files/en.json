@@ -255,8 +255,8 @@
       "error": false
     },
     "songQueue": {
-      "title": "Song queue:",
-      "description": "[SONGS]\n **Now playing**: [SONG]",
+      "title": "Song queue",
+      "description": "**Now playing**:\n [SONG]\n\n [SONGS]\nTo add a song: `[PREFIX]play <song title>` or `[PREFIX]play <youtube link>`",
       "error": false
     },
     "invalidLanguage": {
@@ -301,7 +301,7 @@
     },
     "pollWinner": {
       "title": "Poll ended!",
-      "description": "The most liked answer is: **[MESSAGE]**",
+      "description": "**[POLL]**\n The most liked answer is: **[MESSAGE]**",
       "error": false
     },
     "availableTimezones": {

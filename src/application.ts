@@ -1,4 +1,5 @@
 import { Client, Guild, GuildMember, Message, MessageEmbed } from 'discord.js';
+import { SongData } from './apis/musicAPI';
 import { Timezones } from './apis/timezoneAPI';
 import { config, Config } from './config';
 import { DataStore } from './database/DataStore';
@@ -58,6 +59,20 @@ export interface IApplication {
    * @param options  placeholder options
    */
   message(serverID: string, prop: string, options?: Placeholder): MessageEmbed;
+  /**
+   * Return a message embed specific to a song from the language manager.
+   *
+   * @param serverID server id to check the language
+   * @param prop     message indentifier string
+   * @param song     specific song which data will be displayed
+   * @param options  placeholder options
+   */
+  customSongMessage(
+    serverID: string,
+    prop: string,
+    song: SongData,
+    options?: Placeholder
+  ): MessageEmbed;
   /**
    * Checks if the member has the role or not.
    *
@@ -138,6 +153,20 @@ export class Application implements IApplication {
   ): MessageEmbed {
     const locale = this.serverStore.get(serverID).language;
     return this.languageManager.get(locale, prop, options);
+  }
+
+  public customSongMessage(
+    serverID: string,
+    prop: string,
+    song: SongData,
+    options?: Placeholder
+  ) {
+    const locale = this.serverStore.get(serverID).language;
+    const defaultMsg = this.languageManager.get(locale, prop, options);
+    defaultMsg.setDescription(`[${defaultMsg.description}](${song.url})`);
+    defaultMsg.setThumbnail(song.thumbnail);
+    defaultMsg.footer = { text: song.addedBy, iconURL: song.addedByAvatarURL };
+    return defaultMsg;
   }
 
   public isModerator(serverID: string, member: GuildMember) {

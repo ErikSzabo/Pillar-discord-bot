@@ -53,7 +53,9 @@ export class PlayCommand extends Command {
     if (!music) return;
     musicAPI.queue(serverID, music);
     message.channel.send(
-      this.app.message(serverID, 'songQueued', { song: music.title })
+      this.app.customSongMessage(serverID, 'songQueued', music, {
+        song: music.title,
+      })
     );
   }
 
@@ -89,13 +91,15 @@ export class PlayCommand extends Command {
 
   private async getMusicData(query: string, message: Message) {
     const channel = message.channel;
+    const addedBy = `${message.author.username}#${message.author.discriminator}`;
+    const addedByAvatarURL = message.author.avatarURL();
     if (musicAPI.validateYoutubeUrl(query)) {
       const info = await musicAPI.getVideoDetails(query);
-      return { ...info, channel };
+      return { ...info, channel, addedBy, addedByAvatarURL };
     }
     const info = await ytsr(query);
     if (!info) return null;
-    return { ...info, channel };
+    return { ...info, channel, addedBy, addedByAvatarURL };
   }
 
   private async handleMusicRetrieving(song: string, message: Message) {
@@ -111,6 +115,8 @@ export class PlayCommand extends Command {
 
   private nowPlayingHandler = (serverID: string, music: SongData) => {
     const { channel, title: song } = music;
-    channel.send(this.app.message(serverID, 'nowPlaying', { song }));
+    channel.send(
+      this.app.customSongMessage(serverID, 'nowPlaying', music, { song })
+    );
   };
 }

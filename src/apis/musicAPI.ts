@@ -13,6 +13,9 @@ import {
 export interface SongData {
   title: string;
   url: string;
+  thumbnail: string;
+  addedBy: string;
+  addedByAvatarURL: string;
   channel: TextChannel | NewsChannel | DMChannel;
 }
 
@@ -270,6 +273,11 @@ class MusicAPI extends EventEmitter {
     return {
       title: Util.escapeMarkdown(info.videoDetails.title),
       url: info.videoDetails.video_url,
+      thumbnail:
+        info.videoDetails.thumbnail &&
+        info.videoDetails.thumbnail.thumbnails.length > 0
+          ? info.videoDetails.thumbnail.thumbnails[0].url
+          : '',
     };
   }
 

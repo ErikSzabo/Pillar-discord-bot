@@ -55,10 +55,10 @@ export class HelpCommand extends Command {
       .map((cmd) => {
         return `- **${
           this.app.getServerStore().get(serverID).prefix
-        }${cmd.getUsage()}** -- ${cmd.getDescription(
+        }${cmd.getUsage()}** -- \`${cmd.getDescription(
           this.app,
           this.app.getServerStore().get(serverID).language
-        )}`;
+        )}\`\n`;
       })
       .join('\n');
   }

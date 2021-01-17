@@ -28,7 +28,8 @@ type placeHolderProp =
   | 'songs'
   | 'language'
   | 'description'
-  | 'timezone';
+  | 'timezone'
+  | 'poll';
 
 export interface Placeholder {
   prefix?: string;
@@ -45,6 +46,7 @@ export interface Placeholder {
   language?: string;
   description?: string;
   timezone?: string;
+  poll?: string;
 }
 
 export class LanguageManager {

@@ -51,7 +51,10 @@ export class PollCommand extends Command {
       });
       const winner = answers[counter.indexOf(Math.max(...counter))];
       message.channel.send(
-        this.app.message(serverID, 'pollWinner', { message: winner })
+        this.app.message(serverID, 'pollWinner', {
+          message: winner,
+          poll: `\`\`\`${question}\`\`\``,
+        })
       );
     };
 
@@ -72,11 +75,14 @@ export class PollCommand extends Command {
     message: Message
   ): MessageEmbed {
     const embed = new MessageEmbed();
-    embed.setTitle(question + '\n' + '____');
+
     embed.setColor('#0099ff');
     embed.setAuthor(message.member.displayName, message.author.avatarURL());
     embed.setDescription(
-      answers.map((answer, i) => `${options[i]} - ${answer}\n`)
+      '```' +
+        question +
+        '```\n' +
+        answers.map((answer, i) => `${options[i]} - ${answer}\n`).join('\n')
     );
     embed.setFooter(`🕓 ${duration}`);
     return embed;

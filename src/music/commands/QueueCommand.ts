@@ -20,8 +20,9 @@ export class QueueCommand extends Command {
 
     message.channel.send(
       this.app.message(serverID, 'songQueue', {
-        songs: queue.map((song) => `**-** ${song.title}`).join('\n'),
-        song: queue[0].title,
+        songs: `\`\`\`${queue.map((song) => song.title).join('\n')}\`\`\``,
+        song: `[${queue[0].title}](${queue[0].url})`,
+        prefix: this.app.getServerStore().get(serverID).prefix,
       })
     );
   }
